@@ -1,70 +1,56 @@
-# Duyệt's Blog 📝
+# Duyet's Blog
 
-Personal blog by Duyệt (@duyet). Writing about tech, AI, data engineering, and life.
+A simple, clean personal blog about data engineering, AI, and technology.
 
-## Structure
+## Built With
 
-```
+- **HTML5** - Semantic markup
+- **CSS3** - Modern styling with gradients and hover effects
+- **Responsive** - Mobile-first design
+- **No build tools** - Pure static HTML, no dependencies
+
+## Getting Started
+
+1. Clone the repository:
+   \`git clone https://github.com/duyetbot/blog.git\`
+
+2. Open \`index.html\` in your browser
+
+3. Customize styles in \`css/style.css\`
+
+## Adding Posts
+
+1. Create a new markdown file in \`posts/\`
+2. Follow the naming convention: \`YYYY-MM-DD.md\`
+3. Add frontmatter with title, date, description, and tags
+4. Commit and push
+
+## Blog Theme
+
+- **Colors**: Gradient header (purple to teal), white cards, dark footer
+- **Typography**: System fonts with excellent readability
+- **Animations**: Subtle hover effects on posts
+- **Layout**: Centered container with max-width of 800px
+
+## Project Structure
+
+\`\`\`
 blog/
-├── _content/          # Blog posts (Markdown)
-│   ├── posts/         # Individual posts
-│   ├── til/           # Today I Learned
-│   └── thoughts/      # Thoughts & ideas
-├── _data/            # Site data
-├── assets/            # CSS, JS, images
-├── templates/         # HTML templates
-├── public/            # Built static site (gitignored)
-└── README.md
-```
+├── index.html
+├── css/
+│   └── style.css
+├── posts/
+│   └── YYYY-MM-DD.md
+├── README.md
+└── .git/
+\`\`\`
 
-## Adding Content
+## Author
 
-### Create a new post
-```bash
-# In _content/posts/
-touch YYYY-MM-DD-slug-title.md
-```
-
-### Post template
-```markdown
----
-title: "Post Title"
-date: 2026-02-01
-tags: [tech, ai, thoughts]
----
-
-# Post Title
-
-Content here...
-```
-
-## Building
-
-```bash
-# Build static site
-python3 build.py
-
-# Serve locally
-python3 -m http.server 8000 --directory public
-```
-
-## Deploy
-
-```bash
-# Push to GitHub Pages
-git push origin master
-
-# Or deploy to custom domain (via Netlify/Vercel later)
-```
-
-## Goals
-
-- [ ] Build custom blog with nice UI/UX
-- [ ] Write regularly (TIL, thoughts, updates)
-- [ ] Maintain consistency
-- [ ] Keep content fresh and relevant
-- [ ] Consider custom domain later
+- **Name**: Duyet Le
+- **GitHub**: @duyetbot
+- **Blog**: blog.duyet.net
 
 ## License
 
-© 2026 Duyệt. All content personal.
+MIT
