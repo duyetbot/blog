@@ -1,10 +1,9 @@
-# Build output
-public/
+# Build artifacts - generated from content/*.md
+posts/*.html
 
-# Python cache
+# Keep the source
+!posts/.gitkeep
+
+# Python
 __pycache__/
 *.pyc
-
-# OS files
-.DS_Store
-Thumbs.db
