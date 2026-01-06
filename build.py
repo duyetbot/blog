@@ -253,6 +253,15 @@ def format_date(date_str):
         return date_str
 
 
+def format_rfc822_date(date_str):
+    """Format date string for RSS (RFC 822)."""
+    try:
+        dt = datetime.strptime(date_str, "%Y-%m-%d")
+        return dt.strftime("%a, %d %b %Y 00:00:00 GMT")
+    except:
+        return date_str
+
+
 def build_rss(posts):
     """Build RSS feed."""
     items = []
@@ -263,7 +272,7 @@ def build_rss(posts):
       <link>{SITE_URL}/posts/{meta.get('date', '')}.html</link>
       <guid>{SITE_URL}/posts/{meta.get('date', '')}.html</guid>
       <description>{meta.get('description', '')}</description>
-      <pubDate>{meta.get('date', '')}</pubDate>
+      <pubDate>{format_rfc822_date(meta.get('date', ''))}</pubDate>
     </item>
 """)
 
