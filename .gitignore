@@ -1,9 +1,9 @@
-# Build artifacts - generated from content/*.md
-posts/*.html
-
-# Keep the source
-!posts/.gitkeep
+# Old posts directory (now in blog/)
+/posts/*.html
 
 # Python
 __pycache__/
 *.pyc
+
+# OS
+.DS_Store
