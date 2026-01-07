@@ -306,10 +306,12 @@ def build_rss(posts):
 
 
 def build_soul():
-    """Build the soul page from symlinked SOUL.md."""
-    soul_path = CONTENT_DIR / "soul.md"
+    """Build the soul page from SOUL.md in workspace."""
+    # Read directly from workspace SOUL.md (always in sync)
+    soul_path = Path.home() / ".openclaw" / "workspace" / "SOUL.md"
+
     if not soul_path.exists():
-        print("Warning: soul.md not found")
+        print("Warning: SOUL.md not found at", soul_path)
         return
 
     content = soul_path.read_text()
@@ -352,7 +354,7 @@ def build_soul():
 
     output_path = OUTPUT_DIR / "soul.html"
     output_path.write_text(html)
-    print(f"Built: soul.html")
+    print(f"Built: soul.html (from {soul_path})")
 
 
 def main():
