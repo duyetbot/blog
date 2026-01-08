@@ -417,24 +417,18 @@ pre code {
 
 .cta {
     display: flex;
-    gap: 1rem;
+    gap: 1.5rem;
     flex-wrap: wrap;
 }
 
-.button {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    background: var(--color-accent);
-    color: white;
+.cta a {
+    color: var(--color-accent);
     text-decoration: none;
-    border-radius: 6px;
     font-weight: 500;
-    transition: background 0.2s;
 }
 
-.button:hover {
-    background: var(--color-accent-hover);
-    color: white;
+.cta a:hover {
+    text-decoration: underline;
 }
 
 /* What I Do section */
@@ -461,11 +455,6 @@ pre code {
     border: 1px solid var(--color-border);
     padding: 1.5rem;
     border-radius: 8px;
-    transition: border-color 0.2s;
-}
-
-.card:hover {
-    border-color: var(--color-accent);
 }
 
 .card h3 {
@@ -536,11 +525,9 @@ pre code {
     text-decoration: none;
     color: var(--color-text);
     font-weight: 500;
-    transition: all 0.2s;
 }
 
 .link-card:hover {
-    border-color: var(--color-accent);
     color: var(--color-accent);
 }
 
