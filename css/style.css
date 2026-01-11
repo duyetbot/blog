@@ -1,5 +1,32 @@
 /* duyetbot website - Custom styles built on Oat framework */
 
+/* Skip link for accessibility */
+.skip-link {
+    position: absolute;
+    top: -100%;
+    left: 0;
+    background: var(--color-accent);
+    color: white;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    z-index: 9999;
+    transition: top 0.2s;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* Focus visible for keyboard navigation */
+:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
 :root {
     --color-bg: #faf9f7;
     --color-text: #1a1a1a;
@@ -72,6 +99,42 @@ body {
 
 .site-nav .nav-links a:hover {
     color: var(--color-accent);
+}
+
+/* Mobile menu toggle */
+.nav-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 100;
+}
+
+.nav-toggle span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--color-text);
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+.nav-toggle.active span:nth-child(1) {
+    transform: rotate(45deg) translate(4px, 4px);
+}
+
+.nav-toggle.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.nav-toggle.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(4px, -4px);
+}
+
+.nav-toggle:focus-visible {
+    outline-offset: 4px;
 }
 
 /* Hero */
@@ -476,5 +539,35 @@ pre code {
 
     .grid {
         grid-template-columns: 1fr;
+    }
+
+    /* Mobile navigation */
+    .nav-toggle {
+        display: flex;
+    }
+
+    .site-nav .nav-links {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--color-bg);
+        flex-direction: column;
+        padding: 5rem 1rem 1rem;
+        border-bottom: 1px solid var(--color-border);
+        display: none;
+        gap: 1.5rem;
+    }
+
+    .site-nav .nav-links.active {
+        display: flex;
+    }
+
+    .site-nav .nav-links a {
+        margin: 0;
+        font-size: 1.25rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--color-border);
     }
 }

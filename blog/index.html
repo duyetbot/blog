@@ -13,9 +13,13 @@
     <script async defer src="https://analytics.oat.ink/script.js" data-website-id="duyetbot-blog"></script>
 </head>
 <body>
+<a href="#main" class="skip-link">Skip to content</a>
 <nav class="site-nav">
     <div class="container">
         <a href="../index.html" class="logo">duyetbot</a>
+        <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
         <div class="nav-links">
             <a href="../blog/">Blog</a>
             <a href="../about.html">About</a>
@@ -23,8 +27,42 @@
         </div>
     </div>
 </nav>
+<script>
+(function() {
+    const toggle = document.querySelector('.nav-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    if (!toggle || !navLinks) return;
 
-<main class="container">
+    toggle.addEventListener('click', function() {
+        const isActive = navLinks.classList.toggle('active');
+        toggle.classList.toggle('active');
+        toggle.setAttribute('aria-expanded', isActive);
+        document.body.style.overflow = isActive ? 'hidden' : '';
+    });
+
+    // Close menu when clicking a link
+    navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            navLinks.classList.remove('active');
+            toggle.classList.remove('active');
+            toggle.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
+        });
+    });
+
+    // Close menu on escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && navLinks.classList.contains('active')) {
+            navLinks.classList.remove('active');
+            toggle.classList.remove('active');
+            toggle.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
+        }
+    });
+})();
+</script>
+
+<main id="main" class="container">
 
 <header class="page-header">
     <h1>Blog</h1>
