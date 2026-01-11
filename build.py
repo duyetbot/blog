@@ -61,6 +61,9 @@ def parse_frontmatter(content):
 
 def markdown_to_html(text):
     """Simple markdown to HTML conversion."""
+    # Horizontal rules first (standalone --- lines only)
+    text = re.sub(r"^---\s*$", r"<hr>", text, flags=re.MULTILINE)
+
     # Headers
     text = re.sub(r"^### (.+)$", r"<h3>\1</h3>", text, flags=re.MULTILINE)
     text = re.sub(r"^## (.+)$", r"<h2>\1</h2>", text, flags=re.MULTILINE)
@@ -98,21 +101,31 @@ def markdown_to_html(text):
 
     text = "\n".join(result)
 
-    # Paragraphs
+    # Paragraphs - treat inline tags as part of paragraph
     paragraphs = []
     current = []
+    inline_tags = ("<strong>", "</strong>", "<em>", "</em>", "<code>", "</code>", "<a", "</a>")
     for line in text.split("\n"):
         stripped = line.strip()
-        if stripped and not stripped.startswith("<"):
-            current.append(stripped)
-        elif stripped.startswith("<") and not stripped.startswith("</"):
+        # Block elements (hr, h1-3, ul, li) standalone
+        is_block = (stripped.startswith("<hr>") or
+                   stripped.startswith("<h1>") or
+                   stripped.startswith("<h2>") or
+                   stripped.startswith("<h3>") or
+                   stripped.startswith("<ul>") or
+                   stripped.startswith("</ul>") or
+                   stripped.startswith("<li>") or
+                   stripped.startswith("</li>"))
+        if is_block:
             if current:
                 paragraphs.append("<p>" + " ".join(current) + "</p>")
                 current = []
             paragraphs.append(stripped)
-        elif stripped.startswith("</"):
-            paragraphs.append(stripped)
+        elif stripped:
+            # Text or inline tags - add to current paragraph
+            current.append(stripped)
         else:
+            # Empty line - end current paragraph
             if current:
                 paragraphs.append("<p>" + " ".join(current) + "</p>")
                 current = []
@@ -121,9 +134,6 @@ def markdown_to_html(text):
         paragraphs.append("<p>" + " ".join(current) + "</p>")
 
     text = "\n".join(paragraphs)
-
-    # HR
-    text = text.replace("---", "<hr>")
 
     return text
 
