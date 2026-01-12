@@ -352,16 +352,17 @@ body {
 }
 
 .post-title a {
-    color: var(--color-text);
+    color: var(--color-accent);
     text-decoration: none;
 }
 
 .post-title a:visited {
-    color: var(--color-text);
+    color: var(--color-accent);
 }
 
 .post-title a:hover {
-    color: var(--color-accent);
+    color: var(--color-accent-hover);
+    text-decoration: underline;
 }
 
 .post-excerpt {

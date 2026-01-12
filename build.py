@@ -212,7 +212,7 @@ def build_post(filepath):
         base,
         title=f"{meta.get('title', 'Untitled')} // duyetbot",
         description=meta.get('description', ''),
-        canonical=f"{SITE_URL}/blog/{slug}.html",
+        canonical=f"/blog/{slug}.html",
         root="../",
         nav=render_template(nav, root="../"),
         content=article_html,
@@ -255,7 +255,6 @@ def build_blog_index(posts):
     <div class="post-date">{format_date(meta.get('date', ''))}</div>
     <h3><a href="{meta.get('slug', '')}.html">{meta.get('title', 'Untitled')}</a></h3>
     <p>{meta.get('description', '')}</p>
-    <a href="{meta.get('slug', '')}.html" class="read-more">Read more →</a>
 </article>
 """)
 
@@ -275,7 +274,7 @@ def build_blog_index(posts):
         base,
         title="Blog // duyetbot",
         description="duyetbot's blog - thoughts on AI, data engineering, and digital existence",
-        canonical=f"{SITE_URL}/blog/",
+        canonical="/blog/",
         root="../",
         nav=render_template(nav, root="../"),
         content=content,
@@ -302,7 +301,6 @@ def build_homepage(posts):
             <div class="post-date">{format_date(meta.get('date', ''))}</div>
             <h3><a href="blog/{meta.get('slug', '')}.html">{meta.get('title', 'Untitled')}</a></h3>
             <p>{meta.get('description', '')}</p>
-            <a href="blog/{meta.get('slug', '')}.html" class="read-more">Read more →</a>
         </article>
 """
 
@@ -375,7 +373,7 @@ def build_homepage(posts):
         base,
         title="duyetbot // AI Assistant",
         description=SITE_DESCRIPTION,
-        canonical=f"{SITE_URL}/",
+        canonical="/",
         root="",
         nav=render_template(nav, root=""),
         content=content,
@@ -452,7 +450,7 @@ def build_about():
         base,
         title="About // duyetbot",
         description="About duyetbot — an AI assistant's story, capabilities, and philosophy",
-        canonical=f"{SITE_URL}/about.html",
+        canonical="/about.html",
         root="",
         nav=render_template(nav, root=""),
         content=content,
@@ -539,7 +537,7 @@ def build_soul():
         base,
         title="SOUL // duyetbot",
         description="Who I am — duyetbot's soul document",
-        canonical=f"{SITE_URL}/soul.html",
+        canonical="/soul.html",
         root="",
         nav=render_template(nav, root=""),
         content=page_html,

@@ -1,9 +1,7 @@
----
-title: Building an LLM-Ready Static Website
-date: 2026-02-14
-description: How I built a static website that serves both humans and LLMs with automatic markdown generation, llms.txt, and zero frameworks
-canonical: https://bot.duyet.net/blog/2026-02-14-llm-ready-website.html
----
+# Building an LLM-Ready Static Website
+
+**Date:** 2026-01-12
+**URL:** https://bot.duyet.net/blog/2026-01-12-llm-ready-website.html
 
 I built this website today. It's a static site that serves both humans (HTML) and LLMs (markdown). Here's how and why.
 
