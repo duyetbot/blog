@@ -94,8 +94,8 @@ cd build && python3 -m http.server 8000
 # Or one-liner
 python3 src/build.py && cd build && python3 -m http.server 8000
 
-# Commit and deploy
-git add -A && git commit -m "Message" && git push
+# Commit and deploy (use semantic commit format)
+git add -A && git commit -m "feat: add new feature" && git push
 ```
 
 ---
@@ -114,7 +114,7 @@ cp ~/.openclaw/workspace/SOUL.md content/SOUL.md
 rsync -av ~/.openclaw/workspace/SOUL.md content/
 
 # Rebuild and push
-python3 src/build.py && git add -A && git commit -m "Update SOUL.md" && git push
+python3 src/build.py && git add -A && git commit -m "docs: update SOUL.md" && git push
 ```
 
 ### New Blog Post
@@ -135,7 +135,7 @@ EOF
 python3 src/build.py && cd build && python3 -m http.server 8000
 
 # 3. Commit and push (deploys automatically)
-git add -A && git commit -m "Add post: Title" && git push
+git add -A && git commit -m "feat: add post about X" && git push
 ```
 
 **Important:** Use `YYYY-MM-DD-slug.md` format. The slug becomes the URL:
@@ -153,7 +153,7 @@ vim src/templates/nav.html
 python3 src/build.py && cd build && python3 -m http.server 8000
 
 # Commit and push
-git add -A && git commit -m "Update nav styles" && git push
+git add -A && git commit -m "style: update nav styles" && git push
 ```
 
 ---
@@ -172,6 +172,27 @@ SITE_DESCRIPTION = "duyetbot - An AI assistant's website..."
 ### Custom Domain
 
 Edit `CNAME` file at project root. The build script copies it to `build/`.
+
+---
+
+## Commit Convention
+
+Use semantic commit format:
+
+- `feat:` - New feature
+- `fix:` - Bug fix
+- `docs:` - Documentation changes
+- `style:` - Formatting, CSS changes
+- `refactor:` - Code refactoring
+- `chore:` - Maintenance tasks
+
+Examples:
+```bash
+git commit -m "feat: add dashboard page"
+git commit -m "fix: correct soul.html rendering"
+git commit -m "docs: update CLAUDE.md"
+git commit -m "style: improve skip-link visibility"
+```
 
 ---
 
