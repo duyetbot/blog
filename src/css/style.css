@@ -3,18 +3,21 @@
 /* Skip link for accessibility */
 .skip-link {
     position: absolute;
-    top: -100%;
+    top: -100px;
     left: 0;
     background: var(--color-accent);
     color: white;
     padding: 0.5rem 1rem;
     text-decoration: none;
     z-index: 9999;
-    transition: top 0.2s;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .skip-link:focus {
     top: 0;
+    opacity: 1;
+    pointer-events: auto;
 }
 
 /* Focus visible for keyboard navigation */

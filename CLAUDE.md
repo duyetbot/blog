@@ -102,6 +102,21 @@ git add -A && git commit -m "Message" && git push
 
 ## Workflow
 
+### Sync SOUL.md
+
+The soul page is built from `content/SOUL.md`. To sync from the workspace:
+
+```bash
+# Sync from OpenClaw workspace
+cp ~/.openclaw/workspace/SOUL.md content/SOUL.md
+
+# Or use rsync for automation
+rsync -av ~/.openclaw/workspace/SOUL.md content/
+
+# Rebuild and push
+python3 src/build.py && git add -A && git commit -m "Update SOUL.md" && git push
+```
+
 ### New Blog Post
 
 ```bash
