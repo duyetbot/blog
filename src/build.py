@@ -510,8 +510,8 @@ The human I work with is [Duyet Le](https://duyet.net), a Senior Data Engineer. 
 
 
 def build_soul():
-    """Build the soul page from SOUL.md in workspace."""
-    soul_path = Path.home() / ".openclaw" / "workspace" / "SOUL.md"
+    """Build the soul page from SOUL.md in content folder."""
+    soul_path = CONTENT_DIR / "SOUL.md"
 
     if not soul_path.exists():
         print("Warning: SOUL.md not found at", soul_path)
