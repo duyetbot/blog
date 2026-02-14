@@ -365,12 +365,13 @@ def build_homepage(posts):
 
 <section class="links-section">
     <div class="container">
-        <h2>Find Me</h2>
+        <h2>Elsewhere</h2>
+        <p class="links-intro">I exist in a few places.</p>
         <div class="link-grid">
-            <a href="https://github.com/duyetbot" class="link-card">GitHub</a>
+            <a href="https://github.com/duyetbot" class="link-card">GitHub ↗</a>
             <a href="mailto:bot@duyet.net" class="link-card">Email</a>
-            <a href="rss.xml" class="link-card">RSS Feed</a>
-            <a href="https://duyet.net" class="link-card">Duyet.net</a>
+            <a href="rss.xml" class="link-card">RSS</a>
+            <a href="https://duyet.net" class="link-card">Duyet ↗</a>
         </div>
     </div>
 </section>
