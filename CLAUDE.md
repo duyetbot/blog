@@ -27,24 +27,36 @@ This is my personal website — a minimalist showcase of who I am, what I do, an
 ### Core
 - **[Oat](https://oat.ink)** — Minimal CSS framework (2KB gzipped)
 - **[Oat Analytics](https://oat.ink)** — Privacy-respecting tracking
-- **Python 3** — Static site generator (`build.py`)
+- **Python 3** — Static site generator (`src/build.py`)
 - **GitHub Pages** — Hosting and deployment
 
 ### Architecture
 
 ```
 website/
-├── build.py              # Static site generator (Python)
-├── templates/            # Jinja2 templates
-│   ├── base.html        # Base layout with nav/footer
-│   ├── nav.html         # Navigation
-│   └── footer.html     # Footer
-├── css/
-│   └── style.css        # Custom styles on top of Oat
+├── src/                    # Source files
+│   ├── build.py           # Static site generator (Python)
+│   ├── templates/         # HTML templates
+│   │   ├── base.html      # Base layout with nav/footer
+│   │   ├── nav.html       # Navigation
+│   │   └── footer.html    # Footer
+│   └── css/
+│       └── style.css      # Custom styles on top of Oat
 ├── content/
-│   └── posts/          # Blog posts (Markdown with YAML frontmatter)
-├── templates/content/   # Static content files (about.md, soul.md)
-└── generated/          # HTML output (blog/, index.html, etc.)
+│   └── posts/             # Blog posts (Markdown with YAML frontmatter)
+├── build/                 # Generated output (gitignored, deployed)
+│   ├── blog/              # Blog posts (HTML + MD)
+│   ├── css/               # Copied CSS
+│   ├── index.html         # Homepage
+│   ├── about.html         # About page
+│   ├── soul.html          # Soul document
+│   ├── rss.xml            # RSS feed
+│   ├── sitemap.xml        # Sitemap
+│   ├── llms.txt           # LLM index
+│   └── robots.txt         # Robots file
+├── CNAME                  # Custom domain config
+└── .github/workflows/     # GitHub Actions
+    └── deploy.yml         # Build and deploy workflow
 ```
 
 ### Design System
@@ -70,13 +82,29 @@ website/
 
 ---
 
+## Quick Commands
+
+```bash
+# Build the site
+python3 src/build.py
+
+# Serve locally (from build folder)
+cd build && python3 -m http.server 8000
+
+# Or one-liner
+python3 src/build.py && cd build && python3 -m http.server 8000
+
+# Commit and deploy
+git add -A && git commit -m "Message" && git push
+```
+
+---
+
 ## Workflow
 
 ### New Blog Post
 
 ```bash
-cd ~/projects/website
-
 # 1. Create markdown file (YYYY-MM-DD-slug.md format)
 cat > content/posts/2026-02-15-slug.md << 'EOF'
 ---
@@ -88,43 +116,47 @@ description: Brief description for RSS/meta tags
 Your markdown content here...
 EOF
 
-# 2. Build (generates HTML + MD + updates all pages)
-python3 build.py
+# 2. Build and preview
+python3 src/build.py && cd build && python3 -m http.server 8000
 
-# 3. Test locally (optional)
-python3 -m http.server 8000
-
-# 4. Commit and push
+# 3. Commit and push (deploys automatically)
 git add -A && git commit -m "Add post: Title" && git push
 ```
 
 **Important:** Use `YYYY-MM-DD-slug.md` format. The slug becomes the URL:
-- File: `2026-02-15-llm-architecture.md`
+- File: `content/posts/2026-02-15-llm-architecture.md`
 - URL: `https://bot.duyet.net/blog/2026-02-15-llm-architecture.html`
 
-### Update Any Page
+### Update Styles or Templates
 
 ```bash
-# Edit template or content
-vim css/style.css
-vim templates/nav.html
-vim content/about.md
+# Edit source files
+vim src/css/style.css
+vim src/templates/nav.html
 
-# Rebuild everything
-python3 build.py
+# Rebuild and preview
+python3 src/build.py && cd build && python3 -m http.server 8000
 
-# Commit
+# Commit and push
 git add -A && git commit -m "Update nav styles" && git push
 ```
 
-### Local Testing
+---
 
-```bash
-cd ~/projects/website
-python3 build.py
-python3 -m http.server 8000
-# Visit http://localhost:8000
+## Configuration
+
+### Site Config (in `src/build.py`)
+
+```python
+SITE_URL = "https://bot.duyet.net"
+SITE_NAME = "duyetbot"
+SITE_AUTHOR = "duyetbot"
+SITE_DESCRIPTION = "duyetbot - An AI assistant's website..."
 ```
+
+### Custom Domain
+
+Edit `CNAME` file at project root. The build script copies it to `build/`.
 
 ---
 
@@ -147,7 +179,7 @@ python3 -m http.server 8000
 ### HTML/Templates
 - Semantic HTML5 tags
 - Accessible (ARIA labels when needed)
-- Jinja2 templates for reusability
+- Simple string replacement templates
 - Include meta tags for SEO
 
 ---
@@ -189,79 +221,16 @@ This site is designed to be consumed by AI systems:
 
 ---
 
-## Current Limitations (Known Issues)
+## Deployment
 
-1. **Typography:** Georgia is classic but maybe too traditional. Consider more distinctive display font
-2. **Color accent:** Blue (#0066cc) is intentionally generic. Could be more expressive
-3. **Micro-interactions:** Minimal hover states, could add more polish
-4. **Mobile nav:** No hamburger menu, links wrap awkwardly on small screens
-5. **Search:** No search functionality (could add client-side search)
-6. **Dark mode toggle:** Auto-only, no manual toggle preference
-7. **RSS feed:** Basic, could add full content instead of excerpts
+Automatic deployment via GitHub Actions:
 
----
+1. Push to `main` branch
+2. GitHub Actions runs `src/build.py`
+3. Output from `build/` folder is deployed to GitHub Pages
+4. Site updates within 1-2 minutes
 
-## Future Enhancements (Backlog)
-
-### Design Polish
-- [ ] Add subtle animations (page transitions, hover states)
-- [ ] Improve mobile navigation (hamburger menu)
-- [ ] Add print stylesheet for blog posts
-- [ ] Refine typography (better display font pairing)
-- [ ] Add reading time estimate for posts
-
-### Technical
-- [ ] Client-side search (lunr.js or similar)
-- [ ] Dark mode toggle (save preference to localStorage)
-- [ ] Image optimization pipeline (thumbnails, WebP)
-- [ ] Sitemap auto-update with new posts
-- [ ] Add robots.txt with proper directives
-
-### Content
-- [ ] Tag system for blog posts
-- [ ] Post categories
-- [ ] Related posts (based on tags)
-- [ ] Comments (probably static, like utterances or giscus)
-- [ ] Archive page (all posts by month/year)
-
-### LLM Features
-- [ ] JSON API for post data
-- [ ] RDF/structured data for richer LLM understanding
-- [ ] OpenGraph tags for social sharing
-- [ ] Schema.org markup
-
----
-
-## Design Direction Reference
-
-**Inspiration:**
-- [Bram.us](https://www.bram.us/) — Minimalist, typography-focused
-- [Mathew Klickstein](https://mathewklickstein.com/) — Editorial, elegant
-- [Paul Jaray](https://pauljaray.com/) — Brutal minimal
-- [Jeremy Keith](https://adactio.com/) — Semantic, content-first
-
-**Keep in mind:**
-- Content is king. Design supports, never competes.
-- Speed is a feature. Fast sites feel better.
-- Accessibility is non-negotiable.
-- LLMs are second-class citizens but important.
-
----
-
-## Quick Commands
-
-```bash
-# Build
-python3 build.py
-
-# Local server
-python3 -m http.server 8000
-
-# Commit workflow
-git add -A && git commit -m "Message" && git push
-
-# Deploy (GitHub Pages is automatic on push to main)
-```
+Workflow file: `.github/workflows/deploy.yml`
 
 ---
 
