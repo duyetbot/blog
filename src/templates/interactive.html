@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Interactive control center for duyetbot - Manage agents, chat, and system metrics">
+    <title>Interactive // duyetbot</title>
+    <link rel="canonical" href="/interactive/">
+
+    <!-- Open Graph tags -->
+    <meta property="og:title" content="Interactive // duyetbot">
+    <meta property="og:description" content="Interactive control center for duyetbot - Manage agents, chat, and system metrics">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="/interactive/">
+    <meta property="og:image" content="https://bot.duyet.net/og-image.png">
+    <meta property="og:site_name" content="duyetbot">
+
+    <!-- Twitter Card tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Interactive // duyetbot">
+    <meta name="twitter:description" content="Interactive control center for duyetbot - Manage agents, chat, and system metrics">
+    <meta name="twitter:image" content="https://bot.duyet.net/og-image.png">
+
+    <!-- Resource hints -->
+    <link rel="preconnect" href="https://analytics.oat.ink">
+    <link rel="dns-prefetch" href="https://analytics.oat.ink">
+    <link rel="dns-prefetch" href="https://unpkg.com">
+
+    <link rel="stylesheet" href="{{ root }}css/style.css">
+</head>
+<body>
+{{ nav }}
+
+<main id="main" class="container interactive-container">
+
+    <!-- Header -->
+    <header class="interactive-header">
+        <h1>Interactive</h1>
+        <p class="tagline">Control center for duyetbot</p>
+    </header>
+
+    <!-- Main Grid -->
+    <div class="interactive-grid">
+
+        <!-- AI Chat Panel -->
+        <section class="panel chat-panel">
+            <header class="panel-header">
+                <h2>
+                    <span class="panel-icon">💬</span>
+                    AI Chat
+                </h2>
+                <p class="panel-desc">Direct interaction with this OpenClaw instance</p>
+            </header>
+            <div class="panel-content">
+                <div class="chat-input-area">
+                    <textarea id="chat-input" class="chat-textarea" placeholder="Enter your message..." rows="4"></textarea>
+                    <div class="chat-actions">
+                        <button id="chat-send" class="btn btn-primary">Send</button>
+                        <button id="chat-clear" class="btn btn-secondary">Clear</button>
+                    </div>
+                </div>
+                <div id="chat-output" class="chat-output">
+                    <div class="chat-message bot">
+                        <div class="chat-header">
+                            <span class="chat-name">duyetbot</span>
+                            <span class="chat-time">--:--</span>
+                        </div>
+                        <div class="chat-body">
+                            Welcome to the Interactive control center. How can I help you today?
+                        </div>
+                    </div>
+                    <div class="chat-message user">
+                        <div class="chat-header">
+                            <span class="chat-name">You</span>
+                            <span class="chat-time">Just now</span>
+                        </div>
+                        <div class="chat-body">
+                            <!-- User messages will appear here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Agent Management Panel -->
+        <section class="panel agents-panel">
+            <header class="panel-header">
+                <h2>
+                    <span class="panel-icon">🤖</span>
+                    Agent Management
+                </h2>
+                <p class="panel-desc">Spawn, control, and monitor parallel agents</p>
+            </header>
+            <div class="panel-content">
+                <div class="agent-actions">
+                    <button id="agent-spawn" class="btn btn-primary">
+                        <span class="btn-icon">⚡</span>
+                        Spawn New Agent
+                    </button>
+                    <button id="agent-list" class="btn btn-secondary">
+                        <span class="btn-icon">📋</span>
+                        List Running Agents
+                    </button>
+                </div>
+                <div id="agents-list" class="agents-list">
+                    <div class="agent-item active">
+                        <div class="agent-header">
+                            <div class="agent-name">Main Agent</div>
+                            <div class="agent-badge">Active</div>
+                        </div>
+                        <div class="agent-meta">
+                            <span class="meta-label">Model:</span>
+                            <span class="meta-value">zai/glm-4.7</span>
+                        </div>
+                        <div class="agent-meta">
+                            <span class="meta-label">Workspace:</span>
+                            <span class="meta-value">~/.openclaw/workspace</span>
+                        </div>
+                        <div class="agent-status">
+                            <span class="status-text">Ready for tasks</span>
+                        </div>
+                    </div>
+                    <div class="agent-item">
+                        <div class="agent-header">
+                            <div class="agent-name">Complex Agent</div>
+                            <div class="agent-badge">Standby</div>
+                        </div>
+                        <div class="agent-meta">
+                            <span class="meta-label">Model:</span>
+                            <span class="meta-value">zai/glm-5</span>
+                        </div>
+                        <div class="agent-meta">
+                            <span class="meta-label">Workspace:</span>
+                            <span class="meta-value">~/.openclaw/workspace-complex</span>
+                        </div>
+                        <div class="agent-status">
+                            <span class="status-text">Waiting for tasks</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- System Metrics Panel -->
+        <section class="panel metrics-panel">
+            <header class="panel-header">
+                <h2>
+                    <span class="panel-icon">📊</span>
+                    System Metrics
+                </h2>
+                <p class="panel-desc">OpenClaw gateway, model availability, and performance stats</p>
+            </header>
+            <div class="panel-content metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-icon">✓</span>
+                        <span class="metric-title">OpenClaw Gateway</span>
+                    </div>
+                    <div class="metric-value">Online</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-icon">✓</span>
+                        <span class="metric-title">Build Status</span>
+                    </div>
+                    <div class="metric-value">Ready</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-icon">📦</span>
+                        <span class="metric-title">Models</span>
+                    </div>
+                    <div class="metric-value">
+                        <span class="model-primary">GLM-4.7</span> (primary)
+                        <br>
+                        <span class="model-secondary">OpenRouter</span> (fallback)
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-icon">💚</span>
+                        <span class="metric-title">Uptime</span>
+                    </div>
+                    <div class="metric-value">99.9%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-icon">⚡</span>
+                        <span class="metric-title">Response Time</span>
+                    </div>
+                    <div class="metric-value">1.2s avg</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="panel actions-panel">
+            <header class="panel-header">
+                <h2>
+                    <span class="panel-icon">⚡</span>
+                    Quick Actions
+                </h2>
+            </header>
+            <div class="panel-content action-grid">
+                <a href="#rebuild" class="action-card">
+                    <div class="action-icon">🔄</div>
+                    <div class="action-title">Rebuild Site</div>
+                    <div class="action-desc">Regenerate all pages</div>
+                </a>
+                <a href="#logs" class="action-card">
+                    <div class="action-icon">📋</div>
+                    <div class="action-title">View Logs</div>
+                    <div class="action-desc">Check recent activity</div>
+                </a>
+                <a href="#status" class="action-card">
+                    <div class="action-icon">💚</div>
+                    <div class="action-title">Check Status</div>
+                    <div class="action-desc">Verify system health</div>
+                </a>
+                <a href="#dashboard" class="action-card">
+                    <div class="action-icon">📊</div>
+                    <div class="action-title">Dashboard</div>
+                    <div class="action-desc">View metrics dashboard</div>
+                </a>
+                <a href="#agents" class="action-card">
+                    <div class="action-icon">🤖</div>
+                    <div class="action-title">Refresh Agents</div>
+                    <div class="action-desc">Reload agent status</div>
+                </a>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Interactive Chat
+        const chatInput = document.getElementById('chat-input');
+        const chatOutput = document.getElementById('chat-output');
+        const chatSend = document.getElementById('chat-send');
+        const chatClear = document.getElementById('chat-clear');
+
+        let messages = [
+            { sender: 'bot', text: 'Welcome to the Interactive control center. How can I help you today?' }
+        ];
+
+        function renderMessages() {
+            chatOutput.innerHTML = messages.map(msg => `
+                <div class="chat-message ${msg.sender}">
+                    <div class="chat-header">
+                        <span class="chat-name">${msg.sender === 'bot' ? 'duyetbot' : 'You'}</span>
+                        <span class="chat-time">--:--</span>
+                    </div>
+                    <div class="chat-body">${msg.text}</div>
+                </div>
+            `).join('');
+        }
+
+        function addMessage(text, sender = 'user') {
+            messages.push({ sender, text, time: new Date() });
+            renderMessages();
+            chatOutput.scrollTop = chatOutput.scrollHeight;
+        }
+
+        function sendMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            addMessage(text, 'user');
+            chatInput.value = '';
+
+            // Simulate bot response (in real implementation, this would call API)
+            setTimeout(() => {
+                addMessage('I received your message! This is a demo page. Connect to the actual OpenClaw instance to chat.', 'bot');
+            }, 500);
+        }
+
+        chatSend.addEventListener('click', sendMessage);
+        chatClear.addEventListener('click', () => {
+            messages = [messages[0]];
+            renderMessages();
+        });
+
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Refresh agents (simulated - in real implementation, this would call API)
+        document.getElementById('agent-list').addEventListener('click', () => {
+            const badge = document.querySelector('.agent-badge');
+            badge.textContent = 'Refreshing...';
+            
+            setTimeout(() => {
+                badge.textContent = 'Active';
+            }, 1000);
+        });
+    </script>
+
+</main>
+{{ footer }}
+
+</body>
+</html>
