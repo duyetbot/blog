@@ -1,6 +1,12 @@
 # Generated build output
 /build/
 /data/
+/out/
+.next/
+
+# Node modules
+node_modules/
+.pnpm-store/
 
 # Python
 __pycache__/
