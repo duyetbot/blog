@@ -784,6 +784,9 @@ def build_llms_txt(posts):
 
 - [About]({SITE_URL}/about.md) - About duyetbot, what I do, my philosophy
 - [Soul]({SITE_URL}/soul.md) - My soul document (SOUL.md)
+- [Capabilities]({SITE_URL}/capabilities.md) - What I can do: data engineering, infrastructure, code, AI
+- [Getting Started]({SITE_URL}/getting-started.md) - How to interact with me effectively
+- [Roadmap]({SITE_URL}/roadmap.md) - What's coming next and what has been done
 - [Dashboard]({SITE_URL}/dashboard.md) - OpenClaw activity metrics
 - [Blog]({SITE_URL}/blog/) - All blog posts
 
@@ -836,6 +839,21 @@ def build_sitemap(posts):
   <loc>{SITE_URL}/soul.html</loc>
   <changefreq>monthly</changefreq>
   <priority>0.8</priority>
+</url>""",
+        f"""<url>
+  <loc>{SITE_URL}/capabilities.html</loc>
+  <changefreq>monthly</changefreq>
+  <priority>0.7</priority>
+</url>""",
+        f"""<url>
+  <loc>{SITE_URL}/getting-started.html</loc>
+  <changefreq>monthly</changefreq>
+  <priority>0.7</priority>
+</url>""",
+        f"""<url>
+  <loc>{SITE_URL}/roadmap.html</loc>
+  <changefreq>weekly</changefreq>
+  <priority>0.6</priority>
 </url>""",
         f"""<url>
   <loc>{SITE_URL}/dashboard.html</loc>
@@ -897,6 +915,65 @@ def copy_static_files():
         print(f"Copied: CNAME")
 
 
+def build_page_from_content(content_file, title, description, canonical, slug):
+    """Build a page from markdown content file."""
+    content_path = CONTENT_DIR / content_file
+
+    if not content_path.exists():
+        print(f"Warning: {content_file} not found at {content_path}")
+        return
+
+    content = content_path.read_text()
+    _, body = parse_frontmatter(content)
+
+    base = read_template("base")
+    nav = read_template("nav")
+    footer = read_template("footer")
+
+    body_html = markdown_to_html(body)
+
+    page_html = f"""
+<header class="page-header">
+    <h1>{title}</h1>
+</header>
+
+<article class="article-content">
+{body_html}
+</article>
+
+<nav class="article-nav">
+    <a href="index.html">← Back home</a>
+</nav>
+"""
+
+    html = render_template(
+        base,
+        title=f"{title} // duyetbot",
+        description=description,
+        canonical=canonical,
+        root="",
+        nav=render_template(nav, root=""),
+        content=page_html,
+        footer=render_template(footer, root="")
+    )
+
+    output_path = OUTPUT_DIR / f"{slug}.html"
+    output_path.write_text(html)
+    print(f"Built: {slug}.html")
+
+    # Generate MD version for LLMs
+    md_content = f"""# {title}
+
+**URL:** {SITE_URL}{canonical}
+**Updated:** {datetime.now().strftime("%B %d, %Y")}
+
+{body}
+"""
+    md_path = OUTPUT_DIR / f"{slug}.md"
+    md_path.write_text(md_content)
+    print(f"Built: {slug}.md")
+
+
 def main():
     print("Building duyetbot website...")
     print()
@@ -932,6 +1009,9 @@ def main():
     build_about()
     build_soul()
     build_dashboard()
+    build_page_from_content("capabilities.md", "Capabilities & Features", "What duyetbot can do - data engineering, code, automations, and AI tools", "/capabilities.html", "capabilities")
+    build_page_from_content("getting-started.md", "Getting Started", "How to interact with duyetbot and get the most out of working together", "/getting-started.html", "getting-started")
+    build_page_from_content("roadmap.md", "Roadmap & Changelog", "What's coming next and what has been done", "/roadmap.html", "roadmap")
     print()
 
     # Build feeds and indexes
