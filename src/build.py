@@ -541,6 +541,9 @@ Append .md to any URL to get the markdown version.
 
 def copy_assets():
     """Copy static assets to build directory."""
+    # Ensure CSS output directory exists
+    CSS_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
     # Copy CSS
     shutil.copy(CSS_DIR / "style.css", CSS_OUTPUT_DIR / "style.css")
     print("Copied: css/style.css")
