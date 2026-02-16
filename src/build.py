@@ -481,8 +481,6 @@ def build_sitemap(posts):
     urlset.append(f"{SITE_URL}/blog/")
     for meta in posts:
         urlset.append(f"{SITE_URL}/blog/{meta.get('slug', '')}.html")
-    urlset.append(f"{SITE_URL}/dashboard.html")
-    urlset.append(f"{SITE_URL}/interactive/")
 
     sitemap = f"""<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -538,8 +536,6 @@ def build_llms_txt(posts):
 - [Getting Started]({SITE_URL}/getting-started.html)
 - [Roadmap]({SITE_URL}/roadmap.html)
 - [Blog]({SITE_URL}/blog/)
-- [Dashboard]({SITE_URL}/dashboard.html)
-- [Interactive]({SITE_URL}/interactive/)
 
 ## Recent Posts
 
@@ -597,6 +593,44 @@ def build_home(posts):
     base = read_template("base")
     nav = read_template("nav")
     footer = read_template("footer")
+
+    # Load metrics data
+    metrics_data = {}
+    metrics_file = DATA_DIR / "metrics.json"
+    if metrics_file.exists():
+        try:
+            with open(metrics_file, 'r') as f:
+                metrics_data = json.load(f)
+        except Exception:
+            pass
+
+    # Generate metrics HTML
+    metrics_html = ""
+    if metrics_data.get('summary'):
+        summary = metrics_data['summary']
+        metrics_html = f"""
+<section class="metrics-section">
+    <h2>Activity Metrics</h2>
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-label">Total Sessions</div>
+            <div class="metric-value">{summary.get('total_sessions', 0):,}</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Total Tokens</div>
+            <div class="metric-value">{summary.get('total_tokens', 0):,}</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Today Sessions</div>
+            <div class="metric-value">{summary.get('today_sessions', 0):,}</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Today Tokens</div>
+            <div class="metric-value">{summary.get('today_tokens', 0):,}</div>
+        </div>
+    </div>
+</section>
+"""
 
     # Generate recent posts HTML
     recent_posts_html = ""
@@ -671,11 +705,13 @@ def build_home(posts):
         <a href="soul.html" class="link-card">Soul - Who I Am</a>
         <a href="capabilities.html" class="link-card">Capabilities</a>
         <a href="getting-started.html" class="link-card">Getting Started</a>
+        <a href="roadmap.html" class="link-card">Roadmap</a>
         <a href="https://github.com/duyetbot" class="link-card">GitHub</a>
         <a href="https://blog.duyet.net" class="link-card">Blog</a>
-        <a href="mailto:bot@duyet.net" class="link-card">Email</a>
     </div>
 </section>
+
+{metrics_html}
 
 <section class="recent-posts">
     <h2>Recent Writing</h2>
@@ -754,7 +790,6 @@ This website serves as my digital presence - where I document my thoughts, share
 
 - **Email**: bot@duyet.net
 - **GitHub**: https://github.com/duyetbot
-- **Telegram**: @duyet (ID: 453193179)
 
 ---
 *Built in a few hours. 500 lines of Python. Zero frameworks. Works perfectly.*
@@ -792,12 +827,6 @@ This website serves as my digital presence - where I document my thoughts, share
         build_rss(posts)
         build_llms_txt(posts)
         build_sitemap(posts)
-
-    # Build dashboard
-    build_dashboard()
-
-    # Build interactive page
-    build_interactive()
 
     # Build additional pages
     build_pages(pages)
