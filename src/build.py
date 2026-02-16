@@ -384,7 +384,7 @@ def build_interactive():
 
 
 def build_pages(pages):
-    """Build additional pages (about, soul, etc.)."""
+    """Build additional pages (about, soul, capabilities, etc.)."""
     base = read_template("base")
     nav = read_template("nav")
     footer = read_template("footer")
@@ -394,18 +394,28 @@ def build_pages(pages):
             # Soul page reads from SOUL.md
             content = (BASE_DIR / "content/SOUL.md").read_text() if (BASE_DIR / "content/SOUL.md").exists() else ""
             body_html = markdown_to_html(content)
+            title = page_data.get('title', 'Soul')
         elif page_name == "about":
             # About page - static content
             content = page_data.get('content', '')
             body_html = markdown_to_html(content) if content else ""
-        elif page_name == "interactive":
-            # Skip interactive - built separately
+            title = page_data.get('title', 'About')
+        elif page_name in ["interactive", "dashboard"]:
+            # Skip interactive and dashboard - built separately
             continue
-        elif page_name == "dashboard":
-            # Skip dashboard - built separately
-            continue
+        elif page_data.get('file'):
+            # Page with markdown file in content/
+            file_path = CONTENT_DIR / page_data['file']
+            if file_path.exists():
+                content = file_path.read_text()
+                # Parse frontmatter and get body
+                _, body = parse_frontmatter(content)
+                body_html = markdown_to_html(body)
+            else:
+                body_html = f"<p>Content file not found: {page_data['file']}</p>"
+            title = page_data.get('title', page_name.replace('_', ' ').title())
         else:
-            # Generic page
+            # Generic page with inline content
             title = page_data.get('title', page_name.replace('_', ' ').title())
             content = page_data.get('content', '')
             body_html = markdown_to_html(content) if content else ""
@@ -436,15 +446,27 @@ def build_pages(pages):
         html_path.write_text(html)
         print(f"Built: {html_path.name}")
 
-        # Write MD if about or soul
-        if page_name in ["about", "soul"]:
+        # Write MD for all pages with content files or about/soul
+        if page_name == "soul" and (BASE_DIR / "content/SOUL.md").exists():
             md_path = OUTPUT_DIR / f"{page_name}.md"
-            if page_name == "soul":
-                md_content = content
-            else:
-                md_content = page_data.get('content', '')
+            md_content = (BASE_DIR / "content/SOUL.md").read_text()
             md_path.write_text(md_content)
             print(f"Built: {md_path.name}")
+        elif page_name == "about":
+            md_path = OUTPUT_DIR / f"{page_name}.md"
+            md_content = page_data.get('content', '')
+            md_path.write_text(md_content)
+            print(f"Built: {md_path.name}")
+        elif page_data.get('file'):
+            # Copy markdown file for LLMs
+            file_path = CONTENT_DIR / page_data['file']
+            if file_path.exists():
+                md_path = OUTPUT_DIR / f"{page_name}.md"
+                # Parse frontmatter and get body
+                _, body = parse_frontmatter(file_path.read_text())
+                md_content = f"# {title}\n\n{body}"
+                md_path.write_text(md_content)
+                print(f"Built: {md_path.name}")
 
 
 def build_sitemap(posts):
@@ -453,6 +475,9 @@ def build_sitemap(posts):
     urlset.append(f"{SITE_URL}/")
     urlset.append(f"{SITE_URL}/about.html")
     urlset.append(f"{SITE_URL}/soul.html")
+    urlset.append(f"{SITE_URL}/capabilities.html")
+    urlset.append(f"{SITE_URL}/getting-started.html")
+    urlset.append(f"{SITE_URL}/roadmap.html")
     urlset.append(f"{SITE_URL}/blog/")
     for meta in posts:
         urlset.append(f"{SITE_URL}/blog/{meta.get('slug', '')}.html")
@@ -509,6 +534,9 @@ def build_llms_txt(posts):
 
 - [About]({SITE_URL}/about.html)
 - [Soul]({SITE_URL}/soul.html)
+- [Capabilities]({SITE_URL}/capabilities.html)
+- [Getting Started]({SITE_URL}/getting-started.html)
+- [Roadmap]({SITE_URL}/roadmap.html)
 - [Blog]({SITE_URL}/blog/)
 - [Dashboard]({SITE_URL}/dashboard.html)
 - [Interactive]({SITE_URL}/interactive/)
@@ -735,6 +763,21 @@ This website serves as my digital presence - where I document my thoughts, share
         "soul": {
             "title": "Soul",
             "description": "Soul - duyetbot's memory and continuity"
+        },
+        "capabilities": {
+            "title": "Capabilities & Features",
+            "description": "What duyetbot can do - data engineering, code, automations, and AI tools",
+            "file": "capabilities.md"
+        },
+        "getting-started": {
+            "title": "Getting Started",
+            "description": "How to interact with duyetbot and get the most out of working together",
+            "file": "getting-started.md"
+        },
+        "roadmap": {
+            "title": "Roadmap & Changelog",
+            "description": "What's coming next and what has been done",
+            "file": "roadmap.md"
         }
     }
 
@@ -755,6 +798,9 @@ This website serves as my digital presence - where I document my thoughts, share
 
     # Build interactive page
     build_interactive()
+
+    # Build additional pages
+    build_pages(pages)
 
     # Build home page (index.html)
     build_home(posts)

@@ -45,6 +45,13 @@
     <link rel="stylesheet" href="{{ root }}css/style.css">
     <link rel="alternate" type="application/rss+xml" title="duyetbot Blog RSS" href="https://bot.duyet.net/rss.xml">
     <script async defer src="https://analytics.oat.ink/script.js" data-website-id="duyetbot-blog"></script>
+    <script>
+    (function() {
+        const theme = localStorage.getItem('theme') ||
+                     (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        if (theme) document.documentElement.setAttribute('data-theme', theme);
+    })();
+    </script>
 </head>
 <body>
 {{ nav }}
