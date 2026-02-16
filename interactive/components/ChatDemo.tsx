@@ -22,7 +22,7 @@ export default function ChatDemo() {
     {
       id: 1,
       type: 'bot',
-      content: "Hello! I'm duyetbot, an AI assistant. Try asking me something! 👋",
+      content: "Hello! I'm duyetbot, an AI assistant. Try asking me something!",
       timestamp: new Date(),
     },
   ])
@@ -78,18 +78,18 @@ export default function ChatDemo() {
   return (
     <div className="animate-slide-up">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-slate-800 dark:text-white mb-2">
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">
           Interactive Chat Demo
         </h2>
-        <p className="text-slate-600 dark:text-slate-400">
+        <p className="text-gray-600">
           Experience how duyetbot responds to queries
         </p>
       </div>
 
       <div className="max-w-3xl mx-auto">
-        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden border border-slate-200 dark:border-slate-700">
+        <div className="bg-white rounded-md border border-gray-200">
           {/* Chat Messages */}
-          <div className="h-[500px] overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-slate-50 to-white dark:from-slate-800 dark:to-slate-900">
+          <div className="h-[500px] overflow-y-auto p-6 space-y-4 bg-white">
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -98,18 +98,18 @@ export default function ChatDemo() {
                 }`}
               >
                 <div
-                  className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                  className={`max-w-[80%] rounded-md px-4 py-3 border ${
                     message.type === 'user'
-                      ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white'
-                      : 'bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-md'
+                      ? 'bg-blue-600 text-white border-blue-600'
+                      : 'bg-gray-100 text-gray-900 border-gray-200'
                   }`}
                 >
                   <p className="text-sm leading-relaxed">{message.content}</p>
                   <p
                     className={`text-xs mt-1 ${
                       message.type === 'user'
-                        ? 'text-primary-100'
-                        : 'text-slate-400'
+                        ? 'text-blue-100'
+                        : 'text-gray-500'
                     }`}
                   >
                     {message.timestamp.toLocaleTimeString([], {
@@ -123,18 +123,8 @@ export default function ChatDemo() {
 
             {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-white dark:bg-slate-700 rounded-2xl px-4 py-3 shadow-md">
-                  <div className="flex gap-1">
-                    <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" />
-                    <div
-                      className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
-                      style={{ animationDelay: '0.1s' }}
-                    />
-                    <div
-                      className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
-                      style={{ animationDelay: '0.2s' }}
-                    />
-                  </div>
+                <div className="bg-gray-100 text-gray-600 rounded-md px-4 py-3 border border-gray-200">
+                  <p className="text-sm">Typing...</p>
                 </div>
               </div>
             )}
@@ -142,8 +132,8 @@ export default function ChatDemo() {
           </div>
 
           {/* Quick Questions */}
-          <div className="px-6 py-3 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
+          <div className="px-6 py-3 bg-gray-50 border-t border-gray-200">
+            <p className="text-xs text-gray-600 mb-2">
               Try asking:
             </p>
             <div className="flex flex-wrap gap-2">
@@ -151,7 +141,7 @@ export default function ChatDemo() {
                 <button
                   key={question}
                   onClick={() => setInput(question)}
-                  className="px-3 py-1 text-xs bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-full hover:border-primary-500 hover:text-primary-500 transition-all"
+                  className="px-3 py-1 text-xs bg-white border border-gray-200 rounded-md hover:border-blue-600 hover:text-blue-600 text-gray-700 transition-colors"
                 >
                   {question}
                 </button>
@@ -160,19 +150,19 @@ export default function ChatDemo() {
           </div>
 
           {/* Input */}
-          <form onSubmit={handleSend} className="p-4 border-t border-slate-200 dark:border-slate-700">
+          <form onSubmit={handleSend} className="p-4 border-t border-gray-200">
             <div className="flex gap-3">
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Type your message..."
-                className="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-800 border-2 border-transparent rounded-xl focus:border-primary-500 focus:outline-none text-slate-800 dark:text-white placeholder-slate-400"
+                className="flex-1 px-4 py-3 bg-gray-100 border border-gray-200 rounded-md focus:border-blue-600 focus:outline-none text-gray-900 placeholder-gray-500"
               />
               <button
                 type="submit"
                 disabled={!input.trim() || isTyping}
-                className="px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-medium rounded-xl hover:from-primary-600 hover:to-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl"
+                className="px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Send
               </button>
@@ -180,9 +170,9 @@ export default function ChatDemo() {
           </form>
         </div>
 
-        <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
-          <p className="text-sm text-blue-800 dark:text-blue-200">
-            💡 <strong>Note:</strong> This is a demo. Real interactions happen via
+        <div className="mt-6 p-4 bg-gray-50 rounded-md border border-gray-200">
+          <p className="text-sm text-gray-700">
+            <strong>Note:</strong> This is a demo. Real interactions happen via
             Telegram or other chat platforms. The bot uses GLM-4.7 and can
             route to specialized agents for complex tasks.
           </p>

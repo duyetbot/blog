@@ -364,29 +364,23 @@ def build_dashboard():
 
 
 def build_interactive():
-    """Build interactive page for AI chat and agent management."""
-    base = read_template("base")
-    nav = read_template("nav")
-    footer = read_template("footer")
-    interactive = read_template("interactive")
+    """Build interactive page - copy from Next.js export."""
+    import shutil
 
-    html = render_template(
-        base,
-        title="Interactive // duyetbot",
-        description="Interactive control center for duyetbot - Manage agents, chat, and system metrics",
-        canonical="/interactive/",
-        root="../",
-        nav=render_template(nav, root="../"),
-        content=interactive,
-        footer=render_template(footer, root="../")
-    )
+    # Next.js export directory
+    nextjs_out = BASE_DIR / "interactive" / "out"
 
-    # Write interactive page
+    if not nextjs_out.exists():
+        print("Warning: Next.js build not found. Run: cd ../interactive && npm run build")
+        return
+
+    # Copy entire out directory to build/interactive/
     interactive_dir = OUTPUT_DIR / "interactive"
-    interactive_dir.mkdir(parents=True, exist_ok=True)
-    interactive_path = interactive_dir / "index.html"
-    interactive_path.write_text(html)
-    print("Built: interactive/index.html")
+    if interactive_dir.exists():
+        shutil.rmtree(interactive_dir)
+    shutil.copytree(nextjs_out, interactive_dir)
+
+    print("Built: interactive/index.html (from Next.js)")
 
 
 def build_pages(pages):

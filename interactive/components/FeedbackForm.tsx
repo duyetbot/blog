@@ -36,15 +36,15 @@ export default function FeedbackForm() {
   }
 
   const StarRating = () => (
-    <div className="flex gap-2">
+    <div className="flex gap-1">
       {[1, 2, 3, 4, 5].map((star) => (
         <button
           key={star}
           type="button"
           onClick={() => setFeedback({ ...feedback, rating: star })}
-          className="text-3xl transition-transform hover:scale-110"
+          className="text-lg"
         >
-          {star <= feedback.rating ? '⭐' : '☆'}
+          {star <= feedback.rating ? '★' : '☆'}
         </button>
       ))}
     </div>
@@ -52,12 +52,12 @@ export default function FeedbackForm() {
 
   if (submitted) {
     return (
-      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-8 text-center animate-fade-in">
-        <div className="text-6xl mb-4">✅</div>
-        <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">
+      <div className="border border-gray-200 p-6 text-center">
+        <div className="text-4xl mb-3">Done</div>
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">
           Thank You!
         </h3>
-        <p className="text-slate-600 dark:text-slate-400">
+        <p className="text-gray-600 text-sm">
           Your feedback has been recorded. We appreciate your input!
         </p>
       </div>
@@ -65,19 +65,19 @@ export default function FeedbackForm() {
   }
 
   return (
-    <div className="animate-slide-up">
-      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6">
-        <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">
+    <div>
+      <div className="border border-gray-200 p-6">
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">
           Share Your Feedback
         </h3>
-        <p className="text-slate-600 dark:text-slate-400 mb-6">
+        <p className="text-gray-600 text-sm mb-6">
           Help us improve duyetbot by sharing your thoughts
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Name
             </label>
             <input
@@ -87,14 +87,14 @@ export default function FeedbackForm() {
                 setFeedback({ ...feedback, name: e.target.value })
               }
               required
-              className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border-2 border-transparent rounded-xl focus:border-primary-500 focus:outline-none text-slate-800 dark:text-white placeholder-slate-400"
+              className="w-full px-3 py-2 bg-white border border-gray-300 focus:border-blue-600 focus:outline-none text-gray-900 placeholder-gray-400"
               placeholder="Your name"
             />
           </div>
 
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Email
             </label>
             <input
@@ -104,14 +104,14 @@ export default function FeedbackForm() {
                 setFeedback({ ...feedback, email: e.target.value })
               }
               required
-              className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border-2 border-transparent rounded-xl focus:border-primary-500 focus:outline-none text-slate-800 dark:text-white placeholder-slate-400"
+              className="w-full px-3 py-2 bg-white border border-gray-300 focus:border-blue-600 focus:outline-none text-gray-900 placeholder-gray-400"
               placeholder="your@email.com"
             />
           </div>
 
           {/* Category */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Category
             </label>
             <select
@@ -119,7 +119,7 @@ export default function FeedbackForm() {
               onChange={(e) =>
                 setFeedback({ ...feedback, category: e.target.value })
               }
-              className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border-2 border-transparent rounded-xl focus:border-primary-500 focus:outline-none text-slate-800 dark:text-white"
+              className="w-full px-3 py-2 bg-white border border-gray-300 focus:border-blue-600 focus:outline-none text-gray-900"
             >
               {categories.map((cat) => (
                 <option key={cat.value} value={cat.value}>
@@ -131,18 +131,18 @@ export default function FeedbackForm() {
 
           {/* Rating */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Rating
             </label>
             <StarRating />
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-xs text-gray-500 mt-1">
               {feedback.rating}/5 stars
             </p>
           </div>
 
           {/* Message */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Message
             </label>
             <textarea
@@ -152,7 +152,7 @@ export default function FeedbackForm() {
               }
               required
               rows={5}
-              className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border-2 border-transparent rounded-xl focus:border-primary-500 focus:outline-none text-slate-800 dark:text-white placeholder-slate-400 resize-none"
+              className="w-full px-3 py-2 bg-white border border-gray-300 focus:border-blue-600 focus:outline-none text-gray-900 placeholder-gray-400 resize-none"
               placeholder="Tell us what you think..."
             />
           </div>
@@ -160,16 +160,16 @@ export default function FeedbackForm() {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full px-6 py-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-medium rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all shadow-lg hover:shadow-xl"
+            className="w-full px-4 py-3 bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors"
           >
             Submit Feedback
           </button>
         </form>
 
         {/* Privacy Note */}
-        <div className="mt-6 p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
-          <p className="text-sm text-slate-600 dark:text-slate-400">
-            🔒 Your feedback is private and will only be used to improve the
+        <div className="mt-5 p-3 bg-gray-50 border border-gray-200 text-sm">
+          <p className="text-gray-600">
+            Your feedback is private and will only be used to improve the
             bot. No personal data will be shared.
           </p>
         </div>
