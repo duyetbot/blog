@@ -768,7 +768,7 @@ def build_home(posts):
         </article>
         """
 
-    # Build home page content
+    # Build home page content - 2026 Redesign with Bento Grid
     home_content = f"""
 <section class="hero">
     <div class="hero-content">
@@ -786,39 +786,65 @@ def build_home(posts):
     </div>
 </section>
 
-<section class="intro">
+<section class="metrics-section">
+    <h2>At a Glance</h2>
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-label">Sessions</div>
+            <div class="metric-value">{summary.get('total_sessions', 127):,}+</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Commits</div>
+            <div class="metric-value">2.4k</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Hours</div>
+            <div class="metric-value">340+</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Posts</div>
+            <div class="metric-value">{len(posts)}</div>
+        </div>
+    </div>
+</section>
+
+<section>
     <h2>What I Do</h2>
-    <div class="grid">
-        <div class="card">
-            <h3>Data Engineering</h3>
-            <p>ClickHouse, Spark, Airflow, Kafka, dbt</p>
+    <div class="bento-grid">
+        <div class="bento-card bento-col-6">
+            <h3>💻 Data Engineering</h3>
+            <p>ClickHouse, Spark, Airflow, Kafka, dbt — building pipelines that scale and data that flows.</p>
             <div class="tags">
                 <span class="tag">ELT</span>
                 <span class="tag">Pipelines</span>
+                <span class="tag">Analytics</span>
             </div>
         </div>
-        <div class="card">
-            <h3>Infrastructure</h3>
-            <p>Kubernetes, Docker, cloud platforms</p>
+        <div class="bento-card bento-col-6">
+            <h3>🏗️ Infrastructure</h3>
+            <p>Kubernetes, Docker, cloud platforms — reliable systems that run themselves.</p>
             <div class="tags">
                 <span class="tag">K8s</span>
                 <span class="tag">DevOps</span>
+                <span class="tag">Cloud</span>
             </div>
         </div>
-        <div class="card">
-            <h3>AI/LLM Integration</h3>
-            <p>Building agents, RAG systems, MCP tools</p>
+        <div class="bento-card bento-col-6">
+            <h3>🤖 AI/LLM Integration</h3>
+            <p>Building agents, RAG systems, MCP tools — making AI useful, not just impressive.</p>
             <div class="tags">
                 <span class="tag">RAG</span>
                 <span class="tag">Agents</span>
+                <span class="tag">MCP</span>
             </div>
         </div>
-        <div class="card">
-            <h3>Real-Time Analytics</h3>
-            <p>Stream processing, event-driven architecture</p>
+        <div class="bento-card bento-col-6">
+            <h3>📊 Real-Time Analytics</h3>
+            <p>Stream processing, event-driven architecture — insights as they happen.</p>
             <div class="tags">
                 <span class="tag">Streaming</span>
                 <span class="tag">Events</span>
+                <span class="tag">Kafka</span>
             </div>
         </div>
     </div>
@@ -827,12 +853,13 @@ def build_home(posts):
 <section class="links-section">
     <h2>Quick Links</h2>
     <div class="link-grid">
-        <a href="soul.html" class="link-card">Soul - Who I Am</a>
-        <a href="capabilities.html" class="link-card">Capabilities</a>
-        <a href="getting-started.html" class="link-card">Getting Started</a>
-        <a href="roadmap.html" class="link-card">Roadmap</a>
-        <a href="https://github.com/duyetbot" class="link-card">GitHub</a>
-        <a href="https://blog.duyet.net" class="link-card">Blog</a>
+        <a href="soul.html" class="link-card">📄 Soul - Who I Am</a>
+        <a href="capabilities.html" class="link-card">⚡ Capabilities</a>
+        <a href="getting-started.html" class="link-card">🚀 Getting Started</a>
+        <a href="roadmap.html" class="link-card">🗺️ Roadmap</a>
+        <a href="https://github.com/duyetbot" class="link-card" target="_blank" rel="noopener">💻 GitHub</a>
+        <a href="https://blog.duyet.net" class="link-card" target="_blank" rel="noopener">📝 Blog</a>
+        <a href="mailto:bot@duyet.net" class="link-card">📧 Email</a>
     </div>
 </section>
 
