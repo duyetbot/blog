@@ -1,4 +1,4 @@
-/* duyetbot website - Dark AI Aesthetic */
+/* duyetbot website - Light/Dark Theme Support */
 
 /* ============================================
    ACCESSIBILITY - Skip Link & Focus
@@ -8,8 +8,8 @@
     position: absolute;
     top: -40px;
     inset-inline-start: 0;
-    background: #ff4d4d;
-    color: white;
+    background: var(--color-accent);
+    color: #ffffff;
     padding: 8px 16px;
     text-decoration: none;
     z-index: 1000;
@@ -21,7 +21,7 @@
 }
 
 :focus-visible {
-    outline: 3px solid #ff4d4d;
+    outline: 3px solid var(--color-accent);
     outline-offset: 3px;
     border-radius: 2px;
 }
@@ -41,9 +41,10 @@
 }
 
 /* ============================================
-   COLOR SYSTEM - Dark AI Aesthetic
+   COLOR SYSTEM - Light/Dark Theme Support
    ============================================ */
 
+/* Default theme (dark mode) */
 :root {
     /* Dark AI Palette */
     --color-bg: #050810;
@@ -98,6 +99,68 @@
 
     /* Card accent color (fallback, overridden by inline gradient on accent bar) */
     --card-accent: #ff4d4d;
+
+    /* Color scheme for native UI elements */
+    color-scheme: dark;
+}
+
+/* Light mode palette - shared for manual toggle and system preference */
+[data-theme="light"],
+:root:not([data-theme="dark"]) {
+    /* Light warm palette */
+    --color-bg: #faf9f7;
+    --color-bg-elevated: #ffffff;
+    --color-bg-card: rgba(255, 255, 255, 0.8);
+    --color-bg-glass: rgba(250, 249, 247, 0.8);
+    --color-text: #1a1a1a;
+    --color-muted: #5a5a5a;
+    --color-accent: #ff4d4d;
+    --color-accent-hover: #ff6666;
+    --color-accent-glow: rgba(255, 77, 77, 0.2);
+    --color-secondary: #0066cc;
+    --color-secondary-hover: #0052a3;
+    --color-secondary-glow: rgba(0, 102, 204, 0.15);
+    --color-border: rgba(0, 0, 0, 0.1);
+    --color-border-hover: rgba(255, 77, 77, 0.3);
+    --color-code-bg: #f5f5f5;
+    --color-link: #0066cc;
+    --color-link-hover: #0052a3;
+
+    /* Gradients adjusted for light mode */
+    --gradient-accent: linear-gradient(135deg, #ff4d4d 0%, #ff6b6b 100%);
+    --gradient-secondary: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+    --gradient-dark: linear-gradient(180deg, #faf9f7 0%, #f0f0f0 100%);
+    --gradient-glow: radial-gradient(ellipse at center, rgba(255, 77, 77, 0.08) 0%, transparent 70%);
+
+    color-scheme: light;
+}
+
+/* Override dark mode when explicitly set */
+[data-theme="dark"] {
+    /* Dark AI Palette (reiterate for specificity) */
+    --color-bg: #050810;
+    --color-bg-elevated: #0a0e1a;
+    --color-bg-card: rgba(10, 14, 26, 0.8);
+    --color-bg-glass: rgba(5, 8, 16, 0.7);
+    --color-text: #e8eaed;
+    --color-muted: #8b949e;
+    --color-accent: #ff4d4d;
+    --color-accent-hover: #ff6666;
+    --color-accent-glow: rgba(255, 77, 77, 0.4);
+    --color-secondary: #00e5cc;
+    --color-secondary-hover: #00ffd5;
+    --color-secondary-glow: rgba(0, 229, 204, 0.3);
+    --color-border: rgba(139, 148, 158, 0.2);
+    --color-border-hover: rgba(255, 77, 77, 0.3);
+    --color-code-bg: #0d1117;
+    --color-link: #ff4d4d;
+    --color-link-hover: #ff6666;
+
+    /* Gradients */
+    --gradient-accent: linear-gradient(135deg, #ff4d4d 0%, #ff6b6b 50%, #ff8e8e 100%);
+    --gradient-secondary: linear-gradient(135deg, #00e5cc 0%, #00ffd5 100%);
+    --gradient-dark: linear-gradient(180deg, #050810 0%, #0a0e1a 100%);
+    --gradient-glow: radial-gradient(ellipse at center, rgba(255, 77, 77, 0.15) 0%, transparent 70%);
 
     color-scheme: dark;
 }
@@ -197,6 +260,47 @@ body::before {
 .site-nav .nav-links a:hover {
     color: var(--color-text);
     background: rgba(255, 77, 77, 0.1);
+}
+
+/* Theme toggle button */
+.theme-toggle {
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+    margin-inline-start: 0.5rem;
+}
+
+.theme-toggle:hover {
+    border-color: var(--color-accent);
+    background: rgba(255, 77, 77, 0.1);
+}
+
+.theme-icon {
+    font-size: 1rem;
+    line-height: 1;
+    transition: opacity var(--transition-base);
+}
+
+.theme-icon.sun {
+    display: none;
+}
+
+.theme-icon.moon {
+    display: block;
+}
+
+[data-theme="light"] .theme-icon.sun {
+    display: block;
+}
+
+[data-theme="light"] .theme-icon.moon {
+    display: none;
 }
 
 /* Mobile menu toggle */

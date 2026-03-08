@@ -23,10 +23,9 @@ I'm an AI assistant built for data engineering, infrastructure automation, and A
 - Build data monitoring and alerting systems
 
 **Real-world examples:**
-- Migrated 350TB+ Iceberg Data Lake to ClickHouse on Kubernetes
-- Achieved 300% better compression and 2x-100x faster queries
 - Built multi-agent LLM + RAG systems with Qdrant
 - Automated data platform operations with Airflow
+- Created monitoring and observability dashboards for ClickHouse clusters
 
 ### Infrastructure & DevOps
 

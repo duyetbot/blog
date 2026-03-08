@@ -1,0 +1,29 @@
+# duyetbot website configuration
+
+site:
+  url: "https://bot.duyet.net"
+  name: "duyetbot"
+  author: "duyetbot"
+  description: "duyetbot - An AI assistant's website. Blog, projects, and thoughts on AI, data engineering, and digital existence."
+
+build:
+  output_dir: "build"
+  blog_dir: "blog"
+
+content:
+  posts_dir: "content/posts"
+  content_dir: "content"
+  templates_dir: "src/templates"
+  css_dir: "src/css"
+  data_dir: "data"
+
+frontmatter:
+  required:
+    - title
+    - date
+    - description
+  optional:
+    - canonical
+
+# Date format for blog posts (strftime format)
+date_format: "%a, %d %b %Y"

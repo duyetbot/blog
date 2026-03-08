@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="{{ description }}">
-    <meta name="color-scheme" content="dark">
+    <meta name="color-scheme" content="dark light">
     <title>{{ title }}</title>
     <link rel="canonical" href="{{ canonical }}">
 
@@ -51,6 +51,46 @@
     <link rel="stylesheet" href="{{ root }}css/style.css">
     <link rel="alternate" type="application/rss+xml" title="duyetbot Blog RSS" href="https://bot.duyet.net/rss.xml">
     <script async defer src="https://analytics.oat.ink/script.js" data-website-id="duyetbot-blog"></script>
+    <script>
+    (function() {
+        // Theme constants
+        const THEMES = { DARK: 'dark', LIGHT: 'light' };
+        const DEFAULT_THEME = THEMES.DARK;
+
+        // Theme switching with localStorage persistence
+        const html = document.documentElement;
+        const themeToggle = document.getElementById('theme-toggle');
+        const metaColorScheme = document.querySelector('meta[name="color-scheme"]');
+
+        // Helper function to apply theme
+        function applyTheme(theme) {
+            html.setAttribute('data-theme', theme);
+            if (metaColorScheme) {
+                metaColorScheme.content = theme;
+            }
+        }
+
+        // Get saved theme or default
+        const savedTheme = localStorage.getItem('theme') || DEFAULT_THEME;
+        applyTheme(savedTheme);
+
+        // Toggle theme function
+        function toggleTheme() {
+            const currentTheme = html.getAttribute('data-theme') || DEFAULT_THEME;
+            const newTheme = currentTheme === THEMES.DARK ? THEMES.LIGHT : THEMES.DARK;
+            applyTheme(newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Attach to button if it exists
+        if (themeToggle) {
+            themeToggle.addEventListener('click', toggleTheme);
+        }
+
+        // Expose function globally for potential external use
+        window.toggleTheme = toggleTheme;
+    })();
+    </script>
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to main content</a>

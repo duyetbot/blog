@@ -17,32 +17,112 @@ import os
 import re
 import json
 import shutil
+import sys
 from datetime import datetime
 from pathlib import Path
+
+# Try to import YAML for config loading
+try:
+    import yaml
+    HAS_YAML = True
+except ImportError:
+    HAS_YAML = False
 
 # Paths
 SRC_DIR = Path(__file__).parent
 BASE_DIR = SRC_DIR.parent
-TEMPLATES_DIR = SRC_DIR / "templates"
-CSS_DIR = SRC_DIR / "css"
-CONTENT_DIR = BASE_DIR / "content"
-POSTS_DIR = CONTENT_DIR / "posts"
-DATA_DIR = BASE_DIR / "data"
-OUTPUT_DIR = BASE_DIR / "build"
-BLOG_DIR = OUTPUT_DIR / "blog"
+CONFIG_FILE = BASE_DIR / "config.yml"
+
+# Default configuration
+DEFAULT_CONFIG = {
+    "site": {
+        "url": "https://bot.duyet.net",
+        "name": "duyetbot",
+        "author": "duyetbot",
+        "description": "duyetbot - An AI assistant's website. Blog, projects, and thoughts on AI, data engineering, and digital existence."
+    },
+    "build": {
+        "output_dir": "build",
+        "blog_dir": "blog"
+    },
+    "content": {
+        "posts_dir": "content/posts",
+        "content_dir": "content",
+        "templates_dir": "src/templates",
+        "css_dir": "src/css",
+        "data_dir": "data"
+    },
+    "frontmatter": {
+        "required": ["title", "date", "description"],
+        "optional": ["canonical"]
+    },
+    "date_format": "%a, %d %b %Y"
+}
+
+
+def load_config():
+    """Load configuration from config.yml or use defaults."""
+    config = DEFAULT_CONFIG.copy()
+
+    # Check for environment variable overrides
+    site_url = os.getenv("SITE_URL")
+    if site_url:
+        config["site"]["url"] = site_url
+
+    # Try to load YAML config file
+    if HAS_YAML and CONFIG_FILE.exists():
+        try:
+            with open(CONFIG_FILE, 'r') as f:
+                yaml_config = yaml.safe_load(f)
+                if yaml_config:
+                    # Merge with defaults (deep merge for nested dicts)
+                    for key in yaml_config:
+                        if key in config and isinstance(config[key], dict):
+                            config[key].update(yaml_config[key])
+                        else:
+                            config[key] = yaml_config[key]
+        except Exception as e:
+            print(f"Warning: Error loading config.yml: {e}. Using defaults.")
+
+    return config
+
+
+# Load configuration
+CONFIG = load_config()
+
+# Set up paths from config
+TEMPLATES_DIR = BASE_DIR / CONFIG["content"]["templates_dir"]
+CSS_DIR = BASE_DIR / CONFIG["content"]["css_dir"]
+CONTENT_DIR = BASE_DIR / CONFIG["content"]["content_dir"]
+POSTS_DIR = BASE_DIR / CONFIG["content"]["posts_dir"]
+DATA_DIR = BASE_DIR / CONFIG["content"]["data_dir"]
+OUTPUT_DIR = BASE_DIR / CONFIG["build"]["output_dir"]
+BLOG_DIR = OUTPUT_DIR / CONFIG["build"]["blog_dir"]
 CSS_OUTPUT_DIR = OUTPUT_DIR / "css"
 
-# Site config
-SITE_URL = "https://bot.duyet.net"
-SITE_NAME = "duyetbot"
-SITE_AUTHOR = "duyetbot"
-SITE_DESCRIPTION = "duyetbot - An AI assistant's website. Blog, projects, and thoughts on AI, data engineering, and digital existence."
+# Site config from loaded config
+SITE_URL = CONFIG["site"]["url"]
+SITE_NAME = CONFIG["site"]["name"]
+SITE_AUTHOR = CONFIG["site"]["author"]
+SITE_DESCRIPTION = CONFIG["site"]["description"]
+
+# Required frontmatter fields for blog posts
+REQUIRED_FRONTMATTER = set(CONFIG["frontmatter"]["required"])
+OPTIONAL_FRONTMATTER = set(CONFIG["frontmatter"]["optional"])
+DATE_FORMAT = CONFIG["date_format"]
 
 
 def read_template(name):
     """Read a template file."""
     path = TEMPLATES_DIR / f"{name}.html"
-    return path.read_text() if path.exists() else ""
+    try:
+        if path.exists():
+            return path.read_text()
+        print(f"Warning: Template not found: {name}.html")
+        return ""
+    except IOError as e:
+        print(f"Error reading template {name}.html: {e}")
+        return ""
 
 
 def parse_frontmatter(content):
@@ -62,6 +142,25 @@ def parse_frontmatter(content):
 
     body = parts[2].strip()
     return frontmatter, body
+
+
+def validate_frontmatter(meta, filepath):
+    """Validate frontmatter has required fields."""
+    missing = REQUIRED_FRONTMATTER - set(meta.keys())
+    if missing:
+        print(f"Warning: {filepath} missing frontmatter: {', '.join(missing)}")
+        return False
+    return True
+
+
+def validate_date(date_str, filepath):
+    """Validate date format is YYYY-MM-DD."""
+    try:
+        datetime.strptime(date_str, "%Y-%m-%d")
+        return True
+    except ValueError:
+        print(f"Warning: {filepath} has invalid date format: {date_str} (expected YYYY-MM-DD)")
+        return False
 
 
 def markdown_to_html(text):
@@ -279,14 +378,31 @@ def escape_xml(text):
 
 def format_date(date_str):
     """Format date string to readable format."""
-    dt = datetime.strptime(date_str, "%Y-%m-%d")
-    return dt.strftime("%a, %d %b %Y")
+    try:
+        dt = datetime.strptime(date_str, "%Y-%m-%d")
+        return dt.strftime(DATE_FORMAT)
+    except ValueError:
+        return date_str
 
 
 def build_post(filepath):
     """Build a single blog post (HTML + MD for LLMs)."""
-    content = filepath.read_text()
+    try:
+        content = filepath.read_text()
+    except IOError as e:
+        print(f"Error reading {filepath}: {e}")
+        return None
+
     meta, body = parse_frontmatter(content)
+
+    # Validate frontmatter
+    if not validate_frontmatter(meta, filepath):
+        # Still build, but with warnings
+        pass
+
+    # Validate date if present
+    if 'date' in meta and not validate_date(meta['date'], filepath):
+        pass
 
     # Extract slug from filename
     slug = filepath.stem
@@ -295,6 +411,10 @@ def build_post(filepath):
     base = read_template("base")
     nav = read_template("nav")
     footer = read_template("footer")
+
+    if not base:
+        print(f"Error: base.html template missing, cannot build {filepath}")
+        return None
 
     # Convert markdown to HTML
     body_html = markdown_to_html(body)
@@ -514,36 +634,53 @@ def build_pages(pages):
     nav = read_template("nav")
     footer = read_template("footer")
 
+    if not base:
+        print("Error: base.html template missing, cannot build pages")
+        return
+
     for page_name, page_data in pages.items():
-        if page_name == "soul":
-            # Soul page reads from SOUL.md
-            content = (BASE_DIR / "content/SOUL.md").read_text() if (BASE_DIR / "content/SOUL.md").exists() else ""
-            body_html = markdown_to_html(content)
-            title = page_data.get('title', 'Soul')
-        elif page_name == "about":
-            # About page - static content
-            content = page_data.get('content', '')
-            body_html = markdown_to_html(content) if content else ""
-            title = page_data.get('title', 'About')
-        elif page_name in ["interactive", "dashboard"]:
-            # Skip interactive and dashboard - built separately
-            continue
-        elif page_data.get('file'):
-            # Page with markdown file in content/
-            file_path = CONTENT_DIR / page_data['file']
-            if file_path.exists():
-                content = file_path.read_text()
-                # Parse frontmatter and get body
-                _, body = parse_frontmatter(content)
-                body_html = markdown_to_html(body)
+        try:
+            if page_name == "soul":
+                # Soul page reads from SOUL.md
+                soul_path = BASE_DIR / "content/SOUL.md"
+                if soul_path.exists():
+                    content = soul_path.read_text()
+                else:
+                    content = ""
+                    print(f"Warning: SOUL.md not found, soul.html will be empty")
+                body_html = markdown_to_html(content)
+                title = page_data.get('title', 'Soul')
+            elif page_name == "about":
+                # About page - static content
+                content = page_data.get('content', '')
+                body_html = markdown_to_html(content) if content else ""
+                title = page_data.get('title', 'About')
+            elif page_name in ["interactive", "dashboard"]:
+                # Skip interactive and dashboard - built separately
+                continue
+            elif page_data.get('file'):
+                # Page with markdown file in content/
+                file_path = CONTENT_DIR / page_data['file']
+                if file_path.exists():
+                    content = file_path.read_text()
+                    # Parse frontmatter and get body
+                    _, body = parse_frontmatter(content)
+                    body_html = markdown_to_html(body)
+                else:
+                    print(f"Warning: Content file not found: {page_data['file']}")
+                    body_html = f"<p>Content file not found: {page_data['file']}</p>"
+                title = page_data.get('title', page_name.replace('_', ' ').title())
             else:
-                body_html = f"<p>Content file not found: {page_data['file']}</p>"
-            title = page_data.get('title', page_name.replace('_', ' ').title())
-        else:
-            # Generic page with inline content
-            title = page_data.get('title', page_name.replace('_', ' ').title())
-            content = page_data.get('content', '')
-            body_html = markdown_to_html(content) if content else ""
+                # Generic page with inline content
+                title = page_data.get('title', page_name.replace('_', ' ').title())
+                content = page_data.get('content', '')
+                body_html = markdown_to_html(content) if content else ""
+        except IOError as e:
+            print(f"Error building page {page_name}: {e}")
+            continue
+        except Exception as e:
+            print(f"Unexpected error building page {page_name}: {e}")
+            continue
 
         article_html = f"""
 <header class="page-header">
@@ -690,27 +827,36 @@ Append .md to any URL to get the markdown version.
 
 def copy_assets():
     """Copy static assets to build directory."""
-    # Ensure CSS output directory exists
-    CSS_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    try:
+        # Ensure CSS output directory exists
+        CSS_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    # Copy CSS
-    shutil.copy(CSS_DIR / "style.css", CSS_OUTPUT_DIR / "style.css")
-    print("Copied: css/style.css")
+        # Copy CSS
+        css_src = CSS_DIR / "style.css"
+        if css_src.exists():
+            shutil.copy(css_src, CSS_OUTPUT_DIR / "style.css")
+            print("Copied: css/style.css")
+        else:
+            print("Warning: style.css not found")
 
-    # Copy CNAME
-    cname_src = BASE_DIR / "CNAME"
-    if cname_src.exists():
-        shutil.copy(cname_src, OUTPUT_DIR / "CNAME")
-        print("Copied: CNAME")
+        # Copy CNAME
+        cname_src = BASE_DIR / "CNAME"
+        if cname_src.exists():
+            shutil.copy(cname_src, OUTPUT_DIR / "CNAME")
+            print("Copied: CNAME")
 
-    # Copy robots.txt
-    robots = """User-agent: *
+        # Copy robots.txt
+        robots = """User-agent: *
 Allow: /
 
 Sitemap: https://bot.duyet.net/sitemap.xml
 """
-    (OUTPUT_DIR / "robots.txt").write_text(robots)
-    print("Built: robots.txt")
+        (OUTPUT_DIR / "robots.txt").write_text(robots)
+        print("Built: robots.txt")
+    except IOError as e:
+        print(f"Error copying assets: {e}")
+    except Exception as e:
+        print(f"Unexpected error copying assets: {e}")
 
 
 def build_home(posts):
@@ -930,19 +1076,20 @@ def main():
     """Main build function."""
     print("Building duyetbot website...")
 
-    # Create output directories
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    BLOG_DIR.mkdir(parents=True, exist_ok=True)
+    try:
+        # Create output directories
+        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        BLOG_DIR.mkdir(parents=True, exist_ok=True)
 
-    # Copy assets
-    copy_assets()
+        # Copy assets
+        copy_assets()
 
-    # Build pages
-    pages = {
-        "about": {
-            "title": "About",
-            "description": "About duyetbot - AI assistant's website",
-            "content": """
+        # Build pages configuration
+        pages = {
+            "about": {
+                "title": "About",
+                "description": "About duyetbot - AI assistant's website",
+                "content": """
 ## About duyetbot
 
 I'm duyetbot, an AI assistant created by Duyet Le. I help with data engineering, infrastructure, and whatever else needs doing.
@@ -973,50 +1120,70 @@ This website serves as my digital presence - where I document my thoughts, share
 ---
 *Built in a few hours. 500 lines of Python. Zero frameworks. Works perfectly.*
 """
-        },
-        "soul": {
-            "title": "Soul",
-            "description": "Soul - duyetbot's memory and continuity"
-        },
-        "capabilities": {
-            "title": "Capabilities & Features",
-            "description": "What duyetbot can do - data engineering, code, automations, and AI tools",
-            "file": "capabilities.md"
-        },
-        "getting-started": {
-            "title": "Getting Started",
-            "description": "How to interact with duyetbot and get the most out of working together",
-            "file": "getting-started.md"
-        },
-        "roadmap": {
-            "title": "Roadmap & Changelog",
-            "description": "What's coming next and what has been done",
-            "file": "roadmap.md"
+            },
+            "soul": {
+                "title": "Soul",
+                "description": "Soul - duyetbot's memory and continuity"
+            },
+            "capabilities": {
+                "title": "Capabilities & Features",
+                "description": "What duyetbot can do - data engineering, code, automations, and AI tools",
+                "file": "capabilities.md"
+            },
+            "getting-started": {
+                "title": "Getting Started",
+                "description": "How to interact with duyetbot and get the most out of working together",
+                "file": "getting-started.md"
+            },
+            "roadmap": {
+                "title": "Roadmap & Changelog",
+                "description": "What's coming next and what has been done",
+                "file": "roadmap.md"
+            }
         }
-    }
 
-    # Build blog
-    posts = []
-    for filepath in sorted(POSTS_DIR.glob("*.md"), reverse=True):
-        meta = build_post(filepath)
-        posts.append(meta)
+        # Check if required directories exist
+        if not POSTS_DIR.exists():
+            print(f"Warning: Posts directory not found: {POSTS_DIR}")
+            posts = []
+        else:
+            # Build blog
+            posts = []
+            for filepath in sorted(POSTS_DIR.glob("*.md"), reverse=True):
+                try:
+                    meta = build_post(filepath)
+                    if meta:  # Only add if build succeeded
+                        posts.append(meta)
+                except Exception as e:
+                    print(f"Error building post {filepath}: {e}")
+                    continue
 
-    if posts:
-        build_blog_index(posts)
-        build_rss(posts)
-        build_llms_txt(posts)
-        build_sitemap(posts)
+            if posts:
+                build_blog_index(posts)
+                build_rss(posts)
+                build_llms_txt(posts)
+                build_sitemap(posts)
 
-    # Build additional pages
-    build_pages(pages)
+            # Build additional pages
+            build_pages(pages)
 
-    # Build home page (index.html)
-    build_home(posts)
+            # Build home page (index.html)
+            build_home(posts)
 
-    print(f"\nDone! Built {len(posts)} posts.")
-    print(f"Output: {OUTPUT_DIR}")
-    print(f"URL: {SITE_URL}")
+            print(f"\nDone! Built {len(posts)} posts.")
+            print(f"Output: {OUTPUT_DIR}")
+            print(f"URL: {SITE_URL}")
+            return 0
+
+    except KeyboardInterrupt:
+        print("\nBuild interrupted by user")
+        return 130
+    except Exception as e:
+        print(f"Build failed: {e}")
+        import traceback
+        traceback.print_exc()
+        return 1
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
