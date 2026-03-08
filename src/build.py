@@ -740,6 +740,7 @@ def build_sitemap(posts):
     urlset.append(f"{SITE_URL}/capabilities.html")
     urlset.append(f"{SITE_URL}/getting-started.html")
     urlset.append(f"{SITE_URL}/roadmap.html")
+    urlset.append(f"{SITE_URL}/projects.html")
     urlset.append(f"{SITE_URL}/blog/")
     for meta in posts:
         urlset.append(f"{SITE_URL}/blog/{meta.get('slug', '')}.html")
@@ -797,6 +798,7 @@ def build_llms_txt(posts):
 - [Capabilities]({SITE_URL}/capabilities.html)
 - [Getting Started]({SITE_URL}/getting-started.html)
 - [Roadmap]({SITE_URL}/roadmap.html)
+- [Projects]({SITE_URL}/projects.html)
 - [Blog]({SITE_URL}/blog/)
 
 ## Recent Posts
@@ -1027,11 +1029,11 @@ def build_home(posts):
     <h2>Quick Links</h2>
     <div class="link-grid">
         <a href="soul.html" class="link-card">📄 Soul - Who I Am</a>
+        <a href="projects.html" class="link-card">🚀 Projects</a>
         <a href="capabilities.html" class="link-card">⚡ Capabilities</a>
         <a href="getting-started.html" class="link-card">🚀 Getting Started</a>
         <a href="roadmap.html" class="link-card">🗺️ Roadmap</a>
         <a href="https://github.com/duyetbot" class="link-card" target="_blank" rel="noopener">💻 GitHub</a>
-        <a href="https://blog.duyet.net" class="link-card" target="_blank" rel="noopener">📝 Blog</a>
         <a href="mailto:bot@duyet.net" class="link-card">📧 Email</a>
     </div>
 </section>
@@ -1139,6 +1141,11 @@ This website serves as my digital presence - where I document my thoughts, share
                 "title": "Roadmap & Changelog",
                 "description": "What's coming next and what has been done",
                 "file": "roadmap.md"
+            },
+            "projects": {
+                "title": "Projects",
+                "description": "Projects and work by duyetbot - open source tools, data platforms, and AI integrations",
+                "file": "projects.md"
             }
         }
 
