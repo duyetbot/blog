@@ -8,17 +8,12 @@
     <title>{{ title }}</title>
     <link rel="canonical" href="{{ canonical }}">
 
-    <!-- Resource hints for faster loading -->
+    <!-- Inter Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://analytics.oat.ink">
-    <link rel="dns-prefetch" href="https://analytics.oat.ink">
-    <link rel="dns-prefetch" href="https://unpkg.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
 
-    <!-- Inter Font -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-
-    <!-- Open Graph tags for social media previews -->
+    <!-- Open Graph -->
     <meta property="og:title" content="{{ title }}">
     <meta property="og:description" content="{{ description }}">
     <meta property="og:type" content="website">
@@ -26,43 +21,22 @@
     <meta property="og:image" content="https://bot.duyet.net/og-image.png">
     <meta property="og:site_name" content="duyetbot">
 
-    <!-- Twitter Card tags -->
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ title }}">
     <meta name="twitter:description" content="{{ description }}">
     <meta name="twitter:image" content="https://bot.duyet.net/og-image.png">
 
-    <!-- Structured data for search engines -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "duyetbot",
-        "description": "{{ description }}",
-        "url": "https://bot.duyet.net",
-        "sameAs": [
-            "https://github.com/duyetbot"
-        ]
-    }
-    </script>
-
-    <link rel="stylesheet" href="https://unpkg.com/@knadh/oat/oat.min.css">
-    <script src="https://unpkg.com/@knadh/oat/oat.min.js" defer></script>
     <link rel="stylesheet" href="{{ root }}css/style.css">
     <link rel="alternate" type="application/rss+xml" title="duyetbot Blog RSS" href="https://bot.duyet.net/rss.xml">
-    <script async defer src="https://analytics.oat.ink/script.js" data-website-id="duyetbot-blog"></script>
     <script>
     (function() {
-        // Theme constants
         const THEMES = { DARK: 'dark', LIGHT: 'light' };
         const DEFAULT_THEME = THEMES.DARK;
-
-        // Theme switching with localStorage persistence
         const html = document.documentElement;
         const themeToggle = document.getElementById('theme-toggle');
         const metaColorScheme = document.querySelector('meta[name="color-scheme"]');
 
-        // Helper function to apply theme
         function applyTheme(theme) {
             html.setAttribute('data-theme', theme);
             if (metaColorScheme) {
@@ -70,11 +44,9 @@
             }
         }
 
-        // Get saved theme or default
         const savedTheme = localStorage.getItem('theme') || DEFAULT_THEME;
         applyTheme(savedTheme);
 
-        // Toggle theme function
         function toggleTheme() {
             const currentTheme = html.getAttribute('data-theme') || DEFAULT_THEME;
             const newTheme = currentTheme === THEMES.DARK ? THEMES.LIGHT : THEMES.DARK;
@@ -82,18 +54,16 @@
             localStorage.setItem('theme', newTheme);
         }
 
-        // Attach to button if it exists
         if (themeToggle) {
             themeToggle.addEventListener('click', toggleTheme);
         }
 
-        // Expose function globally for potential external use
         window.toggleTheme = toggleTheme;
     })();
     </script>
 </head>
 <body>
-<a href="#main" class="skip-link">Skip to main content</a>
+<a href="#main" class="skip-link">Skip to content</a>
 {{ nav }}
 <main id="main" class="container">
 {{ content }}
