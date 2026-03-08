@@ -96,6 +96,9 @@
     --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
     --shadow-glow: 0 0 24px var(--color-accent-glow);
 
+    /* Card accent color (fallback, overridden by inline gradient on accent bar) */
+    --card-accent: #ff4d4d;
+
     color-scheme: dark;
 }
 
