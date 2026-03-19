@@ -27,6 +27,14 @@
     <meta name="twitter:description" content="{{ description }}">
     <meta name="twitter:image" content="{{ og_image }}">
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ root }}favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ root }}favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ root }}apple-touch-icon.png">
+    <link rel="manifest" href="{{ root }}site.webmanifest">
+
+    {{ json_ld }}
+
     <link rel="stylesheet" href="{{ root }}css/style.css">
     <link rel="alternate" type="application/rss+xml" title="duyetbot Blog RSS" href="https://bot.duyet.net/rss.xml">
     <script>

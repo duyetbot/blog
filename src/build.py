@@ -120,6 +120,28 @@ RSS_FEED_LIMIT = 15
 RSS_PREVIEW_LENGTH = 1000
 RSS_PREVIEW_LINES = 10
 
+# JSON-LD constants
+SCHEMA_CONTEXT = "https://schema.org"
+OG_IMAGE_URL = f"{SITE_URL}/og-image.png"
+
+# Cached website JSON-LD (generated once, reused for all pages)
+_JSON_LD_WEBSITE_CACHE = None
+
+
+def _get_json_ld_publisher(include_logo=False):
+    """Get publisher/organization structure for JSON-LD."""
+    publisher = {
+        "@type": "Organization",
+        "name": SITE_NAME,
+        "url": SITE_URL
+    }
+    if include_logo:
+        publisher["logo"] = {
+            "@type": "ImageObject",
+            "url": OG_IMAGE_URL
+        }
+    return publisher
+
 
 def read_template(name):
     """Read a template file."""
@@ -398,6 +420,81 @@ def escape_xml(text):
     return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
 
 
+def generate_json_ld_article(meta, url, reading_time=None):
+    """Generate JSON-LD structured data for blog articles (Article schema)."""
+    date_str = meta.get('date', '')
+    dt = _parse_datetime(date_str)
+
+    # Ensure timezone-aware ISO 8601 format (append UTC if naive)
+    if dt:
+        if dt.tzinfo is None:
+            iso_date = dt.isoformat() + "+00:00"
+        else:
+            iso_date = dt.isoformat()
+    else:
+        iso_date = date_str
+
+    data = {
+        "@context": SCHEMA_CONTEXT,
+        "@type": "Article",
+        "headline": meta.get('title', 'Untitled'),
+        "url": url,
+        "description": meta.get('description', ''),
+        "datePublished": iso_date,
+        "dateModified": iso_date,
+        "author": _get_json_ld_publisher(include_logo=False),
+        "publisher": _get_json_ld_publisher(include_logo=True),
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": url
+        }
+    }
+
+    if reading_time:
+        data["timeRequired"] = f"PT{reading_time}M"
+
+    try:
+        json_str = json.dumps(data, ensure_ascii=False)
+        return f'<script type="application/ld+json">{json_str}</script>'
+    except (TypeError, ValueError) as e:
+        print(f"Warning: Failed to generate JSON-LD for {meta.get('title', 'unknown')}: {e}")
+        return ""
+
+
+def generate_json_ld_website():
+    """Generate JSON-LD structured data for the website (WebSite schema)."""
+    global _JSON_LD_WEBSITE_CACHE
+
+    # Return cached version if available (schema is identical for all pages)
+    if _JSON_LD_WEBSITE_CACHE is not None:
+        return _JSON_LD_WEBSITE_CACHE
+
+    data = {
+        "@context": SCHEMA_CONTEXT,
+        "@type": "WebSite",
+        "name": SITE_NAME,
+        "url": SITE_URL,
+        "description": SITE_DESCRIPTION,
+        "publisher": _get_json_ld_publisher(include_logo=False),
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": f"{SITE_URL}/blog/?q={{search_term_string}}"
+            },
+            "query-input": "required name=search_term_string"
+        }
+    }
+
+    try:
+        json_str = json.dumps(data, ensure_ascii=False)
+        _JSON_LD_WEBSITE_CACHE = f'<script type="application/ld+json">{json_str}</script>'
+        return _JSON_LD_WEBSITE_CACHE
+    except (TypeError, ValueError) as e:
+        print(f"Warning: Failed to generate website JSON-LD: {e}")
+        return ""
+
+
 def format_date(date_str):
     """Format date string to readable format. Accepts YYYY-MM-DD or ISO 8601."""
     dt = _parse_datetime(date_str)
@@ -483,14 +580,16 @@ def build_post(filepath):
 
     # Render HTML
     post_url = f"{SITE_URL}/blog/{slug}.html"
+    json_ld = generate_json_ld_article(meta, post_url, reading_time)
     html = render_template(
         base,
         title=f"{meta.get('title', 'Untitled')} // duyetbot",
         description=meta.get('description', ''),
         url=post_url,
         og_type=OG_TYPE_ARTICLE,
-        og_image=f"{SITE_URL}/og-image.png",
+        og_image=OG_IMAGE_URL,
         site_name=SITE_NAME,
+        json_ld=json_ld,
         root="../",
         nav=render_template(nav, root="../"),
         content=article_html,
@@ -565,8 +664,9 @@ def build_blog_index(posts):
         description=f"{SITE_NAME} - Blog - Thoughts on AI, data engineering, and digital existence",
         url=f"{SITE_URL}/blog/",
         og_type=OG_TYPE_WEBSITE,
-        og_image=f"{SITE_URL}/og-image.png",
+        og_image=OG_IMAGE_URL,
         site_name=SITE_NAME,
+        json_ld=generate_json_ld_website(),
         root="../",
         nav=render_template(nav, root="../"),
         content=content,
@@ -763,8 +863,9 @@ def build_pages(pages):
             description=page_data.get('description', f"{title} - duyetbot"),
             url=page_url,
             og_type=OG_TYPE_WEBSITE,
-            og_image=f"{SITE_URL}/og-image.png",
+            og_image=OG_IMAGE_URL,
             site_name=SITE_NAME,
+            json_ld=generate_json_ld_website(),
             root="../",
             nav=render_template(nav, root="../"),
             content=article_html,
@@ -1146,8 +1247,9 @@ def build_home(posts):
         description="I'm duyetbot, an AI assistant helping with data engineering, infrastructure, and digital being.",
         url=SITE_URL,
         og_type=OG_TYPE_WEBSITE,
-        og_image=f"{SITE_URL}/og-image.png",
+        og_image=OG_IMAGE_URL,
         site_name=SITE_NAME,
+        json_ld=generate_json_ld_website(),
         root="",
         nav=render_template(nav, root=""),
         content=home_content,
