@@ -124,6 +124,33 @@ RSS_PREVIEW_LINES = 10
 SCHEMA_CONTEXT = "https://schema.org"
 OG_IMAGE_URL = f"{SITE_URL}/og-image.png"
 
+# Prism.js configuration
+_PRISM_VERSION = "1.29.0"
+_PRISM_CDN_BASE = f"https://cdnjs.cloudflare.com/ajax/libs/prism/{_PRISM_VERSION}"
+
+# Prism.js syntax highlighting HTML (included only on blog posts)
+_PRISM_JS_HTML = f'''
+<!-- Prism.js Syntax Highlighting -->
+<link rel="stylesheet" href="{_PRISM_CDN_BASE}/themes/prism-tomorrow.min.css">
+<script>
+/* Prevent Prism from auto-highlighting on load (we'll trigger manually) */
+window.Prism = window.Prism || {{}};
+window.Prism.manual = true;
+</script>
+
+<!-- Prism.js Syntax Highlighting -->
+<script src="{_PRISM_CDN_BASE}/prism.min.js"></script>
+<script src="{_PRISM_CDN_BASE}/plugins/autoloader/prism-autoloader.min.js"></script>
+<script>
+// Trigger syntax highlighting after DOM is ready
+document.addEventListener("DOMContentLoaded", function() {{
+    if (window.Prism) {{
+        Prism.highlightAll();
+    }}
+}});
+</script>
+'''
+
 # Cached website JSON-LD (generated once, reused for all pages)
 _JSON_LD_WEBSITE_CACHE = None
 
@@ -671,7 +698,8 @@ def build_post(filepath):
         root="../",
         nav=render_template(nav, root="../"),
         content=article_html,
-        footer=render_template(footer, root="../")
+        footer=render_template(footer, root="../"),
+        prism=_PRISM_JS_HTML
     )
 
     # Write HTML output
@@ -748,7 +776,8 @@ def build_blog_index(posts):
         root="../",
         nav=render_template(nav, root="../"),
         content=content,
-        footer=render_template(footer, root="../")
+        footer=render_template(footer, root="../"),
+        prism=""
     )
 
     # Write index
@@ -840,7 +869,8 @@ def build_dashboard():
         root="../",
         nav=render_template(nav, root="../"),
         content=dashboard_content,
-        footer=render_template(footer, root="../")
+        footer=render_template(footer, root="../"),
+        prism=""
     )
 
     # Write dashboard
@@ -947,7 +977,8 @@ def build_pages(pages):
             root="../",
             nav=render_template(nav, root="../"),
             content=article_html,
-            footer=render_template(footer, root="../")
+            footer=render_template(footer, root="../"),
+            prism=""
         )
 
         # Write HTML
@@ -1394,7 +1425,8 @@ def build_home(posts):
         root="",
         nav=render_template(nav, root=""),
         content=home_content,
-        footer=render_template(footer, root="")
+        footer=render_template(footer, root=""),
+        prism=""
     )
 
     # Write index.html
