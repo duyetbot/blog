@@ -541,6 +541,11 @@ def build_post(filepath):
     if 'date' in meta and not validate_date(meta['date'], filepath):
         pass
 
+    # Cache parsed datetime for reuse in RSS/sitemap (avoid re-parsing)
+    date_str = meta.get('date', '')
+    if date_str:
+        meta['_parsed_dt'] = _parse_datetime(date_str)
+
     # Extract slug from filename
     slug = filepath.stem
 
@@ -901,22 +906,50 @@ def build_pages(pages):
 
 
 def build_sitemap(posts):
-    """Build sitemap.xml."""
-    urlset = []
-    urlset.append(f"{SITE_URL}/")
-    urlset.append(f"{SITE_URL}/about.html")
-    urlset.append(f"{SITE_URL}/soul.html")
-    urlset.append(f"{SITE_URL}/capabilities.html")
-    urlset.append(f"{SITE_URL}/getting-started.html")
-    urlset.append(f"{SITE_URL}/roadmap.html")
-    urlset.append(f"{SITE_URL}/projects.html")
-    urlset.append(f"{SITE_URL}/blog/")
+    """Build sitemap.xml with lastmod dates for blog posts."""
+    # Static pages (no lastmod)
+    static_urls = [
+        f"{SITE_URL}/",
+        f"{SITE_URL}/about.html",
+        f"{SITE_URL}/soul.html",
+        f"{SITE_URL}/capabilities.html",
+        f"{SITE_URL}/getting-started.html",
+        f"{SITE_URL}/roadmap.html",
+        f"{SITE_URL}/projects.html",
+        f"{SITE_URL}/blog/"
+    ]
+
+    # Blog posts with lastmod dates
+    url_elements = []
+    for url in static_urls:
+        url_elements.append(f"  <url><loc>{url}</loc></url>")
+
     for meta in posts:
-        urlset.append(f"{SITE_URL}/blog/{meta.get('slug', '')}.html")
+        slug = meta.get('slug', '')
+        url = f"{SITE_URL}/blog/{slug}.html"
+
+        # Add lastmod if date available (use cached parsed datetime if available)
+        date_str = meta.get('date', '')
+        lastmod = ""
+        if date_str:
+            # Check if datetime was already parsed and cached
+            parsed_dt = meta.get('_parsed_dt') or _parse_datetime(date_str)
+            if parsed_dt:
+                # Format as YYYY-MM-DD for sitemap
+                lastmod = f"    <lastmod>{parsed_dt.strftime('%Y-%m-%d')}</lastmod>"
+
+        # Build XML element conditionally
+        if lastmod:
+            url_elements.append(f"""  <url>
+    <loc>{url}</loc>
+{lastmod}
+  </url>""")
+        else:
+            url_elements.append(f"  <url><loc>{url}</loc></url>")
 
     sitemap = f"""<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-{''.join([f'<url><loc>{url}</loc></url>' for url in urlset])}
+{chr(10).join(url_elements)}
 </urlset>
 """
     sitemap_path = OUTPUT_DIR / "sitemap.xml"
@@ -946,15 +979,16 @@ def build_rss(posts):
         if preview:
             content_encoded = f"<content:encoded><![CDATA[{preview}]]></content:encoded>"
 
-        # Format date properly for RFC 822
-        date_str = meta.get('date', '')
-        try:
+        # Format date properly for RFC 822 (use cached datetime if available)
+        dt = meta.get('_parsed_dt')
+        if not dt:
+            date_str = meta.get('date', '')
             dt = _parse_datetime(date_str)
-            if dt:
-                pub_date = dt.strftime("%a, %d %b %Y %H:%M:%S %z")
-            else:
-                pub_date = f"{date_str}T00:00:00+00:00"
-        except Exception:
+
+        if dt:
+            pub_date = dt.strftime("%a, %d %b %Y %H:%M:%S %z")
+        else:
+            date_str = meta.get('date', '')
             pub_date = f"{date_str}T00:00:00+00:00"
 
         rss += f"""
