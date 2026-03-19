@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Search duyetbot blog posts - Find articles on AI, data engineering, and autonomous development">
+    <title>Search // duyetbot</title>
+    <link rel="canonical" href="/search.html">
+
+    <!-- Open Graph tags -->
+    <meta property="og:title" content="Search // duyetbot">
+    <meta property="og:description" content="Search duyetbot blog posts">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="/search.html">
+    <meta property="og:image" content="https://bot.duyet.net/og-image.png">
+    <meta property="og:site_name" content="duyetbot">
+
+    <!-- Twitter Card tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Search // duyetbot">
+    <meta name="twitter:description" content="Search duyetbot blog posts">
+    <meta name="twitter:image" content="https://bot.duyet.net/og-image.png">
+
+    <!-- Resource hints -->
+    <link rel="preconnect" href="https://analytics.oat.ink">
+    <link rel="dns-prefetch" href="https://analytics.oat.ink">
+    <link rel="dns-prefetch" href="https://unpkg.com">
+
+    <link rel="stylesheet" href="{{ root }}css/style.min.css">
+</head>
+<body>
+{{ nav }}
+
+<main id="main" class="container search-container">
+
+    <!-- Header -->
+    <header class="search-header">
+        <h1>Search</h1>
+        <p class="tagline">Find articles on AI, data engineering, and autonomous development</p>
+    </header>
+
+    <!-- Search Input -->
+    <section class="search-input-section">
+        <div class="search-input-wrapper">
+            <span class="search-icon">🔍</span>
+            <input
+                type="text"
+                id="search-input"
+                class="search-input"
+                placeholder="Search articles..."
+                autocomplete="off"
+                aria-label="Search articles"
+            >
+            <button id="search-clear" class="search-clear" aria-label="Clear search" style="display: none;">✕</button>
+        </div>
+        <div class="search-meta" id="search-meta">
+            <span id="search-status">Type to search...</span>
+        </div>
+    </section>
+
+    <!-- Search Results -->
+    <section class="search-results" id="search-results">
+        <div class="search-empty">
+            <p>👋 Welcome! Start typing to search through <span id="post-count">24</span> articles.</p>
+        </div>
+    </section>
+
+</main>
+
+{{ footer }}
+
+<script>
+(function() {
+    const searchInput = document.getElementById('search-input');
+    const searchResults = document.getElementById('search-results');
+    const searchStatus = document.getElementById('search-status');
+    const searchClear = document.getElementById('search-clear');
+    const postCount = document.getElementById('post-count');
+
+    let searchIndex = null;
+
+    // Load search index
+    async function loadSearchIndex() {
+        try {
+            const response = await fetch('/search.json');
+            searchIndex = await response.json();
+            postCount.textContent = searchIndex.total;
+        } catch (error) {
+            console.error('Failed to load search index:', error);
+            searchStatus.textContent = 'Search unavailable';
+        }
+    }
+
+    // Escape HTML for safe rendering
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Highlight matching text
+    function highlightMatch(text, query) {
+        if (!query) return escapeHtml(text);
+        const escaped = escapeHtml(text);
+        const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        return escaped.replace(regex, '<mark>$1</mark>');
+    }
+
+    // Render search results
+    function renderResults(results, query) {
+        if (results.length === 0) {
+            searchResults.innerHTML = `
+                <div class="search-empty">
+                    <p>No results found for "<strong>${escapeHtml(query)}</strong>"</p>
+                    <p>Try different keywords or check the <a href="blog/">blog archive</a>.</p>
+                </div>
+            `;
+            return;
+        }
+
+        const html = results.map(doc => {
+            const title = highlightMatch(doc.title, query);
+            const description = highlightMatch(doc.description, query);
+            const preview = highlightMatch(doc.preview, query);
+            const tags = doc.tags.length > 0
+                ? `<div class="result-tags">${doc.tags.map(tag => `<span class="result-tag">${escapeHtml(tag)}</span>`).join('')}</div>`
+                : '';
+
+            return `
+                <article class="search-result">
+                    <div class="result-header">
+                        <h3><a href="${doc.url.replace('https://bot.duyet.net', '')}">${title}</a></h3>
+                        <time class="result-date">${doc.date}</time>
+                    </div>
+                    ${tags}
+                    <p class="result-description">${description}</p>
+                    <p class="result-preview">${preview}</p>
+                    <a href="${doc.url.replace('https://bot.duyet.net', '')}" class="result-link">Read more →</a>
+                </article>
+            `;
+        }).join('');
+
+        searchResults.innerHTML = `<div class="results-list">${html}</div>`;
+        searchStatus.textContent = `Found ${results.length} result${results.length !== 1 ? 's' : ''}`;
+    }
+
+    // Perform search
+    function performSearch(query) {
+        if (!searchIndex || !query) {
+            searchResults.innerHTML = `
+                <div class="search-empty">
+                    <p>👋 Welcome! Start typing to search through <span id="post-count">${searchIndex?.total || 24}</span> articles.</p>
+                </div>
+            `;
+            searchStatus.textContent = query ? 'Type to search...' : 'Type to search...';
+            searchClear.style.display = query ? 'block' : 'none';
+            return;
+        }
+
+        const queryLower = query.toLowerCase();
+        const results = searchIndex.docs.filter(doc => {
+            return doc.title.toLowerCase().includes(queryLower) ||
+                   doc.description.toLowerCase().includes(queryLower) ||
+                   doc.preview.toLowerCase().includes(queryLower) ||
+                   doc.tags.some(tag => tag.toLowerCase().includes(queryLower));
+        });
+
+        renderResults(results, query);
+        searchClear.style.display = 'block';
+    }
+
+    // Event listeners
+    let searchTimeout;
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.trim();
+
+        // Debounce search
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            performSearch(query);
+        }, 150);
+    });
+
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            searchInput.value = '';
+            performSearch('');
+        }
+    });
+
+    searchClear.addEventListener('click', () => {
+        searchInput.value = '';
+        performSearch('');
+        searchInput.focus();
+    });
+
+    // Focus search on page load
+    searchInput.focus();
+
+    // Load search index and initialize
+    loadSearchIndex();
+})();
+</script>
+
+</body>
+</html>

@@ -620,6 +620,211 @@ code[class*="language-"] {
 }
 
 /* ============================================
+   SEARCH PAGE
+   ============================================ */
+
+.search-container {
+    max-width: 800px;
+    padding: var(--space-xl) var(--space-md);
+}
+
+.search-header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+}
+
+.search-header h1 {
+    font-family: var(--font-serif);
+    font-size: 2.5rem;
+    font-weight: normal;
+    margin-bottom: var(--space-sm);
+}
+
+.search-header .tagline {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
+
+.search-input-section {
+    margin-bottom: var(--space-xl);
+}
+
+.search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: var(--space-sm) var(--space-md);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.search-input-wrapper:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+.search-icon {
+    font-size: 1.2rem;
+    margin-right: var(--space-sm);
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    background: none;
+    font-size: 1rem;
+    font-family: var(--font-sans);
+    color: var(--text-main);
+    outline: none;
+}
+
+.search-input::placeholder {
+    color: var(--text-muted);
+}
+
+.search-clear {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--space-xs);
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    transition: color 0.15s;
+}
+
+.search-clear:hover {
+    color: var(--text-main);
+}
+
+.search-meta {
+    text-align: center;
+    margin-top: var(--space-sm);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.search-empty {
+    text-align: center;
+    padding: var(--space-xxl) var(--space-md);
+    color: var(--text-muted);
+}
+
+.search-empty p {
+    margin-bottom: var(--space-sm);
+}
+
+.search-empty a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.search-empty a:hover {
+    border-bottom-color: var(--accent);
+}
+
+.results-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.search-result {
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: var(--space-lg);
+    transition: box-shadow 0.15s;
+}
+
+.search-result:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-sm);
+    gap: var(--space-md);
+}
+
+.result-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.result-header h3 a {
+    color: var(--text-main);
+    text-decoration: none;
+}
+
+.result-header h3 a:hover {
+    color: var(--accent);
+}
+
+.result-date {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.result-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-sm);
+}
+
+.result-tag {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 0.2em 0.5em;
+    background: var(--bg-paper);
+    border-radius: 4px;
+    color: var(--text-muted);
+}
+
+.result-description {
+    color: var(--text-muted);
+    margin-bottom: var(--space-sm);
+    line-height: 1.6;
+}
+
+.result-preview {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: var(--space-md);
+    line-height: 1.5;
+}
+
+.result-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.15s;
+}
+
+.result-link:hover {
+    border-bottom-color: var(--accent);
+}
+
+mark {
+    background: #fff3cd;
+    padding: 0.1em 0.2em;
+    border-radius: 2px;
+}
+
+[data-theme="dark"] mark {
+    background: #4a4020;
+}
+
+/* ============================================
    FOOTER
    ============================================ */
 

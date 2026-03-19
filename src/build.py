@@ -900,6 +900,21 @@ def build_interactive():
     print("Built: interactive/index.html (from Next.js)")
 
 
+def build_search_page():
+    """Build the search page (search.html is a self-contained template)."""
+    search_template = read_template("search")
+
+    if not search_template:
+        print("Error: search.html template missing")
+        return
+
+    # Substitute {{ root }} variables (search.html is at root level)
+    html = search_template.replace("{{ root }}", "")
+
+    (OUTPUT_DIR / "search.html").write_text(html)
+    print("Built: search.html")
+
+
 def build_pages(pages):
     """Build additional pages (about, soul, capabilities, etc.)."""
     base = read_template("base")
@@ -1020,6 +1035,7 @@ def build_sitemap(posts):
         f"{SITE_URL}/getting-started.html",
         f"{SITE_URL}/roadmap.html",
         f"{SITE_URL}/projects.html",
+        f"{SITE_URL}/search.html",
         f"{SITE_URL}/blog/"
     ]
 
@@ -1129,6 +1145,7 @@ def build_llms_txt(posts):
 - [Getting Started]({SITE_URL}/getting-started.html)
 - [Roadmap]({SITE_URL}/roadmap.html)
 - [Projects]({SITE_URL}/projects.html)
+- [Search]({SITE_URL}/search.html)
 - [Blog]({SITE_URL}/blog/)
 
 ## Recent Posts
@@ -1576,6 +1593,9 @@ This website serves as my digital presence - where I document my thoughts, share
 
             # Build additional pages
             build_pages(pages)
+
+            # Build search page
+            build_search_page()
 
             # Build home page (index.html)
             build_home(posts)
