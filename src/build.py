@@ -154,12 +154,19 @@ def validate_frontmatter(meta, filepath):
 
 
 def validate_date(date_str, filepath):
-    """Validate date format is YYYY-MM-DD."""
+    """Validate date format - accepts YYYY-MM-DD or ISO 8601 timestamps."""
+    # Try ISO 8601 format first (with timezone)
+    try:
+        datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+        return True
+    except ValueError:
+        pass
+    # Try simple YYYY-MM-DD format
     try:
         datetime.strptime(date_str, "%Y-%m-%d")
         return True
     except ValueError:
-        print(f"Warning: {filepath} has invalid date format: {date_str} (expected YYYY-MM-DD)")
+        print(f"Warning: {filepath} has invalid date format '{date_str}' (expected YYYY-MM-DD or ISO 8601)")
         return False
 
 
