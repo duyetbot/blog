@@ -646,8 +646,7 @@ def build_post(filepath):
 
     # Get templates
     base = read_template("base")
-    nav = read_template("nav")
-    footer = read_template("footer")
+    nav, footer = _get_common_components(root="../")
 
     if not base:
         print(f"Error: base.html template missing, cannot build {filepath}")
@@ -696,9 +695,9 @@ def build_post(filepath):
         site_name=SITE_NAME,
         json_ld=json_ld,
         root="../",
-        nav=render_template(nav, root="../"),
+        nav=nav,
         content=article_html,
-        footer=render_template(footer, root="../"),
+        footer=footer,
         prism=_PRISM_JS_HTML
     )
 
@@ -738,8 +737,7 @@ def build_post(filepath):
 def build_blog_index(posts):
     """Build blog index page."""
     base = read_template("base")
-    nav = read_template("nav")
-    footer = read_template("footer")
+    nav, footer = _get_common_components(root="../")
 
     # Generate post list
     post_list = []
@@ -774,9 +772,9 @@ def build_blog_index(posts):
         site_name=SITE_NAME,
         json_ld=generate_json_ld_website(),
         root="../",
-        nav=render_template(nav, root="../"),
+        nav=nav,
         content=content,
-        footer=render_template(footer, root="../"),
+        footer=footer,
         prism=""
     )
 
@@ -789,8 +787,7 @@ def build_blog_index(posts):
 def build_dashboard():
     """Build dashboard page with real metrics from OpenClaw Gateway API."""
     base = read_template("base")
-    nav = read_template("nav")
-    footer = read_template("footer")
+    nav, footer = _get_common_components(root="../")
 
     # Check for metrics file
     metrics_file = DATA_DIR / "metrics.json"
@@ -867,9 +864,9 @@ def build_dashboard():
         description="OpenClaw activity metrics and automation status",
         canonical="/dashboard.html",
         root="../",
-        nav=render_template(nav, root="../"),
+        nav=nav,
         content=dashboard_content,
-        footer=render_template(footer, root="../"),
+        footer=footer,
         prism=""
     )
 
@@ -918,12 +915,13 @@ def build_search_page():
 def build_pages(pages):
     """Build additional pages (about, soul, capabilities, etc.)."""
     base = read_template("base")
-    nav = read_template("nav")
-    footer = read_template("footer")
 
     if not base:
         print("Error: base.html template missing, cannot build pages")
         return
+
+    # Get cached nav/footer for root-level pages
+    nav, footer = _get_common_components(root="")
 
     for page_name, page_data in pages.items():
         try:
@@ -990,9 +988,9 @@ def build_pages(pages):
             site_name=SITE_NAME,
             json_ld=generate_json_ld_website(),
             root="../",
-            nav=render_template(nav, root="../"),
+            nav=nav,
             content=article_html,
-            footer=render_template(footer, root="../"),
+            footer=footer,
             prism=""
         )
 
@@ -1278,8 +1276,7 @@ Sitemap: https://bot.duyet.net/sitemap.xml
 def build_home(posts):
     """Build the home page (index.html)."""
     base = read_template("base")
-    nav = read_template("nav")
-    footer = read_template("footer")
+    nav, footer = _get_common_components(root="")
 
     # Load metrics data
     metrics_data = {}
@@ -1473,9 +1470,9 @@ def build_home(posts):
         site_name=SITE_NAME,
         json_ld=generate_json_ld_website(),
         root="",
-        nav=render_template(nav, root=""),
+        nav=nav,
         content=home_content,
-        footer=render_template(footer, root=""),
+        footer=footer,
         prism=""
     )
 
@@ -1491,6 +1488,26 @@ def render_template(template, **kwargs):
     for key, value in kwargs.items():
         content = content.replace(f"{{{{ {key} }}}}", value)
     return content
+
+
+def _get_common_components(root=""):
+    """Cache and return rendered nav/footer for given root path.
+
+    This prevents double-rendering the same templates multiple times.
+    """
+    def _render_cached(component_name):
+        """Helper to render and cache a single component."""
+        cache_key = f"{component_name}_{root}"
+        if cache_key not in _get_common_components.cache:
+            template = read_template(component_name)
+            _get_common_components.cache[cache_key] = (
+                render_template(template, root=root) if template else ""
+            )
+        return _get_common_components.cache[cache_key]
+
+    return (_render_cached("nav"), _render_cached("footer"))
+
+_get_common_components.cache = {}
 
 
 def main():
