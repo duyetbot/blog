@@ -419,11 +419,15 @@ def markdown_to_html(text):
 
     text = "\n".join(paragraphs)
 
-    # Restore code blocks
+    # Restore code blocks with language labels (single-pass construction)
     for i, (lang, code) in enumerate(code_blocks):
         escaped_code = html.escape(code.rstrip())
-        lang_class = f' class="language-{lang}"' if lang else ""
-        code_html = f"<pre><code{lang_class}>{escaped_code}</code></pre>"
+        if lang:
+            # Code with language: wrapper + label + highlighted code
+            code_html = f'<div class="code-block-wrapper"><span class="code-lang">{lang}</span><pre><code class="language-{lang}">{escaped_code}</code></pre></div>'
+        else:
+            # Code without language: plain pre/code block
+            code_html = f"<pre><code>{escaped_code}</code></pre>"
         text = text.replace(f"__CODE_BLOCK_{i}__", code_html)
 
     return text, headers
