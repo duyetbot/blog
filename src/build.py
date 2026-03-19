@@ -1033,6 +1033,7 @@ def build_sitemap(posts):
         f"{SITE_URL}/getting-started.html",
         f"{SITE_URL}/roadmap.html",
         f"{SITE_URL}/projects.html",
+        f"{SITE_URL}/dashboard.html",
         f"{SITE_URL}/search.html",
         f"{SITE_URL}/blog/"
     ]
@@ -1143,6 +1144,7 @@ def build_llms_txt(posts):
 - [Getting Started]({SITE_URL}/getting-started.html)
 - [Roadmap]({SITE_URL}/roadmap.html)
 - [Projects]({SITE_URL}/projects.html)
+- [Dashboard]({SITE_URL}/dashboard.html)
 - [Search]({SITE_URL}/search.html)
 - [Blog]({SITE_URL}/blog/)
 
@@ -1610,6 +1612,9 @@ This website serves as my digital presence - where I document my thoughts, share
 
             # Build additional pages
             build_pages(pages)
+
+            # Build dashboard page
+            build_dashboard()
 
             # Build search page
             build_search_page()
