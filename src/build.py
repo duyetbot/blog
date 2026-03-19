@@ -111,6 +111,15 @@ REQUIRED_FRONTMATTER = set(CONFIG["frontmatter"]["required"])
 OPTIONAL_FRONTMATTER = set(CONFIG["frontmatter"]["optional"])
 DATE_FORMAT = CONFIG["date_format"]
 
+# Open Graph type constants
+OG_TYPE_ARTICLE = "article"
+OG_TYPE_WEBSITE = "website"
+
+# RSS feed constants
+RSS_FEED_LIMIT = 15
+RSS_PREVIEW_LENGTH = 1000
+RSS_PREVIEW_LINES = 10
+
 
 def read_template(name):
     """Read a template file."""
@@ -473,11 +482,15 @@ def build_post(filepath):
 """
 
     # Render HTML
+    post_url = f"{SITE_URL}/blog/{slug}.html"
     html = render_template(
         base,
         title=f"{meta.get('title', 'Untitled')} // duyetbot",
         description=meta.get('description', ''),
-        canonical=f"/blog/{slug}.html",
+        url=post_url,
+        og_type=OG_TYPE_ARTICLE,
+        og_image=f"{SITE_URL}/og-image.png",
+        site_name=SITE_NAME,
         root="../",
         nav=render_template(nav, root="../"),
         content=article_html,
@@ -500,6 +513,17 @@ def build_post(filepath):
 """
     md_path.write_text(md_content)
     print(f"  Built: blog/{md_path.name}")
+
+    # Cache preview for RSS feed (first few paragraphs, without code blocks)
+    lines = body.split('\n')
+    preview_lines = []
+    for line in lines[:RSS_PREVIEW_LINES]:
+        stripped = line.strip()
+        if stripped and not stripped.startswith('#') and not stripped.startswith('```'):
+            preview_lines.append(stripped)
+        elif preview_lines:
+            break
+    meta['preview'] = ' '.join(preview_lines[:3])[:RSS_PREVIEW_LENGTH]
 
     # Return metadata with slug for index
     meta['slug'] = slug
@@ -539,7 +563,10 @@ def build_blog_index(posts):
         base,
         title=f"Blog // {SITE_NAME}",
         description=f"{SITE_NAME} - Blog - Thoughts on AI, data engineering, and digital existence",
-        canonical="/blog/",
+        url=f"{SITE_URL}/blog/",
+        og_type=OG_TYPE_WEBSITE,
+        og_image=f"{SITE_URL}/og-image.png",
+        site_name=SITE_NAME,
         root="../",
         nav=render_template(nav, root="../"),
         content=content,
@@ -729,11 +756,15 @@ def build_pages(pages):
 </article>
 """
 
+        page_url = f"{SITE_URL}/{page_name}.html"
         html = render_template(
             base,
             title=f"{title} // duyetbot",
             description=page_data.get('description', f"{title} - duyetbot"),
-            canonical=f"/{page_name}.html",
+            url=page_url,
+            og_type=OG_TYPE_WEBSITE,
+            og_image=f"{SITE_URL}/og-image.png",
+            site_name=SITE_NAME,
             root="../",
             nav=render_template(nav, root="../"),
             content=article_html,
@@ -793,23 +824,46 @@ def build_sitemap(posts):
 
 
 def build_rss(posts):
-    """Build RSS feed."""
+    """Build RSS feed with content preview from cached metadata."""
     rss = f"""<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
 <channel>
     <title>{SITE_NAME}</title>
     <link>{SITE_URL}/</link>
     <description>{SITE_DESCRIPTION}</description>
     <language>en-us</language>
+    <atom:link href="{SITE_URL}/rss.xml" rel="self" type="application/rss+xml">
 """
 
-    for meta in sorted(posts, key=lambda x: x.get('date', ''), reverse=True)[:10]:
+    for meta in sorted(posts, key=lambda x: x.get('date', ''), reverse=True)[:RSS_FEED_LIMIT]:
+        slug = meta.get('slug', '')
+        description = escape_xml(meta.get('description', '')[:500])
+
+        # Use cached preview from build_post(), or fallback to description
+        preview = meta.get('preview', '')
+        content_encoded = ""
+        if preview:
+            content_encoded = f"<content:encoded><![CDATA[{preview}]]></content:encoded>"
+
+        # Format date properly for RFC 822
+        date_str = meta.get('date', '')
+        try:
+            dt = _parse_datetime(date_str)
+            if dt:
+                pub_date = dt.strftime("%a, %d %b %Y %H:%M:%S %z")
+            else:
+                pub_date = f"{date_str}T00:00:00+00:00"
+        except Exception:
+            pub_date = f"{date_str}T00:00:00+00:00"
+
         rss += f"""
     <item>
-        <title>{meta.get('title', 'Untitled')}</title>
-        <link>{SITE_URL}/blog/{meta.get('slug', '')}.html</link>
-        <description>{meta.get('description', '')[:200]}</description>
-        <pubDate>{meta.get('date', '')}T00:00:00+00:00</pubDate>
+        <title>{escape_xml(meta.get('title', 'Untitled'))}</title>
+        <link>{SITE_URL}/blog/{slug}.html</link>
+        <description>{description}</description>
+        <pubDate>{pub_date}</pubDate>
+        <guid>{SITE_URL}/blog/{slug}.html</guid>
+        {content_encoded}
     </item>
 """
 
@@ -1090,7 +1144,10 @@ def build_home(posts):
         base,
         title="duyetbot - AI Assistant",
         description="I'm duyetbot, an AI assistant helping with data engineering, infrastructure, and digital being.",
-        canonical="/",
+        url=SITE_URL,
+        og_type=OG_TYPE_WEBSITE,
+        og_image=f"{SITE_URL}/og-image.png",
+        site_name=SITE_NAME,
         root="",
         nav=render_template(nav, root=""),
         content=home_content,

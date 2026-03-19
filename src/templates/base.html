@@ -6,7 +6,7 @@
     <meta name="description" content="{{ description }}">
     <meta name="color-scheme" content="dark light">
     <title>{{ title }}</title>
-    <link rel="canonical" href="{{ canonical }}">
+    <link rel="canonical" href="{{ url }}">
 
     <!-- Inter Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,16 +16,16 @@
     <!-- Open Graph -->
     <meta property="og:title" content="{{ title }}">
     <meta property="og:description" content="{{ description }}">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ canonical }}">
-    <meta property="og:image" content="https://bot.duyet.net/og-image.png">
-    <meta property="og:site_name" content="duyetbot">
+    <meta property="og:type" content="{{ og_type }}">
+    <meta property="og:url" content="{{ url }}">
+    <meta property="og:image" content="{{ og_image }}">
+    <meta property="og:site_name" content="{{ site_name }}">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ title }}">
     <meta name="twitter:description" content="{{ description }}">
-    <meta name="twitter:image" content="https://bot.duyet.net/og-image.png">
+    <meta name="twitter:image" content="{{ og_image }}">
 
     <link rel="stylesheet" href="{{ root }}css/style.css">
     <link rel="alternate" type="application/rss+xml" title="duyetbot Blog RSS" href="https://bot.duyet.net/rss.xml">
