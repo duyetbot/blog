@@ -1157,6 +1157,39 @@ Append .md to any URL to get the markdown version.
     print("Built: llms.txt")
 
 
+def build_search_index(posts):
+    """Build search index JSON for client-side search."""
+    search_docs = []
+    for meta in posts:
+        # Use cached preview and parsed datetime from build_post()
+        preview = meta.get('preview', '')
+        dt = meta.get('_parsed_dt')
+        timestamp = int(dt.timestamp()) if dt else 0
+
+        search_docs.append({
+            "title": meta.get('title', 'Untitled'),
+            "url": f"{SITE_URL}/blog/{meta.get('slug', '')}.html",
+            "description": meta.get('description', ''),
+            "date": meta.get('date', ''),
+            "timestamp": timestamp,
+            "tags": meta.get('tags', []),
+            "preview": preview[:500] if len(preview) > 500 else preview
+        })
+
+    # Sort by date (newest first)
+    search_docs.sort(key=lambda x: x['timestamp'], reverse=True)
+
+    search_index = {
+        "generated": datetime.now().isoformat(),
+        "total": len(search_docs),
+        "docs": search_docs
+    }
+
+    search_path = OUTPUT_DIR / "search.json"
+    search_path.write_text(json.dumps(search_index, indent=2, ensure_ascii=False))
+    print(f"Built: search.json ({len(search_docs)} posts)")
+
+
 def minify_css(css_content):
     """Simple CSS minifier - removes comments, extra whitespace, and unnecessary semicolons."""
     if not isinstance(css_content, str):
@@ -1538,6 +1571,7 @@ This website serves as my digital presence - where I document my thoughts, share
                 build_blog_index(posts)
                 build_rss(posts)
                 build_llms_txt(posts)
+                build_search_index(posts)
                 build_sitemap(posts)
 
             # Build additional pages
