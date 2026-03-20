@@ -1124,14 +1124,14 @@ def build_rss(posts):
 
         # Format date properly for RFC 822 (use cached datetime if available)
         dt = meta.get('_parsed_dt')
+        date_str = meta.get('date', '')
+
         if not dt:
-            date_str = meta.get('date', '')
             dt = _parse_datetime(date_str)
 
         if dt:
             pub_date = dt.strftime("%a, %d %b %Y %H:%M:%S %z")
         else:
-            date_str = meta.get('date', '')
             pub_date = f"{date_str}T00:00:00+00:00"
 
         rss += f"""
