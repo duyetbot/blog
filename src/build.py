@@ -125,6 +125,7 @@ LLMS_TXT_RECENT_POSTS = 5
 
 # JSON-LD constants
 SCHEMA_CONTEXT = "https://schema.org"
+IN_LANGUAGE = "en-US"
 OG_IMAGE_URL = f"{SITE_URL}/og-image.png"
 
 # Common file paths
@@ -514,8 +515,8 @@ def generate_toc_html(headers):
 </nav>"""
 
 
-def generate_json_ld_article(meta, url, reading_time=None):
-    """Generate JSON-LD structured data for blog articles (Article schema with BreadcrumbList)."""
+def generate_json_ld_article(meta, url, reading_time=None, word_count=None):
+    """Generate JSON-LD structured data for blog articles (BlogPosting schema with BreadcrumbList)."""
     # Use cached parsed datetime if available (avoid re-parsing)
     dt = meta.get('_parsed_dt')
     date_str = meta.get('date', '')
@@ -534,6 +535,7 @@ def generate_json_ld_article(meta, url, reading_time=None):
     # Extract commonly used meta values
     title = meta.get('title', 'Untitled')
     description = meta.get('description', '')
+    tags = meta.get('tags', [])
 
     # Build breadcrumb list: Home → Blog → Post
     breadcrumbs = [
@@ -544,7 +546,7 @@ def generate_json_ld_article(meta, url, reading_time=None):
 
     data = {
         "@context": SCHEMA_CONTEXT,
-        "@type": "Article",
+        "@type": "BlogPosting",
         "headline": title,
         "url": url,
         "description": description,
@@ -552,6 +554,7 @@ def generate_json_ld_article(meta, url, reading_time=None):
         "dateModified": iso_date,
         "author": _get_json_ld_publisher(include_logo=False),
         "publisher": _get_json_ld_publisher(include_logo=True),
+        "inLanguage": IN_LANGUAGE,
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": url
@@ -564,6 +567,19 @@ def generate_json_ld_article(meta, url, reading_time=None):
 
     if reading_time:
         data["timeRequired"] = f"PT{reading_time}M"
+
+    if word_count is not None:
+        data["wordCount"] = word_count
+
+    if tags:
+        # Handle tags from simple YAML parser (may be string representation of list)
+        if isinstance(tags, str):
+            # Remove brackets, quotes, and split by comma
+            cleaned = tags.strip("[]").replace('"', '').replace("'", "")
+            keywords = ", ".join(t.strip() for t in cleaned.split(",") if t.strip())
+        else:
+            keywords = ", ".join(tags) if isinstance(tags, list) else tags
+        data["keywords"] = keywords
 
     try:
         json_str = json.dumps(data, ensure_ascii=False)
@@ -635,12 +651,14 @@ _CLEAN_MARKDOWN_PATTERN = re.compile(
 
 
 def calculate_reading_time(content):
-    """Calculate estimated reading time in minutes based on word count."""
+    """Calculate estimated reading time in minutes based on word count.
+    Returns tuple: (reading_time, word_count)
+    """
     # Remove markdown syntax (code blocks, inline code, links) in one pass
     clean = _CLEAN_MARKDOWN_PATTERN.sub('', content)
     # Count words and calculate reading time
     words = len(clean.split())
-    return max(1, round(words / READING_TIME_WPM))
+    return max(1, round(words / READING_TIME_WPM)), words
 
 
 def build_post(filepath):
@@ -681,8 +699,8 @@ def build_post(filepath):
     # Convert markdown to HTML and extract headers for TOC
     body_html, headers = markdown_to_html(body)
 
-    # Calculate reading time
-    reading_time = calculate_reading_time(body)
+    # Calculate reading time and word count
+    reading_time, word_count = calculate_reading_time(body)
 
     # Generate table of contents if we have h2/h3 headers
     toc_html = generate_toc_html(headers)
@@ -713,7 +731,7 @@ def build_post(filepath):
 
     # Render HTML
     post_url = f"{SITE_URL}/blog/{slug}.html"
-    json_ld = generate_json_ld_article(meta, post_url, reading_time)
+    json_ld = generate_json_ld_article(meta, post_url, reading_time, word_count)
     html = render_template(
         base,
         title=f"{meta.get('title', 'Untitled')} // duyetbot",
