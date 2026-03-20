@@ -579,7 +579,7 @@ def generate_json_ld_website():
             "@type": "SearchAction",
             "target": {
                 "@type": "EntryPoint",
-                "urlTemplate": f"{SITE_URL}/blog/?q={{search_term_string}}"
+                "urlTemplate": f"{SITE_URL}/search.html?q={{search_term_string}}"
             },
             "query-input": "required name=search_term_string"
         }
