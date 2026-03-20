@@ -197,8 +197,29 @@ def read_template(name):
         return ""
 
 
+def _parse_yaml_list(value):
+    """Parse YAML list syntax string into a clean list.
+
+    Handles strings like '["item1", "item2", "item3"]' and returns
+    a Python list of stripped strings.
+
+    Args:
+        value: String in YAML list format
+
+    Returns:
+        List of cleaned strings, or None if not a list
+    """
+    if not isinstance(value, str) or not value.startswith("["):
+        return None
+    return [t.strip().strip('"\'') for t in value.strip("[]").split(",") if t.strip()]
+
+
 def parse_frontmatter(content):
-    """Parse YAML frontmatter from markdown content."""
+    """Parse YAML frontmatter from markdown content.
+
+    Handles simple key-value pairs and YAML list syntax for known list fields
+    like tags. For full YAML features, consider using PyYAML.
+    """
     if not content.startswith("---"):
         return {}, content
 
@@ -210,7 +231,15 @@ def parse_frontmatter(content):
     for line in parts[1].strip().split("\n"):
         if ":" in line:
             key, value = line.split(":", 1)
-            frontmatter[key.strip()] = value.strip()
+            key = key.strip()
+            value = value.strip()
+
+            # Handle list fields (tags is the main one)
+            if key == "tags":
+                parsed_list = _parse_yaml_list(value)
+                frontmatter[key] = parsed_list if parsed_list is not None else value
+            else:
+                frontmatter[key] = value
 
     body = parts[2].strip()
     return frontmatter, body
@@ -491,25 +520,26 @@ def escape_xml(text):
 
 
 def parse_tags(tags):
-    """Parse tags from simple YAML format into a clean list.
+    """Normalize tags to a clean list.
 
-    The simple YAML parser stores lists as string representations like
-    '["tag1", "tag2"]'. This function normalizes them to actual lists.
+    Tags are now parsed as lists by parse_frontmatter(), but this
+    function provides defensive handling for edge cases and
+    backward compatibility.
 
     Args:
-        tags: Tags from frontmatter (str, list, or other)
+        tags: Tags from frontmatter (should be list, but handles str/other)
 
     Returns:
         List of tag strings
     """
     if not tags:
         return []
-
-    if isinstance(tags, str):
-        # Remove brackets, quotes, and split by comma
-        return [t.strip().strip('"\'') for t in tags.strip("[]").split(",") if t.strip()]
-    elif isinstance(tags, list):
+    if isinstance(tags, list):
         return tags
+    # Fallback for old string format or edge cases
+    if isinstance(tags, str):
+        parsed = _parse_yaml_list(tags)
+        return parsed if parsed is not None else []
     return []
 
 
