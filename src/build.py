@@ -479,7 +479,10 @@ def _slugify(text):
 
 def escape_xml(text):
     """Escape XML special characters for RSS feeds."""
-    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+    return (text.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace('"', "&quot;"))
 
 
 def generate_toc_html(headers):
