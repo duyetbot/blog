@@ -69,6 +69,18 @@
         }
 
         window.toggleTheme = toggleTheme;
+
+        // Global keyboard shortcut: "/" to open search
+        document.addEventListener('keydown', (e) => {
+            // Only trigger if not typing in an input/textarea
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
+                return;
+            }
+            if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                e.preventDefault();
+                window.location.href = '/search.html';
+            }
+        });
     })();
     </script>
 </head>

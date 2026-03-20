@@ -56,6 +56,7 @@
         </div>
         <div class="search-meta" id="search-meta">
             <span id="search-status">Type to search...</span>
+            <span class="search-shortcut">Press <kbd>/</kbd> to focus, <kbd>Esc</kbd> to clear</span>
         </div>
     </section>
 
@@ -186,6 +187,10 @@
         if (e.key === 'Escape') {
             searchInput.value = '';
             performSearch('');
+        } else if (e.key === '/' && document.activeElement !== searchInput) {
+            // Focus input when / is pressed and input is not already focused
+            e.preventDefault();
+            searchInput.focus();
         }
     });
 

@@ -703,6 +703,26 @@ code[class*="language-"] {
     margin-top: var(--space-sm);
     color: var(--text-muted);
     font-size: 0.9rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+}
+
+.search-shortcut {
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+kbd {
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.1em 0.4em;
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .search-empty {
