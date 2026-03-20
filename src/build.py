@@ -179,12 +179,12 @@ def read_template(name):
     """Read a template file."""
     path = TEMPLATES_DIR / f"{name}.html"
     try:
-        if path.exists():
-            return path.read_text()
-        print(f"Warning: Template not found: {name}.html")
-        return ""
-    except IOError as e:
-        print(f"Error reading template {name}.html: {e}")
+        return path.read_text()
+    except OSError as e:
+        if isinstance(e, FileNotFoundError):
+            print(f"Warning: Template not found: {name}.html")
+        else:
+            print(f"Error reading template {name}.html: {e}")
         return ""
 
 
