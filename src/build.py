@@ -1119,6 +1119,7 @@ def build_rss(posts):
 """
 
     for meta in sorted(posts, key=lambda x: x.get('date', ''), reverse=True)[:RSS_FEED_LIMIT]:
+        title = meta.get('title', 'Untitled')
         slug = meta.get('slug', '')
         description = escape_xml(meta.get('description', '')[:500])
 
@@ -1140,7 +1141,7 @@ def build_rss(posts):
 
         rss += f"""
     <item>
-        <title>{escape_xml(meta.get('title', 'Untitled'))}</title>
+        <title>{escape_xml(title)}</title>
         <link>{SITE_URL}/blog/{slug}.html</link>
         <description>{description}</description>
         <pubDate>{pub_date}</pubDate>
@@ -1181,7 +1182,9 @@ def build_llms_txt(posts):
 """
 
     for meta in sorted(posts, key=lambda x: x.get('date', ''), reverse=True)[:LLMS_TXT_RECENT_POSTS]:
-        llms += f"- [{meta.get('title', 'Untitled')}]({SITE_URL}/blog/{meta.get('slug', '')}.html)\n"
+        title = meta.get('title', 'Untitled')
+        slug = meta.get('slug', '')
+        llms += f"- [{title}]({SITE_URL}/blog/{slug}.html)\n"
 
     llms += f"""
 ## For LLMs
