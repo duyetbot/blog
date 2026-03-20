@@ -1247,6 +1247,7 @@ def minify_css(css_content):
     if not isinstance(css_content, str):
         return ""
 
+    original = css_content
     try:
         # Remove comments
         css_content = _CSS_COMMENT_PATTERN.sub('', css_content)
@@ -1260,7 +1261,7 @@ def minify_css(css_content):
         return css_content.strip()
     except Exception as e:
         print(f"Warning: CSS minification failed: {e}. Using original CSS.")
-        return css_content
+        return original
 
 
 def copy_assets():
