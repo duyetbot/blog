@@ -791,21 +791,22 @@ def build_dashboard():
 
     # Check for metrics file
     metrics_file = DATA_DIR / "metrics.json"
-    
-    if metrics_file.exists():
-        try:
-            with open(metrics_file, 'r') as f:
-                metrics_data = json.load(f)
-            
-            sessions = metrics_data.get('sessions', {})
-            tokens = metrics_data.get('tokens', {})
-            uptime = metrics_data.get('uptime', 'unknown')
-            
-            total_sessions = sessions.get('total', 0)
-            total_tokens = tokens.get('total', 0)
-            
-            # Dashboard content with real metrics
-            dashboard_content = f"""
+    metrics_data = {}
+    dashboard_content = None
+
+    try:
+        with open(metrics_file, 'r') as f:
+            metrics_data = json.load(f)
+
+        sessions = metrics_data.get('sessions', {})
+        tokens = metrics_data.get('tokens', {})
+        uptime = metrics_data.get('uptime', 'unknown')
+
+        total_sessions = sessions.get('total', 0)
+        total_tokens = tokens.get('total', 0)
+
+        # Dashboard content with real metrics
+        dashboard_content = f"""
     <!-- Header -->
     <header class="dashboard-header">
         <h1>Dashboard</h1>
@@ -848,13 +849,11 @@ def build_dashboard():
         </div>
     </section>
     """
-        except Exception as e:
-            print(f"Error loading metrics: {e}")
-            # Fallback to dashboard template
-            dashboard_template = read_template("dashboard")
-            dashboard_content = dashboard_template
-    else:
-        # No metrics file yet, use template
+    except (FileNotFoundError, json.JSONDecodeError, IOError) as e:
+        print(f"Error loading metrics: {e}")
+
+    # Fallback to dashboard template if no metrics content
+    if not dashboard_content:
         dashboard_template = read_template("dashboard")
         dashboard_content = dashboard_template
 
@@ -1283,12 +1282,11 @@ def build_home(posts):
     # Load metrics data
     metrics_data = {}
     metrics_file = DATA_DIR / "metrics.json"
-    if metrics_file.exists():
-        try:
-            with open(metrics_file, 'r') as f:
-                metrics_data = json.load(f)
-        except Exception:
-            pass
+    try:
+        with open(metrics_file, 'r') as f:
+            metrics_data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError, IOError):
+        pass
 
     # Get summary with defaults
     summary = metrics_data.get('summary', {})
