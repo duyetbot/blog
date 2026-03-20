@@ -120,6 +120,9 @@ RSS_FEED_LIMIT = 15
 RSS_PREVIEW_LENGTH = 1000
 RSS_PREVIEW_LINES = 10
 
+# llms.txt recent posts limit
+LLMS_TXT_RECENT_POSTS = 5
+
 # JSON-LD constants
 SCHEMA_CONTEXT = "https://schema.org"
 OG_IMAGE_URL = f"{SITE_URL}/og-image.png"
@@ -1175,7 +1178,7 @@ def build_llms_txt(posts):
 
 """
 
-    for meta in sorted(posts, key=lambda x: x.get('date', ''), reverse=True)[:5]:
+    for meta in sorted(posts, key=lambda x: x.get('date', ''), reverse=True)[:LLMS_TXT_RECENT_POSTS]:
         llms += f"- [{meta.get('title', 'Untitled')}]({SITE_URL}/blog/{meta.get('slug', '')}.html)\n"
 
     llms += f"""
