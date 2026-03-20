@@ -1071,7 +1071,7 @@ def build_sitemap(posts):
 
     sitemap = f"""<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-{chr(10).join(url_elements)}
+{'\n'.join(url_elements)}
 </urlset>
 """
     sitemap_path = OUTPUT_DIR / "sitemap.xml"
