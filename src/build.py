@@ -700,7 +700,11 @@ def build_post_meta_html(date_str, parsed_dt, reading_time=None):
     Returns:
         HTML string for post meta section
     """
-    meta_html = f'<div class="post-meta"><time class="post-date">{format_date(date_str, parsed_dt)}</time>'
+    # Format ISO date for datetime attribute
+    iso_date = _format_iso_date(parsed_dt) if parsed_dt else None
+    datetime_attr = f' datetime="{iso_date}"' if iso_date else ''
+
+    meta_html = f'<div class="post-meta"><time class="post-date"{datetime_attr}>{format_date(date_str, parsed_dt)}</time>'
     if reading_time:
         meta_html += f' <span class="post-reading-time">{reading_time}{READING_TIME_SUFFIX}</span>'
     meta_html += '</div>'
@@ -1644,15 +1648,17 @@ def build_tag_index(posts):
             date = meta.get('date', '')
             description = meta.get('description', '')
 
-            # Format date nicely
+            # Format date nicely with datetime attribute
             parsed_dt = meta.get('_parsed_dt')
             formatted_date = format_date(date, parsed_dt) if parsed_dt else date
+            iso_date = _format_iso_date(parsed_dt) if parsed_dt else None
+            datetime_attr = f' datetime="{iso_date}"' if iso_date else ''
             reading_time = meta.get('reading_time')
             reading_time_suffix = format_reading_time_inline(reading_time)
 
             post_list.append(f"""
                 <li class="tag-post-item">
-                    <time class="tag-post-date">{formatted_date}{reading_time_suffix}</time>
+                    <time class="tag-post-date"{datetime_attr}>{formatted_date}{reading_time_suffix}</time>
                     <h3 class="tag-post-title">
                         <a href="blog/{slug}.html">{title}</a>
                     </h3>
