@@ -132,7 +132,10 @@
                 <article class="search-result">
                     <div class="result-header">
                         <h3><a href="${doc.url.replace('https://bot.duyet.net', '')}">${title}</a></h3>
-                        <time class="result-date">${doc.date}</time>
+                        <div class="result-meta">
+                            <time class="result-date">${doc.date}</time>
+                            ${doc.reading_time ? `<span class="post-reading-time">${doc.reading_time} min read</span>` : ''}
+                        </div>
                     </div>
                     ${tags}
                     <p class="result-description">${description}</p>

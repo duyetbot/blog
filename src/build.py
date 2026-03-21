@@ -1378,7 +1378,8 @@ def build_search_index(posts):
             "date": meta.get('date', ''),
             "timestamp": timestamp,
             "tags": meta.get('tags', []),
-            "preview": preview[:500]
+            "preview": preview[:500],
+            "reading_time": meta.get('reading_time', 1)
         })
 
     # Sort by date (newest first)
