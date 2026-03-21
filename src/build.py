@@ -598,6 +598,25 @@ def generate_toc_html(headers):
 </nav>"""
 
 
+def generate_breadcrumbs_html(title, root=""):
+    """Generate breadcrumbs navigation HTML for blog posts.
+
+    Args:
+        title: Current page title
+        root: Root path for relative links (default: "")
+
+    Returns:
+        HTML string for breadcrumbs navigation
+    """
+    return f"""<nav class="breadcrumbs" aria-label="Breadcrumb">
+    <ol>
+        <li><a href="{root}../">Home</a></li>
+        <li><a href="{root}index.html">Blog</a></li>
+        <li aria-current="page">{title}</li>
+    </ol>
+</nav>"""
+
+
 def generate_json_ld_article(meta, url, reading_time=None, word_count=None):
     """Generate JSON-LD structured data for blog articles (BlogPosting schema with BreadcrumbList)."""
     # Use cached parsed datetime if available (avoid re-parsing)
@@ -789,8 +808,13 @@ def build_post(filepath):
     # Get cached parsed datetime for display (avoid re-parsing)
     parsed_dt = meta.get('_parsed_dt')
 
+    # Generate breadcrumbs navigation
+    breadcrumbs_html = generate_breadcrumbs_html(meta.get('title', 'Untitled'), root="../")
+
     # Create article HTML
     article_html = f"""
+{breadcrumbs_html}
+
 <header class="article-header">
     <div class="post-meta">
         <time class="post-date">{format_date(meta.get('date', ''), parsed_dt)}</time>

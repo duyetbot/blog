@@ -453,6 +453,49 @@ section h2 {
    ARTICLE - Editorial Typography
    ============================================ */
 
+/* Breadcrumbs navigation */
+.breadcrumbs {
+    padding: var(--space-sm) 0;
+    margin-bottom: var(--space-md);
+}
+
+.breadcrumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: var(--space-xs);
+}
+
+.breadcrumbs li {
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.breadcrumbs li:not(:last-child)::after {
+    content: "/";
+    margin-left: var(--space-xs);
+    color: var(--border);
+}
+
+.breadcrumbs a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.breadcrumbs a:hover {
+    color: var(--accent);
+}
+
+.breadcrumbs li[aria-current="page"] {
+    color: var(--text-main);
+    font-weight: 500;
+}
+
 .article-header,
 .page-header {
     padding: var(--space-xl) 0;
