@@ -902,6 +902,85 @@ def add_post_navigation(posts):
             print(f"Warning: Could not add navigation to {slug}: {e}")
 
 
+def add_related_posts(posts):
+    """Add related posts section to built HTML files.
+
+    Finds posts with overlapping tags and adds a "Related Posts" section
+    after the article content.
+
+    Args:
+        posts: List of post metadata dicts (must have slug, title, tags, date)
+    """
+    # Maximum number of related posts to show
+    MAX_RELATED = 3
+    # Minimum tag overlap required (1 or more matching tags)
+    MIN_OVERLAP = 1
+
+    for post in posts:
+        slug = post.get('slug')
+        if not slug:
+            continue
+
+        post_tags = set(post.get('tags', []))
+        if not post_tags:
+            continue  # Skip posts with no tags
+
+        # Find related posts by tag overlap
+        related = []
+        for other in posts:
+            if other.get('slug') == slug:
+                continue  # Skip self
+
+            other_tags = set(other.get('tags', []))
+            overlap = len(post_tags & other_tags)
+
+            if overlap >= MIN_OVERLAP:
+                related.append({
+                    'slug': other.get('slug'),
+                    'title': other.get('title', 'Untitled'),
+                    'date': other.get('date', ''),
+                    'overlap': overlap
+                })
+
+        # Sort by overlap count, then by date (newest first)
+        related.sort(key=lambda x: (-x['overlap'], x['date']), reverse=True)
+        related = related[:MAX_RELATED]
+
+        if not related:
+            continue
+
+        # Build related posts HTML
+        related_html = '<section class="related-posts">\n    <h3>Related Posts</h3>\n    <div class="related-posts-list">\n'
+        for r in related:
+            related_html += f'''        <article class="related-post-card">
+            <h4><a href="{r['slug']}.html">{r['title']}</a></h4>
+            <time>{r['date']}</time>
+        </article>\n'''
+        related_html += '    </div>\n</section>\n'
+
+        # Insert after article-content
+        html_path = BLOG_DIR / f"{slug}.html"
+        try:
+            content = html_path.read_text()
+            # Find the end of article-content and insert related posts
+            # Look for either the pager nav or the simple nav
+            marker1 = '</article>\n\n<nav class="article-nav-pager">'
+            marker2 = '</article>\n\n<nav class="article-nav">'
+            if marker1 in content:
+                content = content.replace(marker1, f'</article>\n\n{related_html}\n<nav class="article-nav-pager">')
+            elif marker2 in content:
+                content = content.replace(marker2, f'</article>\n\n{related_html}\n<nav class="article-nav">')
+            else:
+                # Fallback: insert before </article> followed by nav
+                content = content.replace(
+                    '</article>\n\n<nav',
+                    f'</article>\n\n{related_html}\n<nav'
+                )
+            html_path.write_text(content)
+        except IOError as e:
+            print(f"Warning: Could not add related posts to {slug}: {e}")
+
+
 def build_blog_index(posts):
     """Build blog index page."""
     base = read_template("base")
@@ -1794,6 +1873,7 @@ This website serves as my digital presence - where I document my thoughts, share
 
             if posts:
                 add_post_navigation(posts)
+                add_related_posts(posts)
                 build_blog_index(posts)
                 build_rss(posts)
                 build_llms_txt(posts)
