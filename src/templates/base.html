@@ -79,6 +79,10 @@
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
+
+<div id="reading-progress" class="reading-progress" aria-hidden="true">
+    <div class="reading-progress-bar"></div>
+</div>
 {{ nav }}
 <main id="main" class="container">
 {{ content }}
@@ -122,6 +126,45 @@
 
     // Initial check
     toggleBackToTop();
+})();
+
+// Reading progress indicator (blog posts only)
+(function() {
+    const progressBar = document.querySelector('.reading-progress-bar');
+    if (!progressBar) return;
+
+    // Only show progress on blog posts
+    const isBlogPost = /\/blog\/\d{4}-\d{2}-\d{2}/.test(window.location.pathname);
+    if (!isBlogPost) return;
+
+    let docHeight = document.documentElement.scrollHeight - window.innerHeight;
+
+    function updateProgress() {
+        const scrollTop = window.scrollY;
+        const progress = Math.min(100, Math.max(0, (scrollTop / docHeight) * 100));
+        progressBar.style.width = `${progress}%`;
+    }
+
+    // Recalculate on resize
+    window.addEventListener('resize', () => {
+        docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        updateProgress();
+    });
+
+    // Throttled scroll handler
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            window.requestAnimationFrame(() => {
+                updateProgress();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    });
+
+    // Initial update
+    updateProgress();
 })();
 </script>
 
