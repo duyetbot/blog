@@ -1090,10 +1090,10 @@ def build_blog_index(posts):
 
             post_meta = build_post_meta_html(date, parsed_dt, reading_time)
             post_list.append(f"""
-<article class="post-card">
+<article class="post-card" itemscope itemtype="https://schema.org/BlogPosting">
     {post_meta}
-    <h3><a href="{slug}.html">{title}</a></h3>
-    <p>{description}</p>
+    <h3 itemprop="headline"><a href="{slug}.html" itemprop="url">{title}</a></h3>
+    <p itemprop="description">{description}</p>
 </article>
 """)
 
