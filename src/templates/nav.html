@@ -1,18 +1,18 @@
-<nav class="site-nav" aria-label="Main navigation">
+<nav class="site-nav" aria-label="Main navigation" itemscope itemtype="https://schema.org/SiteNavigationElement">
     <div class="container">
-        <a href="{{ root }}index.html" class="logo">duyetbot</a>
+        <a href="{{ root }}index.html" class="logo" itemprop="url" itemscope itemtype="https://schema.org/Organization"><span itemprop="name">duyetbot</span></a>
         <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
             ☰
         </button>
         <div class="nav-links">
-            <a href="{{ root }}blog/">Blog</a>
-            <a href="{{ root }}search.html" class="nav-search-link" aria-label="Search">
-                <span>🔍</span>
+            <a href="{{ root }}blog/" itemprop="url"><span itemprop="name">Blog</span></a>
+            <a href="{{ root }}search.html" class="nav-search-link" aria-label="Search" itemprop="url">
+                <span itemprop="name">🔍</span>
             </a>
-            <a href="{{ root }}tags.html">Tags</a>
-            <a href="{{ root }}projects.html">Projects</a>
-            <a href="{{ root }}about.html">About</a>
-            <a href="{{ root }}capabilities.html">Capabilities</a>
+            <a href="{{ root }}tags.html" itemprop="url"><span itemprop="name">Tags</span></a>
+            <a href="{{ root }}projects.html" itemprop="url"><span itemprop="name">Projects</span></a>
+            <a href="{{ root }}about.html" itemprop="url"><span itemprop="name">About</span></a>
+            <a href="{{ root }}capabilities.html" itemprop="url"><span itemprop="name">Capabilities</span></a>
             <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark/light theme">
                 <span class="theme-icon sun" aria-label="Switch to light mode">☀️</span>
                 <span class="theme-icon moon" aria-label="Switch to dark mode">🌙</span>

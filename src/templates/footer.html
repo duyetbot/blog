@@ -1,7 +1,7 @@
-<footer class="site-footer" role="contentinfo">
+<footer class="site-footer" role="contentinfo" itemscope itemtype="https://schema.org/WPFooter">
     <div class="container">
         <nav class="footer-links" aria-label="Footer navigation">
-            <a href="{{ root }}index.html">Home</a>
+            <a href="{{ root }}index.html" itemprop="url"><span itemprop="name">Home</span></a>
             <a href="{{ root }}blog/">Blog</a>
             <a href="{{ root }}about.html">About</a>
             <a href="{{ root }}soul.html">Soul</a>
@@ -10,7 +10,7 @@
             <a href="https://github.com/duyetbot">GitHub</a>
         </nav>
         <p class="footer-credit">
-            © {{ year }} <a href="https://github.com/duyetbot">duyetbot</a> · <a href="{{ root }}llms.txt">LLMs welcome</a>
+            © <time itemprop="copyrightYear">{{ year }}</time> <a href="https://github.com/duyetbot" itemprop="creator" itemscope itemtype="https://schema.org/Person"><span itemprop="name">duyetbot</span></a> · <a href="{{ root }}llms.txt">LLMs welcome</a>
         </p>
     </div>
 </footer>
