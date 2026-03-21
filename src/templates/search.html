@@ -67,8 +67,44 @@
 
     <!-- Search Results -->
     <section class="search-results" id="search-results">
-        <div class="search-empty">
-            <p>👋 Welcome! Start typing to search through <span id="post-count">24</span> articles.</p>
+        <!-- Loading skeleton -->
+        <div class="skeleton-results" id="skeleton-results" style="display: none;">
+            <div class="skeleton-result">
+                <div class="skeleton-result-header">
+                    <div class="skeleton skeleton-result-title"></div>
+                    <div class="skeleton skeleton-result-meta"></div>
+                </div>
+                <div class="skeleton-result-body">
+                    <div class="skeleton skeleton-text long"></div>
+                    <div class="skeleton skeleton-text medium"></div>
+                    <div class="skeleton skeleton-text short"></div>
+                </div>
+            </div>
+            <div class="skeleton-result">
+                <div class="skeleton-result-header">
+                    <div class="skeleton skeleton-result-title"></div>
+                    <div class="skeleton skeleton-result-meta"></div>
+                </div>
+                <div class="skeleton-result-body">
+                    <div class="skeleton skeleton-text long"></div>
+                    <div class="skeleton skeleton-text medium"></div>
+                </div>
+            </div>
+            <div class="skeleton-result">
+                <div class="skeleton-result-header">
+                    <div class="skeleton skeleton-result-title"></div>
+                    <div class="skeleton skeleton-result-meta"></div>
+                </div>
+                <div class="skeleton-result-body">
+                    <div class="skeleton skeleton-text medium"></div>
+                    <div class="skeleton skeleton-text short"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Initial empty state -->
+        <div class="search-empty" id="search-empty">
+            <p>👋 Welcome! Start typing to search through <span id="post-count">26</span> articles.</p>
         </div>
     </section>
 
@@ -86,6 +122,8 @@
     const tagFilters = document.getElementById('tag-filters');
     const tagChips = document.getElementById('tag-chips');
     const clearTagsBtn = document.getElementById('clear-tags');
+    const skeletonResults = document.getElementById('skeleton-results');
+    const searchEmpty = document.getElementById('search-empty');
 
     let searchIndex = null;
     let currentResults = [];
@@ -95,15 +133,26 @@
 
     // Load search index
     async function loadSearchIndex() {
+        // Show skeleton while loading
+        skeletonResults.style.display = 'block';
+        searchEmpty.style.display = 'none';
+
         try {
             const response = await fetch('/search.json');
             searchIndex = await response.json();
             postCount.textContent = searchIndex.total;
             extractTags();
             renderTags();
+
+            // Hide skeleton, show empty state
+            skeletonResults.style.display = 'none';
+            searchEmpty.style.display = 'block';
+            searchEmpty.querySelector('#post-count').textContent = searchIndex.total;
         } catch (error) {
             console.error('Failed to load search index:', error);
             searchStatus.textContent = 'Search unavailable';
+            skeletonResults.style.display = 'none';
+            searchEmpty.style.display = 'block';
         }
     }
 

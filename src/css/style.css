@@ -1803,3 +1803,92 @@ mark {
         page-break-inside: avoid;
     }
 }
+
+/* ============================================
+   SKELETON LOADING STATES
+   ============================================ */
+
+@keyframes skeleton shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.skeleton {
+    background: linear-gradient(90deg, var(--bg-white) 25%, var(--bg-paper) 50%, var(--bg-white) 75%);
+    background-size: 200% 100%;
+    animation: skeleton shimmer 1.5s infinite;
+    border-radius: 4px;
+}
+
+.skeleton-text {
+    height: 1em;
+    margin-bottom: 0.5em;
+}
+
+.skeleton-text.short { width: 60%; }
+.skeleton-text.medium { width: 80%; }
+.skeleton-text.long { width: 100%; }
+
+.skeleton-title {
+    height: 1.5rem;
+    width: 70%;
+    margin-bottom: 1rem;
+}
+
+.skeleton-card {
+    padding: var(--space-md) 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.skeleton-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.skeleton-meta {
+    display: flex;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xs);
+}
+
+.skeleton-meta .skeleton {
+    height: 0.8rem;
+    width: 80px;
+}
+
+.skeleton-result {
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
+}
+
+.skeleton-result-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--space-sm);
+}
+
+.skeleton-result-title {
+    height: 1.25rem;
+    width: 60%;
+}
+
+.skeleton-result-meta {
+    height: 0.8rem;
+    width: 100px;
+}
+
+.skeleton-result-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+/* Hide skeleton when content loads */
+.skeleton.loaded {
+    display: none;
+}
+
