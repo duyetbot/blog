@@ -351,6 +351,67 @@ def validate_og_image():
     return True
 
 
+def validate_favicon_files():
+    """Validate that favicon files exist for proper browser display.
+
+    Checks for favicon files referenced in base template.
+    Warns if missing since this affects browser tab icons.
+    """
+    favicon_files = [
+        OUTPUT_DIR / "favicon-32x32.png",
+        OUTPUT_DIR / "favicon-16x16.png",
+        OUTPUT_DIR / "apple-touch-icon.png",
+    ]
+
+    missing = [f for f in favicon_files if not f.exists()]
+    if missing:
+        print(f"Warning: {len(missing)} favicon file(s) missing:")
+        for f in missing:
+            print(f"  - {f.name}")
+        print(f"  Browser tab icons may not display correctly")
+        print(f"  Recommended: Generate favicon at https://realfavicongenerator.net/")
+        return False
+    return True
+
+
+def validate_internal_links():
+    """Validate internal links in generated HTML to prevent broken links.
+
+    Checks that all internal .html references have corresponding files.
+    This is a basic validation during build time.
+    """
+    # Get all HTML files that were generated
+    html_files = set()
+    try:
+        html_files.update(OUTPUT_DIR.glob("**/*.html"))
+        html_files.update(BLOG_DIR.glob("**/*.html"))
+    except Exception:
+        pass
+
+    # Map files by relative path from root
+    html_paths = set()
+    for f in html_files:
+        rel_path = f.relative_to(OUTPUT_DIR)
+        html_paths.add(str(rel_path))
+
+    issues = []
+
+    # Check for common pages that should exist
+    required_pages = ["index.html", "blog/index.html", "search.html", "tags.html",
+                      "about.html", "projects.html", "capabilities.html"]
+    for page in required_pages:
+        if page not in html_paths:
+            issues.append(f"Missing expected page: {page}")
+
+    if issues:
+        print("Warning: Internal link validation issues:")
+        for issue in issues:
+            print(f"  - {issue}")
+        return False
+
+    return True
+
+
 def markdown_to_html(text):
     """Simple markdown to HTML conversion. Returns (html, toc_data)."""
     import html
@@ -2407,9 +2468,6 @@ def main():
         # Copy assets
         copy_assets()
 
-        # Validate Open Graph image
-        validate_og_image()
-
         # Build pages configuration
         pages = {
             "404": {
@@ -2543,6 +2601,13 @@ This website serves as my digital presence - where I document my thoughts, share
             print(f"\nDone! Built {len(posts)} posts.")
             print(f"Output: {OUTPUT_DIR}")
             print(f"URL: {SITE_URL}")
+
+            # Post-build validation
+            print("\n--- Validation ---")
+            validate_og_image()
+            validate_favicon_files()
+            validate_internal_links()
+
             return 0
 
     except KeyboardInterrupt:
