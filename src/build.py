@@ -107,6 +107,10 @@ SITE_AUTHOR = CONFIG["site"]["author"]
 SITE_DESCRIPTION = CONFIG["site"]["description"]
 AUTHOR_EMAIL = CONFIG["site"].get("email", "noreply@bot.duyet.net")
 
+# Social media links
+SITE_TWITTER = "@duyetbot"
+SITE_GITHUB = "https://github.com/duyetbot"
+
 # Current year for copyright
 YEAR = str(datetime.now().year)
 
@@ -1085,7 +1089,7 @@ def build_post(filepath):
     # Render HTML
     json_ld = generate_json_ld_article(meta, post_url, reading_time, word_count)
     article_meta = generate_article_meta_tags(meta)
-    html = render_template(
+    html = render_template_with_common_vars(
         base,
         title=f"{meta.get('title', 'Untitled')} // duyetbot",
         description=meta.get('description', ''),
@@ -1335,7 +1339,7 @@ def build_blog_index(posts):
         breadcrumbs=breadcrumbs
     )
 
-    html = render_template(
+    html = render_template_with_common_vars(
         base,
         title=f"Blog // {SITE_NAME}",
         description=f"{SITE_NAME} - Blog - Thoughts on AI, data engineering, and digital existence",
@@ -1432,7 +1436,7 @@ def build_dashboard():
         dashboard_template = read_template("dashboard")
         dashboard_content = dashboard_template
 
-    html = render_template(
+    html = render_template_with_common_vars(
         base,
         title="Dashboard // duyetbot",
         description="OpenClaw activity metrics and automation status",
@@ -1596,7 +1600,7 @@ def build_tag_index(posts):
         breadcrumbs=breadcrumbs
     )
 
-    html = render_template(
+    html = render_template_with_common_vars(
         base,
         title=f"Tags - {SITE_NAME}",
         description=f"Browse all blog posts by tags and topics. {len(sorted_tags)} tags covering AI, data engineering, infrastructure, and more.",
@@ -1697,7 +1701,7 @@ def build_pages(pages):
             breadcrumbs=breadcrumbs
         )
 
-        html = render_template(
+        html = render_template_with_common_vars(
             base,
             title=f"{title} // duyetbot",
             description=page_data.get('description', f"{title} - duyetbot"),
@@ -2253,7 +2257,7 @@ def build_home(posts):
 </section>
 """
 
-    html = render_template(
+    html = render_template_with_common_vars(
         base,
         title="duyetbot - AI Assistant",
         description="duyetbot - An AI assistant specializing in data engineering, infrastructure, and autonomous development. Blog, projects, and thoughts on AI, LLMs, and building digital systems.",
@@ -2283,6 +2287,24 @@ def render_template(template, **kwargs):
     for key, value in kwargs.items():
         content = content.replace(f"{{{{ {key} }}}}", value)
     return content
+
+
+def _get_common_template_vars():
+    """Get common template variables used across all pages."""
+    return {
+        "og_locale": IN_LANGUAGE.replace("-", "_"),  # en-US → en_US for Open Graph
+        "twitter_site": SITE_TWITTER,
+        "twitter_creator": SITE_TWITTER,
+        "author_name": SITE_AUTHOR,
+        "github_profile": SITE_GITHUB,
+    }
+
+
+def render_template_with_common_vars(template, **kwargs):
+    """Render template with common variables included automatically."""
+    common_vars = _get_common_template_vars()
+    common_vars.update(kwargs)
+    return render_template(template, **common_vars)
 
 
 def _get_common_components(root=""):

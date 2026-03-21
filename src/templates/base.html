@@ -28,12 +28,19 @@
     <meta property="og:url" content="{{ url }}">
     <meta property="og:image" content="{{ og_image }}">
     <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:locale" content="{{ og_locale }}">
 {{ article_meta }}
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="{{ twitter_site }}">
+    <meta name="twitter:creator" content="{{ twitter_creator }}">
     <meta name="twitter:title" content="{{ title }}">
     <meta name="twitter:description" content="{{ description }}">
     <meta name="twitter:image" content="{{ og_image }}">
+
+    <!-- Author & Verification -->
+    <meta name="author" content="{{ author_name }}">
+    <link rel="me" href="{{ github_profile }}">
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href="{{ root }}favicon-32x32.png">
