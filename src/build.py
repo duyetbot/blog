@@ -1272,14 +1272,23 @@ def build_sitemap(posts):
     static_urls = [
         f"{SITE_URL}/",
         f"{SITE_URL}/about.html",
+        f"{SITE_URL}/about.md",
         f"{SITE_URL}/soul.html",
+        f"{SITE_URL}/soul.md",
         f"{SITE_URL}/capabilities.html",
+        f"{SITE_URL}/capabilities.md",
         f"{SITE_URL}/getting-started.html",
+        f"{SITE_URL}/getting-started.md",
         f"{SITE_URL}/roadmap.html",
+        f"{SITE_URL}/roadmap.md",
         f"{SITE_URL}/projects.html",
+        f"{SITE_URL}/projects.md",
         f"{SITE_URL}/dashboard.html",
+        f"{SITE_URL}/dashboard.md",
         f"{SITE_URL}/search.html",
-        f"{SITE_URL}/blog/"
+        f"{SITE_URL}/blog/",
+        f"{SITE_URL}/llms.txt",
+        f"{SITE_URL}/rss.xml"
     ]
 
     # Blog posts with lastmod dates
@@ -1520,10 +1529,18 @@ def copy_assets():
             print("Copied: CNAME")
 
         # Copy robots.txt
-        robots = """User-agent: *
+        robots = f"""# robots.txt for {SITE_NAME}
+User-agent: *
 Allow: /
 
-Sitemap: https://bot.duyet.net/sitemap.xml
+# Disallow search-only pages (optional)
+# Disallow: /search.html
+
+# Sitemap
+Sitemap: {SITE_URL}/sitemap.xml
+
+# Crawl delay (polite, not required for small sites)
+# Crawl-delay: 1
 """
         (OUTPUT_DIR / "robots.txt").write_text(robots)
         print("Built: robots.txt")
