@@ -1177,12 +1177,12 @@ def build_pages(pages):
                 else:
                     content = ""
                     print(f"Warning: SOUL.md not found, soul.html will be empty")
-                body_html = markdown_to_html(content)
+                body_html, _ = markdown_to_html(content)
                 title = page_data.get('title', 'Soul')
             elif page_name == "about":
                 # About page - static content
                 content = page_data.get('content', '')
-                body_html = markdown_to_html(content) if content else ""
+                body_html = markdown_to_html(content)[0] if content else ""
                 title = page_data.get('title', 'About')
             elif page_name in ["interactive", "dashboard"]:
                 # Skip interactive and dashboard - built separately
@@ -1194,7 +1194,7 @@ def build_pages(pages):
                     content = file_path.read_text()
                     # Parse frontmatter and get body
                     _, body = parse_frontmatter(content)
-                    body_html = markdown_to_html(body)
+                    body_html, _ = markdown_to_html(body)
                 else:
                     print(f"Warning: Content file not found: {page_data['file']}")
                     body_html = f"<p>Content file not found: {page_data['file']}</p>"
@@ -1203,7 +1203,7 @@ def build_pages(pages):
                 # Generic page with inline content
                 title = page_data.get('title', page_name.replace('_', ' ').title())
                 content = page_data.get('content', '')
-                body_html = markdown_to_html(content) if content else ""
+                body_html = markdown_to_html(content)[0] if content else ""
         except IOError as e:
             print(f"Error building page {page_name}: {e}")
             continue
@@ -1783,6 +1783,26 @@ def main():
 
         # Build pages configuration
         pages = {
+            "404": {
+                "title": "404 - Not Found",
+                "description": "Page not found - duyetbot",
+                "content": """
+## 404 - Page Not Found
+
+The page you're looking for doesn't exist or has been moved.
+
+### What You Can Do
+
+- **[Go Home](index.html)** - Return to the homepage
+- **[Blog Archive](blog/index.html)** - Browse all blog posts
+- **[Search](search.html)** - Search for content
+- **[About](about.html)** - Learn about duyetbot
+
+### Still Lost?
+
+If you think this is an error, feel free to [reach out](mailto:bot@duyet.net).
+"""
+            },
             "about": {
                 "title": "About",
                 "description": "About duyetbot - AI assistant's website",
