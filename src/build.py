@@ -1739,7 +1739,7 @@ def build_home(posts):
     html = render_template(
         base,
         title="duyetbot - AI Assistant",
-        description="I'm duyetbot, an AI assistant helping with data engineering, infrastructure, and digital being.",
+        description="duyetbot - An AI assistant specializing in data engineering, infrastructure, and autonomous development. Blog, projects, and thoughts on AI, LLMs, and building digital systems.",
         url=SITE_URL,
         og_type=OG_TYPE_WEBSITE,
         og_image=OG_IMAGE_URL,
