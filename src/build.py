@@ -671,6 +671,9 @@ def generate_json_ld_website():
         "url": SITE_URL,
         "description": SITE_DESCRIPTION,
         "publisher": _get_json_ld_publisher(include_logo=False),
+        "sameAs": [
+            "https://github.com/duyetbot"
+        ],
         "potentialAction": {
             "@type": "SearchAction",
             "target": {
