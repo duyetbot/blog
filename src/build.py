@@ -127,6 +127,10 @@ RSS_PREVIEW_LINES = 10
 # llms.txt recent posts limit
 LLMS_TXT_RECENT_POSTS = 5
 
+# "New" badge constants
+NEW_POST_DAYS_THRESHOLD = 7  # Days for "New" badge
+NEW_BADGE_HTML = '<span class="new-badge">New</span>'
+
 # JSON-LD constants
 SCHEMA_CONTEXT = "https://schema.org"
 IN_LANGUAGE = "en-US"
@@ -624,6 +628,42 @@ def build_post_meta_html(date_str, parsed_dt, reading_time=None):
         meta_html += f' <span class="post-reading-time">{reading_time}{READING_TIME_SUFFIX}</span>'
     meta_html += '</div>'
     return meta_html
+
+
+def is_post_new(parsed_dt, days_threshold=NEW_POST_DAYS_THRESHOLD):
+    """Check if a post is considered "new" based on its publish date.
+
+    Args:
+        parsed_dt: Datetime object (may be timezone-aware or naive)
+        days_threshold: Number of days for "new" threshold (default: NEW_POST_DAYS_THRESHOLD)
+
+    Returns:
+        True if post is within threshold days, False otherwise
+    """
+    if not parsed_dt:
+        return False
+    # Use date-only comparison to avoid timezone issues
+    # Get current UTC date and subtract threshold days
+    from datetime import datetime, timezone, timedelta
+    cutoff_date = (datetime.now(timezone.utc) - timedelta(days=days_threshold)).date()
+    # Convert post datetime to date (handles both aware and naive)
+    post_date = parsed_dt.date() if hasattr(parsed_dt, 'date') else parsed_dt
+    return post_date >= cutoff_date
+
+
+def build_new_badge_html(parsed_dt, leading_space=False):
+    """Generate "New" badge HTML for recent posts.
+
+    Args:
+        parsed_dt: Datetime object from post metadata
+        leading_space: Whether to include leading space (default: False)
+
+    Returns:
+        HTML string for badge, or empty string if post is not new
+    """
+    if is_post_new(parsed_dt):
+        return (' ' if leading_space else '') + NEW_BADGE_HTML
+    return ''
 
 
 def generate_toc_html(headers):
@@ -1145,9 +1185,6 @@ def build_blog_index(posts):
     base = read_template("base")
     nav, footer = _get_common_components(root="../")
 
-    # Calculate cutoff date for "New" badge (7 days ago) as naive datetime
-    new_cutoff = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=7)
-
     # Group posts by year
     posts_by_year = {}
     for meta in sorted(posts, key=lambda x: x.get('date', ''), reverse=True):
@@ -1171,10 +1208,8 @@ def build_blog_index(posts):
             description = meta.get('description', '')
             reading_time = meta.get('reading_time')
 
-            # Check if post is new (within 7 days)
-            # Normalize to naive by stripping timezone if present
-            is_new = bool(parsed_dt) and (parsed_dt.replace(tzinfo=None) if parsed_dt.tzinfo else parsed_dt) >= new_cutoff
-            new_badge = '<span class="new-badge">New</span>' if is_new else ''
+            # Generate new badge using helper
+            new_badge = build_new_badge_html(parsed_dt)
 
             post_meta = build_post_meta_html(date, parsed_dt, reading_time)
             post_list.append(f"""
@@ -1930,17 +1965,16 @@ def build_home(posts):
     # Generate recent posts HTML with modern card design
     recent_posts_html = '<div class="recent-posts-grid">'
     for i, post in enumerate(posts[:3]):
-        # Format date nicely
-        try:
-            from datetime import datetime
-            dt = datetime.strptime(post['date'], '%Y-%m-%d')
-            formatted_date = dt.strftime('%b %d, %Y')
-        except:
-            formatted_date = post['date']
+        # Use cached parsed datetime for date formatting
+        parsed_dt = post.get('_parsed_dt')
+        formatted_date = format_date(post['date'], parsed_dt)
 
         # Get reading time if available
         reading_time = post.get('reading_time')
         reading_time_badge = f' <span class="post-reading-time">{reading_time}{READING_TIME_SUFFIX}</span>' if reading_time else ''
+
+        # Generate new badge using helper (with leading space for card title)
+        new_badge = build_new_badge_html(parsed_dt, leading_space=True)
 
         # Add a gradient accent color (rotate through 3 colors)
         gradients = [
@@ -1959,7 +1993,7 @@ def build_home(posts):
                     {reading_time_badge}
                 </div>
                 <h3 class="post-card-title" itemprop="headline">
-                    <a href="blog/{post['slug']}.html" itemprop="url">{post['title']}</a>
+                    <a href="blog/{post['slug']}.html" itemprop="url">{post['title']}</a>{new_badge}
                 </h3>
                 <p class="post-card-excerpt" itemprop="description">{post.get('description', '')}</p>
                 <a href="blog/{post['slug']}.html" class="post-card-link">Read more →</a>
