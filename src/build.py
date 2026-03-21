@@ -898,6 +898,39 @@ def generate_json_ld_collection_page(title, url, description, breadcrumbs):
         return ""
 
 
+def generate_json_ld_web_page(title, url, description, breadcrumbs):
+    """Generate JSON-LD structured data for static pages (About, Projects, etc.) with BreadcrumbList.
+
+    Args:
+        title: Page title
+        url: Page URL
+        description: Page description
+        breadcrumbs: List of breadcrumb items (dicts with @type, position, name, item)
+
+    Returns:
+        HTML string with JSON-LD script, or empty string on error
+    """
+    data = {
+        "@context": SCHEMA_CONTEXT,
+        "@type": "WebPage",
+        "name": title,
+        "url": url,
+        "description": description,
+        "publisher": _get_json_ld_publisher(include_logo=False),
+        "breadcrumb": {
+            "@type": "BreadcrumbList",
+            "itemListElement": breadcrumbs
+        }
+    }
+
+    try:
+        json_str = json.dumps(data, ensure_ascii=False)
+        return f'<script type="application/ld+json">{json_str}</script>'
+    except (TypeError, ValueError) as e:
+        print(f"Warning: Failed to generate web page JSON-LD for {title}: {e}")
+        return ""
+
+
 def format_date(date_str, dt=None):
     """Format date string to readable format. Accepts YYYY-MM-DD or ISO 8601.
 
@@ -1639,6 +1672,19 @@ def build_pages(pages):
 """
 
         page_url = f"{SITE_URL}/{page_name}.html"
+
+        # Generate JSON-LD with breadcrumbs for static pages
+        breadcrumbs = [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": SITE_URL},
+            {"@type": "ListItem", "position": 2, "name": title, "item": page_url}
+        ]
+        json_ld = generate_json_ld_web_page(
+            title=f"{title} - {SITE_NAME}",
+            url=page_url,
+            description=page_data.get('description', f"{title} - duyetbot"),
+            breadcrumbs=breadcrumbs
+        )
+
         html = render_template(
             base,
             title=f"{title} // duyetbot",
@@ -1647,7 +1693,7 @@ def build_pages(pages):
             og_type=OG_TYPE_WEBSITE,
             og_image=OG_IMAGE_URL,
             site_name=SITE_NAME,
-            json_ld=generate_json_ld_website(),
+            json_ld=json_ld,
             article_meta="",
             year=YEAR,
             root="../",
