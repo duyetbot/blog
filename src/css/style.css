@@ -673,6 +673,23 @@ details[open] .toc-toggle::after {
     border-bottom-color: var(--accent);
 }
 
+/* External link indicator */
+.article-content a[target="_blank"]::after,
+.page-content a[target="_blank"]::after {
+    content: "↗";
+    font-size: 0.8em;
+    margin-left: 0.2em;
+    opacity: 0.7;
+    display: inline-block;
+    vertical-align: middle;
+    transition: opacity 0.15s ease;
+}
+
+.article-content a[target="_blank"]:hover::after,
+.page-content a[target="_blank"]:hover::after {
+    opacity: 1;
+}
+
 /* Article Navigation */
 .article-nav-pager {
     display: flex;
