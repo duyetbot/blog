@@ -1246,6 +1246,115 @@ code[class*="language-"] {
     color: var(--accent);
 }
 
+/* Tag index page styles */
+.tag-navigation {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+}
+
+.tag-nav-label {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.tag-nav-link {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-main);
+    text-decoration: none;
+}
+
+.tag-nav-link:hover {
+    color: var(--accent);
+}
+
+.tag-section {
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--border);
+}
+
+.tag-section:last-child {
+    border-bottom: none;
+}
+
+.tag-section-title {
+    font-family: var(--font-sans);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: var(--space-md);
+}
+
+.tag-section-title a {
+    color: var(--text-main);
+    text-decoration: none;
+}
+
+.tag-section-title a:hover {
+    color: var(--accent);
+}
+
+.tag-count {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-left: var(--space-sm);
+}
+
+.tag-post-list {
+    list-style: none;
+    padding: 0;
+}
+
+.tag-post-item {
+    padding: var(--space-md) 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.tag-post-item:last-child {
+    border-bottom: none;
+}
+
+.tag-post-date {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: var(--space-xs);
+}
+
+.tag-post-title {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    line-height: 1.3;
+    margin-bottom: var(--space-xs);
+}
+
+.tag-post-title a {
+    color: var(--text-main);
+    text-decoration: none;
+}
+
+.tag-post-title a:hover {
+    color: var(--accent);
+}
+
+.tag-post-description {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.tag-more-posts {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: var(--space-sm);
+    font-style: italic;
+}
+
 kbd {
     background: var(--bg-white);
     border: 1px solid var(--border);

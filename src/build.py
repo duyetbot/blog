@@ -534,6 +534,10 @@ def _slugify(text):
     return text.strip('-')
 
 
+# Public alias for slugify (used by build_tag_index)
+slugify = _slugify
+
+
 def escape_xml(text):
     """Escape XML special characters for RSS feeds."""
     return (text.replace("&", "&amp;")
@@ -1294,6 +1298,117 @@ def build_search_page():
 
     (OUTPUT_DIR / "search.html").write_text(html)
     print("Built: search.html")
+
+
+def build_tag_index(posts):
+    """Build tag index page (tags.html) showing all tags and their posts."""
+    base = read_template("base")
+    nav, footer = _get_common_components(root="")
+
+    if not base:
+        print("Error: base.html template missing, cannot build tag index")
+        return
+
+    # Collect all unique tags and group posts by tag
+    tags_to_posts = {}
+    for meta in posts:
+        tags = parse_tags(meta.get('tags', []))
+        for tag in tags:
+            if tag not in tags_to_posts:
+                tags_to_posts[tag] = []
+            tags_to_posts[tag].append(meta)
+
+    # Sort tags alphabetically
+    sorted_tags = sorted(tags_to_posts.keys())
+
+    # Generate tag sections
+    tag_sections = []
+    for tag in sorted_tags:
+        # Compute tag slug once for reuse
+        tag_slug = slugify(tag)
+        tag_posts = tags_to_posts[tag]
+        # Sort posts by date (newest first) using sorted() to avoid mutation
+        tag_posts = sorted(tag_posts, key=lambda x: x.get('date', ''), reverse=True)
+
+        # Generate post list for this tag
+        post_list = []
+        for meta in tag_posts[:10]:  # Limit to 10 posts per tag
+            slug = meta.get('slug', '')
+            title = meta.get('title', 'Untitled')
+            date = meta.get('date', '')
+            description = meta.get('description', '')
+
+            # Format date nicely
+            parsed_dt = meta.get('_parsed_dt')
+            formatted_date = format_date(date, parsed_dt) if parsed_dt else date
+
+            post_list.append(f"""
+                <li class="tag-post-item">
+                    <time class="tag-post-date">{formatted_date}</time>
+                    <h3 class="tag-post-title">
+                        <a href="blog/{slug}.html">{title}</a>
+                    </h3>
+                    {f'<p class="tag-post-description">{description}</p>' if description else ''}
+                </li>
+            """)
+
+        posts_html = '\n'.join(post_list)
+        post_count = len(tag_posts)
+        show_more = f'<p class="tag-more-posts">+ {post_count - 10} more posts</p>' if post_count > 10 else ''
+
+        tag_sections.append(f"""
+<section class="tag-section" id="{tag_slug}">
+    <h2 class="tag-section-title">
+        <a href="#{tag_slug}">#{tag}</a>
+        <span class="tag-count">{post_count} post{'s' if post_count != 1 else ''}</span>
+    </h2>
+    <ul class="tag-post-list">
+{posts_html}
+    </ul>
+{show_more}
+</section>
+""")
+
+    # Generate tag navigation with cached slugs
+    tag_nav_items = []
+    for tag in sorted_tags:
+        tag_slug = slugify(tag)
+        tag_nav_items.append(f'<a href="#{tag_slug}" class="tag-nav-link">#{tag}</a>')
+    tag_nav = ' '.join(tag_nav_items)
+
+    content = f"""
+<header class="page-header">
+    <h1>Tags</h1>
+    <p class="tagline">Browse posts by topic</p>
+    <nav class="tag-navigation" aria-label="Jump to tag">
+        <span class="tag-nav-label">Topics:</span>
+        {tag_nav}
+    </nav>
+</header>
+
+{''.join(tag_sections)}
+"""
+
+    html = render_template(
+        base,
+        title=f"Tags - {SITE_NAME}",
+        description=f"Browse all blog posts by tags and topics. {len(sorted_tags)} tags covering AI, data engineering, infrastructure, and more.",
+        url=f"{SITE_URL}/tags.html",
+        og_type=OG_TYPE_WEBSITE,
+        og_image=OG_IMAGE_URL,
+        site_name=SITE_NAME,
+        json_ld=generate_json_ld_website(),
+        article_meta="",
+        year=YEAR,
+        root="",
+        nav=nav,
+        content=content,
+        footer=footer,
+        prism=""
+    )
+
+    (OUTPUT_DIR / "tags.html").write_text(html)
+    print(f"Built: tags.html ({len(sorted_tags)} tags)")
 
 
 def build_pages(pages):
@@ -2105,6 +2220,9 @@ This website serves as my digital presence - where I document my thoughts, share
 
             # Build search page
             build_search_page()
+
+            # Build tag index page
+            build_tag_index(posts)
 
             # Build home page (index.html)
             build_home(posts)
