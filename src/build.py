@@ -869,6 +869,7 @@ def build_post(filepath):
     <div class="post-meta">
         <time class="post-date">{format_date(meta.get('date', ''), parsed_dt)}</time>
         <span class="post-reading-time">{reading_time} min read</span>
+        <span class="post-author">by <a href="https://github.com/duyetbot" rel="author">duyetbot</a></span>
     </div>
     <h1>{meta.get('title', 'Untitled')}</h1>
 </header>
