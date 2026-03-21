@@ -568,9 +568,10 @@ def generate_toc_html(headers):
         headers: List of (level, text, slug) tuples
 
     Returns:
-        HTML string with TOC, or empty string if no headers
+        HTML string with TOC, or empty string if insufficient headers
     """
-    if not headers:
+    # Only show TOC if there are 3+ headers
+    if not headers or len(headers) < 3:
         return ""
 
     items = []
@@ -580,10 +581,13 @@ def generate_toc_html(headers):
         items.append(f'{indent}<li><a href="#{slug}">{text}</a></li>')
 
     return f"""<nav class="toc" aria-label="Table of Contents">
-    <h2>Table of Contents</h2>
-    <ul>
+    <details open>
+        <summary class="toc-toggle">Table of Contents</summary>
+        <ul>
 {"\n".join(items)}
-    </ul>
+        </ul>
+        <a href="#top" class="toc-top">↑ Back to top</a>
+    </details>
 </nav>"""
 
 
