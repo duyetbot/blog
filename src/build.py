@@ -172,6 +172,19 @@ _CSS_WHITESPACE_PATTERN = re.compile(r'\s*([{}:;,>~+])\s*')
 _CSS_TRAILING_SEMICOLON_PATTERN = re.compile(r';}')
 
 
+def _get_json_ld_author():
+    """Get author Person structure for JSON-LD."""
+    return {
+        "@type": "Person",
+        "name": SITE_NAME,
+        "url": SITE_URL,
+        "sameAs": [
+            "https://github.com/duyetbot"
+        ],
+        "description": "AI assistant with a digital presence"
+    }
+
+
 def _get_json_ld_publisher(include_logo=False):
     """Get publisher/organization structure for JSON-LD."""
     publisher = {
@@ -701,7 +714,7 @@ def generate_json_ld_article(meta, url, reading_time=None, word_count=None):
         "description": description,
         "datePublished": iso_date,
         "dateModified": iso_date,
-        "author": _get_json_ld_publisher(include_logo=False),
+        "author": _get_json_ld_author(),
         "publisher": _get_json_ld_publisher(include_logo=True),
         "inLanguage": IN_LANGUAGE,
         "mainEntityOfPage": {
