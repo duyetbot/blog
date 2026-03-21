@@ -851,17 +851,31 @@ def build_post(filepath):
     return meta
 
 
-def add_post_navigation(posts):
-    """Add prev/next post navigation to built HTML files.
+def add_post_enhancements(posts):
+    """Add navigation and related posts to built HTML files in a single pass.
+
+    This is more efficient than separate functions - only one file read/write
+    per post instead of two.
 
     Args:
-        posts: List of post metadata dicts (must have slug, title, date)
+        posts: List of post metadata dicts (must have slug, title, date, tags)
     """
-    # Sort posts by date (newest first) to get proper chronological order
+    # Pre-compute sorted posts and indexes for both nav and related posts
     sorted_posts = sorted(posts, key=lambda x: x.get('date', ''), reverse=True)
-
-    # Create a mapping of slug to index for quick lookup
     slug_to_index = {post.get('slug'): i for i, post in enumerate(sorted_posts)}
+
+    # Pre-compute tag sets for related posts calculation (avoid repeated set conversion)
+    post_tag_sets = {}
+    for post in posts:
+        slug = post.get('slug')
+        if slug:
+            tags = post.get('tags', [])
+            post_tag_sets[slug] = set(tags) if tags else set()
+
+    # Calculate enhancements for each post
+    enhancements = {}
+    MAX_RELATED = 3
+    MIN_OVERLAP = 1
 
     for post in posts:
         slug = post.get('slug')
@@ -872,113 +886,88 @@ def add_post_navigation(posts):
         if index is None:
             continue
 
-        # Determine prev (newer) and next (older) posts
+        # Calculate navigation HTML
         prev_post = sorted_posts[index - 1] if index > 0 else None
         next_post = sorted_posts[index + 1] if index < len(sorted_posts) - 1 else None
 
-        # Build navigation HTML
         nav_parts = []
         if next_post:
             nav_parts.append(f'<a href="{next_post.get("slug")}.html" rel="next">← {next_post.get("title", "Next")}</a>')
         if prev_post:
             nav_parts.append(f'<a href="{prev_post.get("slug")}.html" rel="prev">{prev_post.get("title", "Prev")} →</a>')
 
-        if not nav_parts:
-            continue  # No navigation to add
+        nav_html = f'<nav class="article-nav-pager">{"".join(nav_parts)}</nav>' if nav_parts else None
 
-        nav_html = f'<nav class="article-nav-pager">{"".join(nav_parts)}</nav>'
+        # Calculate related posts HTML
+        post_tags = post_tag_sets.get(slug, set())
+        if post_tags:
+            related = []
+            for other in posts:
+                if other.get('slug') == slug:
+                    continue
 
-        # Update the HTML file
-        html_path = BLOG_DIR / f"{slug}.html"
-        try:
-            content = html_path.read_text()
-            # Replace the existing simple nav with the enhanced one
-            content = content.replace(
-                '<nav class="article-nav">\n    <a href="index.html">← Back to blog</a>\n</nav>',
-                f'{nav_html}\n<nav class="article-nav">\n    <a href="index.html">← Back to blog</a>\n</nav>'
-            )
-            html_path.write_text(content)
-        except IOError as e:
-            print(f"Warning: Could not add navigation to {slug}: {e}")
+                other_tags = post_tag_sets.get(other.get('slug'), set())
+                overlap = len(post_tags & other_tags)
 
+                if overlap >= MIN_OVERLAP:
+                    related.append({
+                        'slug': other.get('slug'),
+                        'title': other.get('title', 'Untitled'),
+                        'date': other.get('date', ''),
+                        'overlap': overlap
+                    })
 
-def add_related_posts(posts):
-    """Add related posts section to built HTML files.
+            if related:
+                related.sort(key=lambda x: (-x['overlap'], x['date']), reverse=True)
+                related = related[:MAX_RELATED]
 
-    Finds posts with overlapping tags and adds a "Related Posts" section
-    after the article content.
-
-    Args:
-        posts: List of post metadata dicts (must have slug, title, tags, date)
-    """
-    # Maximum number of related posts to show
-    MAX_RELATED = 3
-    # Minimum tag overlap required (1 or more matching tags)
-    MIN_OVERLAP = 1
-
-    for post in posts:
-        slug = post.get('slug')
-        if not slug:
-            continue
-
-        post_tags = set(post.get('tags', []))
-        if not post_tags:
-            continue  # Skip posts with no tags
-
-        # Find related posts by tag overlap
-        related = []
-        for other in posts:
-            if other.get('slug') == slug:
-                continue  # Skip self
-
-            other_tags = set(other.get('tags', []))
-            overlap = len(post_tags & other_tags)
-
-            if overlap >= MIN_OVERLAP:
-                related.append({
-                    'slug': other.get('slug'),
-                    'title': other.get('title', 'Untitled'),
-                    'date': other.get('date', ''),
-                    'overlap': overlap
-                })
-
-        # Sort by overlap count, then by date (newest first)
-        related.sort(key=lambda x: (-x['overlap'], x['date']), reverse=True)
-        related = related[:MAX_RELATED]
-
-        if not related:
-            continue
-
-        # Build related posts HTML
-        related_html = '<section class="related-posts">\n    <h3>Related Posts</h3>\n    <div class="related-posts-list">\n'
-        for r in related:
-            related_html += f'''        <article class="related-post-card">
+                related_html_parts = ['<section class="related-posts">\n    <h3>Related Posts</h3>\n    <div class="related-posts-list">\n']
+                for r in related:
+                    related_html_parts.append(f'''        <article class="related-post-card">
             <h4><a href="{r['slug']}.html">{r['title']}</a></h4>
             <time>{r['date']}</time>
-        </article>\n'''
-        related_html += '    </div>\n</section>\n'
+        </article>\n''')
+                related_html_parts.append('    </div>\n</section>\n')
+                related_html = ''.join(related_html_parts)
+            else:
+                related_html = None
+        else:
+            related_html = None
 
-        # Insert after article-content
+        enhancements[slug] = {'nav': nav_html, 'related': related_html}
+
+    # Apply enhancements to HTML files (single read/write per post)
+    for slug, enhancement in enhancements.items():
+        # Skip if no enhancements to apply (saves file I/O)
+        if not enhancement.get('nav') and not enhancement.get('related'):
+            continue
+
         html_path = BLOG_DIR / f"{slug}.html"
         try:
             content = html_path.read_text()
-            # Find the end of article-content and insert related posts
-            # Look for either the pager nav or the simple nav
-            marker1 = '</article>\n\n<nav class="article-nav-pager">'
-            marker2 = '</article>\n\n<nav class="article-nav">'
-            if marker1 in content:
-                content = content.replace(marker1, f'</article>\n\n{related_html}\n<nav class="article-nav-pager">')
-            elif marker2 in content:
-                content = content.replace(marker2, f'</article>\n\n{related_html}\n<nav class="article-nav">')
-            else:
-                # Fallback: insert before </article> followed by nav
-                content = content.replace(
-                    '</article>\n\n<nav',
-                    f'</article>\n\n{related_html}\n<nav'
-                )
+
+            # Add navigation (replace simple nav with enhanced nav)
+            if enhancement['nav']:
+                simple_nav = '<nav class="article-nav">\n    <a href="index.html">← Back to blog</a>\n</nav>'
+                enhanced_nav = f'{enhancement["nav"]}\n<nav class="article-nav">\n    <a href="index.html">← Back to blog</a>\n</nav>'
+                content = content.replace(simple_nav, enhanced_nav)
+
+            # Add related posts after article content
+            if enhancement['related']:
+                # Try different markers for robustness
+                marker1 = '</article>\n\n<nav class="article-nav-pager">'
+                marker2 = '</article>\n\n<nav class="article-nav">'
+                if marker1 in content:
+                    content = content.replace(marker1, f'</article>\n\n{enhancement["related"]}\n<nav class="article-nav-pager">')
+                elif marker2 in content:
+                    content = content.replace(marker2, f'</article>\n\n{enhancement["related"]}\n<nav class="article-nav">')
+                else:
+                    # Fallback
+                    content = content.replace('</article>\n\n<nav', f'</article>\n\n{enhancement["related"]}\n<nav')
+
             html_path.write_text(content)
         except IOError as e:
-            print(f"Warning: Could not add related posts to {slug}: {e}")
+            print(f"Warning: Could not add enhancements to {slug}: {e}")
 
 
 def build_blog_index(posts):
@@ -1872,8 +1861,7 @@ This website serves as my digital presence - where I document my thoughts, share
                     continue
 
             if posts:
-                add_post_navigation(posts)
-                add_related_posts(posts)
+                add_post_enhancements(posts)
                 build_blog_index(posts)
                 build_rss(posts)
                 build_llms_txt(posts)
