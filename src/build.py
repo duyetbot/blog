@@ -1409,57 +1409,64 @@ def build_pages(pages):
 
 
 def build_sitemap(posts):
-    """Build sitemap.xml with lastmod dates for blog posts."""
-    # Static pages (no lastmod)
-    static_urls = [
-        f"{SITE_URL}/",
-        f"{SITE_URL}/about.html",
-        f"{SITE_URL}/about.md",
-        f"{SITE_URL}/soul.html",
-        f"{SITE_URL}/soul.md",
-        f"{SITE_URL}/capabilities.html",
-        f"{SITE_URL}/capabilities.md",
-        f"{SITE_URL}/getting-started.html",
-        f"{SITE_URL}/getting-started.md",
-        f"{SITE_URL}/roadmap.html",
-        f"{SITE_URL}/roadmap.md",
-        f"{SITE_URL}/projects.html",
-        f"{SITE_URL}/projects.md",
-        f"{SITE_URL}/dashboard.html",
-        f"{SITE_URL}/dashboard.md",
-        f"{SITE_URL}/search.html",
-        f"{SITE_URL}/blog/",
-        f"{SITE_URL}/llms.txt",
-        f"{SITE_URL}/rss.xml"
+    """Build sitemap.xml with lastmod dates, priority, and changefreq for SEO."""
+    # Static pages with priority and changefreq (homepage highest priority)
+    static_pages = [
+        # (url, priority, changefreq)
+        (f"{SITE_URL}/", "1.0", "weekly"),
+        (f"{SITE_URL}/blog/", "0.9", "daily"),
+        (f"{SITE_URL}/about.html", "0.8", "monthly"),
+        (f"{SITE_URL}/projects.html", "0.8", "monthly"),
+        (f"{SITE_URL}/capabilities.html", "0.7", "monthly"),
+        (f"{SITE_URL}/search.html", "0.6", "monthly"),
+        (f"{SITE_URL}/dashboard.html", "0.5", "weekly"),
+        (f"{SITE_URL}/getting-started.html", "0.5", "monthly"),
+        (f"{SITE_URL}/roadmap.html", "0.5", "monthly"),
+        (f"{SITE_URL}/soul.html", "0.4", "monthly"),
+        # Markdown versions (lower priority, for LLMs)
+        (f"{SITE_URL}/about.md", "0.3", "monthly"),
+        (f"{SITE_URL}/projects.md", "0.3", "monthly"),
+        (f"{SITE_URL}/capabilities.md", "0.3", "monthly"),
+        (f"{SITE_URL}/dashboard.md", "0.3", "monthly"),
+        (f"{SITE_URL}/getting-started.md", "0.3", "monthly"),
+        (f"{SITE_URL}/roadmap.md", "0.3", "monthly"),
+        (f"{SITE_URL}/soul.md", "0.3", "monthly"),
+        # Resources
+        (f"{SITE_URL}/llms.txt", "0.2", "monthly"),
+        (f"{SITE_URL}/rss.xml", "0.2", "daily"),
     ]
 
-    # Blog posts with lastmod dates
     url_elements = []
-    for url in static_urls:
-        url_elements.append(f"  <url><loc>{url}</loc></url>")
+    # Add static pages
+    for url, priority, changefreq in static_pages:
+        url_elements.append(f"""  <url>
+    <loc>{url}</loc>
+    <priority>{priority}</priority>
+    <changefreq>{changefreq}</changefreq>
+  </url>""")
 
+    # Add blog posts with lastmod, priority, and changefreq
     for meta in posts:
         slug = meta.get('slug', '')
         url = f"{SITE_URL}/blog/{slug}.html"
 
         # Add lastmod if date available (use cached parsed datetime if available)
         date_str = meta.get('date', '')
-        lastmod = ""
+        lastmod_xml = ""
         if date_str:
             # Check if datetime was already parsed and cached
             parsed_dt = meta.get('_parsed_dt') or _parse_datetime(date_str)
             if parsed_dt:
                 # Format as YYYY-MM-DD for sitemap
-                lastmod = f"    <lastmod>{parsed_dt.strftime('%Y-%m-%d')}</lastmod>"
+                lastmod_xml = f"    <lastmod>{parsed_dt.strftime('%Y-%m-%d')}</lastmod>"
 
-        # Build XML element conditionally
-        if lastmod:
-            url_elements.append(f"""  <url>
+        # Build XML element with blog-specific SEO metadata
+        url_elements.append(f"""  <url>
     <loc>{url}</loc>
-{lastmod}
+{lastmod_xml}
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
   </url>""")
-        else:
-            url_elements.append(f"  <url><loc>{url}</loc></url>")
 
     sitemap = f"""<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
