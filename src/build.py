@@ -1738,16 +1738,16 @@ def build_home(posts):
         accent = gradients[i % 3]
 
         recent_posts_html += f'''
-        <article class="recent-post-card" style="--card-accent: {accent}">
+        <article class="recent-post-card" itemscope itemtype="https://schema.org/BlogPosting" style="--card-accent: {accent}">
             <div class="post-card-accent"></div>
             <div class="post-card-inner">
                 <div class="post-card-meta">
-                    <time datetime="{post['date']}">{formatted_date}</time>
+                    <time datetime="{post['date']}" itemprop="datePublished">{formatted_date}</time>
                 </div>
-                <h3 class="post-card-title">
-                    <a href="blog/{post['slug']}.html">{post['title']}</a>
+                <h3 class="post-card-title" itemprop="headline">
+                    <a href="blog/{post['slug']}.html" itemprop="url">{post['title']}</a>
                 </h3>
-                <p class="post-card-excerpt">{post.get('description', '')}</p>
+                <p class="post-card-excerpt" itemprop="description">{post.get('description', '')}</p>
                 <a href="blog/{post['slug']}.html" class="post-card-link">Read more →</a>
             </div>
         </article>
