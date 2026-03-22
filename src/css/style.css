@@ -3818,6 +3818,27 @@ mark {
         widows: 3;
     }
 
+    /* Add page numbers */
+    @page {
+        margin: 2cm;
+        @bottom-center {
+            content: "Page " counter(page) " of " counter(pages);
+            font-size: 9pt;
+            color: #666;
+        }
+    }
+
+    /* Print footer with URL */
+    .article-header::after {
+        content: "Printed from " attr(data-url);
+        display: block;
+        font-size: 8pt;
+        color: #999;
+        margin-top: 1em;
+        padding-top: 1em;
+        border-top: 1px solid #ddd;
+    }
+
     /* Links - show URLs */
     .article-content a[href^="http"]::after {
         content: " (" attr(href) ")";
