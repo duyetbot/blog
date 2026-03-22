@@ -1063,6 +1063,28 @@ details[open] .toc-toggle::after {
     }
 }
 
+/* Comments Section */
+.comments-section {
+    margin: var(--space-xl) 0;
+    padding: var(--space-lg) 0;
+    border-top: 1px solid var(--border);
+    text-align: center;
+}
+
+.comments-section h2 {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    margin-bottom: var(--space-md);
+}
+
+.comments-placeholder {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
 .article-nav {
     text-align: center;
     margin: var(--space-lg) 0;
@@ -2586,6 +2608,7 @@ mark {
     .code-copy-btn,
     .article-author-bio,
     .article-share,
+    .comments-section,
     .modal {
         display: none !important;
     }

@@ -1276,6 +1276,14 @@ def build_post(filepath):
     </div>
 </div>
 
+<section id="comments" class="comments-section" aria-labelledby="comments-title">
+    <h2 id="comments-title">Comments</h2>
+    <p class="comments-placeholder">
+        Comments are currently disabled. When enabled, you'll be able to discuss this article here.
+        In the meantime, feel free to <a href="{SITE_GITHUB}/website/issues/new" rel="noopener">share your thoughts on GitHub</a>.
+    </p>
+</section>
+
 <nav class="article-nav">
     <a href="index.html">← Back to blog</a>
 </nav>
