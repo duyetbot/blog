@@ -93,12 +93,19 @@
         const DEFAULT_FONT_SIZE = FONT_SIZES.MEDIUM;
         const FONT_SIZE_KEY = 'fontSize';
         const SIZE_VALUES = Object.values(FONT_SIZES);
+        const SIZE_LABELS = { 0.875: 'A-', 1: 'A', 1.125: 'A+', 1.25: 'A++' };
         let currentFontSize = DEFAULT_FONT_SIZE;
 
         function applyFontSize(size) {
             html.style.fontSize = size + 'rem';
             currentFontSize = size;
             localStorage.setItem(FONT_SIZE_KEY, size);
+
+            // Update font size level indicator
+            const levelIndicator = document.getElementById('font-size-level');
+            if (levelIndicator) {
+                levelIndicator.textContent = SIZE_LABELS[size] || 'A';
+            }
         }
 
         function getNextSize(direction) {
