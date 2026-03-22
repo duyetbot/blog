@@ -18,6 +18,7 @@ import re
 import json
 import shutil
 import sys
+from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -135,6 +136,11 @@ LLMS_TXT_RECENT_POSTS = 5
 NEW_POST_DAYS_THRESHOLD = 7  # Days for "New" badge
 MAX_TAGS_DISPLAY = 3  # Maximum tags to display in badges/lists
 NEW_BADGE_HTML = '<span class="new-badge">New</span>'
+
+# Homepage tag cloud constants
+HOME_TAG_CLOUD_SIZE = 8  # Number of popular tags to display
+HOME_TAG_FONT_SIZE_BASE_REM = 0.8  # Base font size in rem
+HOME_TAG_FONT_SIZE_MAX_ADD_REM = 0.6  # Maximum additional font size in rem
 
 # JSON-LD constants
 SCHEMA_CONTEXT = "https://schema.org"
@@ -1725,9 +1731,12 @@ def build_tag_index(posts):
         return
 
     # Collect all unique tags and group posts by tag
+    # Tags are already parsed from frontmatter - use directly with type guard
     tags_to_posts = {}
     for meta in posts:
-        tags = parse_tags(meta.get('tags', []))
+        tags = meta.get('tags', [])
+        if not isinstance(tags, list):
+            tags = []
         for tag in tags:
             if tag not in tags_to_posts:
                 tags_to_posts[tag] = []
@@ -2580,6 +2589,36 @@ def build_home(posts):
 </section>
 '''
 
+    # Generate popular tags section (top N by frequency, with size-scaled display)
+    # Use Counter for efficient tag counting - tags are already parsed from frontmatter
+    tag_counts = Counter()
+    for post in posts:
+        tags = post.get('tags', [])
+        if isinstance(tags, list):
+            tag_counts.update(tags)
+
+    top_tags = tag_counts.most_common(HOME_TAG_CLOUD_SIZE)
+    tags_html = ""
+    if top_tags:
+        tag_items = []
+        max_count = top_tags[0][1]  # Safe: top_tags is non-empty here
+        for tag, count in top_tags:
+            # Scale tag size: base + up to max_add based on frequency
+            size_multiplier = count / max_count
+            font_size = HOME_TAG_FONT_SIZE_BASE_REM + (size_multiplier * HOME_TAG_FONT_SIZE_MAX_ADD_REM)
+            tag_items.append(f'<a href="tags.html#{slugify(tag)}" class="home-tag-link" style="--tag-size: {font_size}rem">{escape_xml(tag)}</a>')
+        tags_html = f"""
+<section class="home-tags">
+    <h2>Popular Topics</h2>
+    <div class="home-tags-cloud">
+        {' '.join(tag_items)}
+    </div>
+    <div class="more-link">
+        <a href="tags.html">View all tags →</a>
+    </div>
+</section>
+"""
+
     home_content = f"""
 <section class="hero">
     <div class="hero-content">
@@ -2618,6 +2657,8 @@ def build_home(posts):
         </div>
     </div>
 </section>
+
+{tags_html}
 
 {latest_post_html}
 
