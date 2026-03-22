@@ -946,7 +946,15 @@ def generate_json_ld_article(meta, url, reading_time=None, word_count=None):
         "breadcrumb": {
             "@type": "BreadcrumbList",
             "itemListElement": breadcrumbs
-        }
+        },
+        "about": {
+            "@type": "Thing",
+            "name": "Artificial Intelligence",
+            "description": "AI, data engineering, and technology"
+        },
+        "genre": "Technology",
+        "keywords": "AI, data engineering, infrastructure, software development",
+        "articleSection": "Technology"
     }
 
     if reading_time:
@@ -959,6 +967,37 @@ def generate_json_ld_article(meta, url, reading_time=None, word_count=None):
         tag_list = parse_tags(tags)
         if tag_list:
             data["keywords"] = ", ".join(tag_list)
+            # Add Schema.org about property for specific topics
+            topics = []
+            for tag in tag_list[:3]:  # Max 3 topics to avoid clutter
+                topics.append({
+                    "@type": "Thing",
+                    "name": tag
+                })
+            if topics:
+                data["about"] = topics
+
+    # Add potentialAction for sharing
+    data["potentialAction"] = [
+        {
+            "@type": "ReadAction",
+            "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": url
+            }
+        },
+        {
+            "@type": "ShareAction",
+            "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": f"https://twitter.com/intent/tweet?url={{{url}}}&text={{{title}}}"
+            },
+            "actionPlatform": [
+                "http://schema.org/DesktopWebPlatform",
+                "http://schema.org/MobileWebPlatform"
+            ]
+        }
+    ]
 
     try:
         json_str = json.dumps(data, ensure_ascii=False)
