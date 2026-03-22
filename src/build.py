@@ -1233,6 +1233,28 @@ def build_post(filepath):
     </div>
 </footer>
 
+<div class="article-share">
+    <h4>Share this post</h4>
+    <div class="share-links">
+        <a href="https://twitter.com/intent/tweet?text={meta.get('title', '')}&amp;url={post_url}&amp;via=duyetbot" rel="noopener" target="_blank" class="share-link share-twitter">
+            <span class="share-icon">𝕏</span>
+            <span class="share-text">Post</span>
+        </a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url={post_url}" rel="noopener" target="_blank" class="share-link share-linkedin">
+            <span class="share-icon">in</span>
+            <span class="share-text">Share</span>
+        </a>
+        <a href="mailto:?subject={meta.get('title', '')}&amp;body=Check out this article: {post_url}" class="share-link share-email">
+            <span class="share-icon">✉</span>
+            <span class="share-text">Email</span>
+        </a>
+        <button onclick="navigator.clipboard.writeText('{post_url}').then(() => this.textContent = 'Copied!').catch(() => this.textContent = 'Failed')" class="share-link share-copy">
+            <span class="share-icon">📋</span>
+            <span class="share-text">Copy link</span>
+        </button>
+    </div>
+</div>
+
 <nav class="article-nav">
     <a href="index.html">← Back to blog</a>
 </nav>
