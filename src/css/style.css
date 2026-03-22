@@ -2586,6 +2586,41 @@ mark {
         page-break-inside: avoid;
     }
 
+    /* Broken image handling */
+    img[alt]:not([alt=""])::before {
+        /* Show for broken images with alt text */
+        content: attr(alt);
+        display: block;
+        background: var(--bg-white);
+        border: 2px dashed var(--border);
+        padding: var(--space-sm);
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        text-align: center;
+        min-height: 100px;
+    }
+
+    img:not([src]), img[src=""] {
+        /* Show placeholder for images without src */
+        min-width: 100px;
+        min-height: 60px;
+        background: var(--bg-white);
+        border: 2px dashed var(--border);
+        display: inline-block;
+    }
+
+    img:not([src]):not([alt=""])::before,
+    img[src=""]:not([alt=""])::before {
+        content: "No image";
+        display: block;
+        padding: var(--space-sm);
+        text-align: center;
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
     /* Page breaks */
     .article-content p,
     .article-content ul,
