@@ -5,6 +5,7 @@
             ☰
         </button>
         <div class="nav-links">
+            <button class="nav-close" id="nav-close" aria-label="Close menu">×</button>
             <a href="{{ root }}blog/" itemprop="url"><span itemprop="name">Blog</span></a>
             <a href="{{ root }}archive.html" itemprop="url"><span itemprop="name">Archive</span></a>
             <a href="{{ root }}rss.xml" class="rss-link nav-rss-link" aria-label="Subscribe to RSS feed" itemprop="url">
@@ -47,6 +48,15 @@
             toggle.setAttribute('aria-expanded', 'false');
         });
     });
+
+    // Mobile menu close button
+    const navClose = document.getElementById('nav-close');
+    if (navClose) {
+        navClose.addEventListener('click', () => {
+            navLinks.classList.remove('active');
+            toggle.setAttribute('aria-expanded', 'false');
+        });
+    }
 
     // Theme toggle
     const themeToggle = document.getElementById('theme-toggle');

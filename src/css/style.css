@@ -322,7 +322,8 @@ textarea:focus-visible {
 }
 
 /* Mobile menu */
-.nav-toggle {
+.nav-toggle,
+.nav-close {
     display: none;
 }
 
@@ -341,6 +342,23 @@ textarea:focus-visible {
 
     .site-nav .nav-links.active {
         display: flex;
+    }
+
+    .nav-close {
+        display: block;
+        position: absolute;
+        top: var(--space-sm);
+        right: var(--space-sm);
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: var(--space-xs);
+    }
+
+    .nav-close:hover {
+        color: var(--text-main);
     }
 
     .nav-toggle {
