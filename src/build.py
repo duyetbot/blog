@@ -133,6 +133,7 @@ LLMS_TXT_RECENT_POSTS = 5
 
 # "New" badge constants
 NEW_POST_DAYS_THRESHOLD = 7  # Days for "New" badge
+MAX_TAGS_DISPLAY = 3  # Maximum tags to display in badges/lists
 NEW_BADGE_HTML = '<span class="new-badge">New</span>'
 
 # JSON-LD constants
@@ -1361,7 +1362,6 @@ def add_post_enhancements(posts):
 
     # Pre-compute tag sets for related posts calculation (avoid repeated set conversion)
     # Also pre-compute parsed tags for display (limited to MAX_TAGS_DISPLAY)
-    MAX_TAGS_DISPLAY = 3
     post_tag_sets = {}
     slug_to_display_tags = {}
     for post in posts:
@@ -1506,8 +1506,7 @@ def build_blog_index(posts):
             # Generate new badge using helper
             new_badge = build_new_badge_html(parsed_dt)
 
-            # Generate tag badges (limit to 3 for blog index)
-            MAX_TAGS_DISPLAY = 3
+            # Generate tag badges (limit to module MAX_TAGS_DISPLAY)
             display_tags = tags[:MAX_TAGS_DISPLAY]
             tag_badges = ''.join(f'<a href="../tags.html#{slugify(tag)}" class="post-tag-badge">{escape_xml(tag)}</a>' for tag in display_tags) if display_tags else ''
             tags_html = f'<div class="post-tags">{tag_badges}</div>' if tag_badges else ''

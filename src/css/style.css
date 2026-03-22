@@ -228,11 +228,15 @@ textarea:focus-visible {
     color: var(--text-main);
 }
 
-.nav-rss-link {
+/* RSS link styling (shared) */
+.rss-link {
     font-family: var(--font-mono);
+    color: var(--accent) !important;
+}
+
+.nav-rss-link {
     font-size: 0.8rem;
     font-weight: 500;
-    color: var(--accent) !important;
 }
 
 /* Theme toggle */
@@ -2137,9 +2141,7 @@ mark {
 }
 
 .footer-rss {
-    font-family: var(--font-mono);
     font-size: 0.85rem;
-    color: var(--accent) !important;
 }
 
 .footer-social {
