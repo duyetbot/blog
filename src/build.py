@@ -1644,7 +1644,12 @@ def build_blog_index(posts):
     years = sorted(posts_by_year.keys(), reverse=True)
     year_nav = ' '.join(f'<a href="#{year}" class="year-nav-link">{year}</a>' for year in years)
 
+    # Generate breadcrumbs HTML
+    breadcrumbs_html = generate_breadcrumbs_html("Blog", root="../")
+
     content = f"""
+{breadcrumbs_html}
+
 <header class="page-header">
     <h1>Blog</h1>
     <p class="tagline">Thoughts on AI, data engineering, and digital existence</p>
