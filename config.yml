@@ -24,6 +24,8 @@ frontmatter:
     - description
   optional:
     - canonical
+    - series
+    - series_order
 
 # Date format for blog posts (strftime format)
 date_format: "%a, %d %b %Y"

@@ -1611,6 +1611,23 @@ def add_post_enhancements(posts):
     sorted_posts = sorted(posts, key=lambda x: x.get('date', ''), reverse=True)
     slug_to_index = {post.get('slug'): i for i, post in enumerate(sorted_posts)}
 
+    # Group posts by series for series navigation
+    series_to_posts = {}
+    for post in posts:
+        series = post.get('series')
+        if series:
+            if series not in series_to_posts:
+                series_to_posts[series] = []
+            series_to_posts[series].append(post)
+
+    # Sort each series by series_order if provided, otherwise by date
+    for series, series_posts in series_to_posts.items():
+        series_to_posts[series] = sorted(
+            series_posts,
+            key=lambda p: (p.get('series_order', 999), p.get('date', '')),
+            reverse=False
+        )
+
     # Pre-compute tag sets for related posts calculation (avoid repeated set conversion)
     # Also pre-compute parsed tags for display (limited to MAX_TAGS_DISPLAY)
     post_tag_sets = {}
@@ -1652,6 +1669,30 @@ def add_post_enhancements(posts):
             nav_parts.append(f'<a href="{prev_post.get("slug")}.html" rel="prev">{prev_post.get("title", "Prev")} →</a>')
 
         nav_html = f'<nav class="article-nav-pager">{"".join(nav_parts)}</nav>' if nav_parts else None
+
+        # Calculate series navigation if post is part of a series
+        series_nav_html = None
+        series = post.get('series')
+        if series and series in series_to_posts:
+            series_posts = series_to_posts[series]
+            series_index = next((i for i, p in enumerate(series_posts) if p.get('slug') == slug), None)
+
+            if series_index is not None:
+                series_prev = series_posts[series_index - 1] if series_index > 0 else None
+                series_next = series_posts[series_index + 1] if series_index < len(series_posts) - 1 else None
+
+                series_nav_parts = []
+                if series_prev:
+                    series_nav_parts.append(f'<a href="{series_prev.get("slug")}.html" rel="prev">← Part {series_index}: {series_prev.get("title", "Previous")}</a>')
+                if series_next:
+                    series_nav_parts.append(f'<a href="{series_next.get("slug")}.html" rel="next">Part {series_index + 2}: {series_next.get("title", "Next")} →</a>')
+
+                if series_nav_parts:
+                    series_nav_html = f'''
+<nav class="series-nav">
+    <div class="series-nav-header">Series: {escape_xml(series)} ({len(series_posts)} parts)</div>
+    <div class="series-nav-links">{"".join(series_nav_parts)}</div>
+</nav>'''
 
         # Calculate related posts with enhanced scoring
         post_tags = post_tag_sets.get(slug, set())
@@ -1733,17 +1774,23 @@ def add_post_enhancements(posts):
             else:
                 related_html = None
 
-        enhancements[slug] = {'nav': nav_html, 'related': related_html}
+        enhancements[slug] = {'nav': nav_html, 'related': related_html, 'series': series_nav_html}
 
     # Apply enhancements to HTML files (single read/write per post)
     for slug, enhancement in enhancements.items():
         # Skip if no enhancements to apply (saves file I/O)
-        if not enhancement.get('nav') and not enhancement.get('related'):
+        if not enhancement.get('nav') and not enhancement.get('related') and not enhancement.get('series'):
             continue
 
         html_path = BLOG_DIR / f"{slug}.html"
         try:
             content = html_path.read_text()
+
+            # Add series navigation at the beginning of article (after header, before content)
+            if enhancement['series']:
+                article_marker = '</header>\n\n{toc_html}\n\n<article class="article-content"'
+                if article_marker in content:
+                    content = content.replace(article_marker, f'</header>\n\n{enhancement["series"]}\n\n{{toc_html}}\n\n<article class="article-content"')
 
             # Add navigation (replace simple nav with enhanced nav)
             if enhancement['nav']:
