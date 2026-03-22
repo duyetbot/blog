@@ -665,14 +665,19 @@ def markdown_to_html(text):
     # Restore code blocks with language labels (single-pass construction)
     for i, (lang, code) in enumerate(code_blocks):
         escaped_code = html.escape(code.rstrip())
+        # Count lines for indicator
+        line_count = len(code.rstrip().split('\n'))
         # Language label only if lang is specified
         lang_label = f'<span class="code-lang">{lang}</span>' if lang else ''
+        # Line count indicator (only for blocks with 5+ lines)
+        lines_indicator = f'<span class="code-lines">{line_count} lines</span>' if line_count >= 5 else ''
         lang_class = f'class="language-{lang}"' if lang else ''
         # Escape code for data attribute (preserves newlines for copying)
         code_attr = html.escape(code, quote=True)
 
         code_html = f'''<div class="code-block-wrapper">
 {lang_label}
+{lines_indicator}
 <button class="code-copy-btn" aria-label="Copy code to clipboard" data-code="{code_attr}">
 <span class="copy-icon">Copy</span>
 </button>

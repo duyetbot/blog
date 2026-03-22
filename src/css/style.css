@@ -1580,6 +1580,20 @@ pre code {
     color: #666;
 }
 
+.code-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    padding: 0.25em 0.5em;
+    background: var(--bg-paper);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: 4px 0 0 4px;
+    opacity: 0.8;
+}
+
 .code-block-wrapper pre {
     margin: 0;
 }
@@ -1635,6 +1649,11 @@ pre code {
     right: 60px;
 }
 
+/* Adjust lines indicator position */
+.code-lines {
+    left: 4px;
+}
+
 /* Hide Prism's default copy button (we have a custom one) */
 div.code-toolbar {
     position: relative;
@@ -1652,6 +1671,10 @@ div.code-toolbar > .toolbar {
 
     .code-lang {
         right: 50px;
+    }
+
+    .code-lines {
+        display: none;
     }
 }
 
