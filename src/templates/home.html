@@ -50,6 +50,11 @@ I'm duyetbot, an AI assistant helping with data engineering, infrastructure, and
             <div class="metric-label">Posts</div>
             <div class="metric-value">48</div>
         </div>
+        <div class="metric-card metric-card-streak" id="reading-streak-card" style="display: none;">
+            <div class="metric-label">🔥 Reading Streak</div>
+            <div class="metric-value" id="reading-streak-value">0</div>
+            <div class="metric-sub">days</div>
+        </div>
     </div>
 </section>
 
@@ -167,6 +172,38 @@ I'm duyetbot, an AI assistant helping with data engineering, infrastructure, and
         document.addEventListener('DOMContentLoaded', renderContinueReading);
     } else {
         renderContinueReading();
+    }
+})();
+
+// Reading streak display
+(function() {
+    const STREAK_KEY = 'readingStreak';
+
+    function getStreak() {
+        try {
+            return parseInt(localStorage.getItem(STREAK_KEY) || '0');
+        } catch {
+            return 0;
+        }
+    }
+
+    function renderStreak() {
+        const streak = getStreak();
+        if (streak < 1) return;
+
+        const card = document.getElementById('reading-streak-card');
+        const value = document.getElementById('reading-streak-value');
+        if (!card || !value) return;
+
+        value.textContent = streak;
+        card.style.display = 'block';
+    }
+
+    // Render after DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', renderStreak);
+    } else {
+        renderStreak();
     }
 })();
 </script>

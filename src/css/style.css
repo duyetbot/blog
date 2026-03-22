@@ -3625,6 +3625,22 @@ mark {
     color: var(--text-main);
 }
 
+.metric-sub {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: var(--space-xs);
+}
+
+.metric-card-streak {
+    border-color: #ff6b35;
+    background: linear-gradient(135deg, var(--bg-paper) 0%, rgba(255, 107, 53, 0.05) 100%);
+}
+
+.metric-card-streak .metric-value {
+    color: #ff6b35;
+}
+
 /* Bento Grid */
 .bento-grid {
     display: grid;
