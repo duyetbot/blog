@@ -2172,7 +2172,10 @@ mark {
     .skip-link,
     .theme-toggle,
     .nav-search-link,
-    .toc {
+    .toc,
+    .toc-toggle,
+    .heading-link,
+    .code-copy-btn {
         display: none !important;
     }
 
