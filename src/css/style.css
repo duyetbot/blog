@@ -892,6 +892,23 @@ section h2 {
     color: var(--text-main);
 }
 
+.article-progress-header {
+    position: relative;
+    height: 3px;
+    background: var(--border);
+    margin-bottom: var(--space-md);
+}
+
+.article-progress-bar-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    transition: width 0.3s ease;
+}
+
 .post-meta {
     display: flex;
     gap: var(--space-sm);

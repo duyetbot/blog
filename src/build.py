@@ -1296,6 +1296,9 @@ def build_post(filepath):
 {breadcrumbs_html}
 
 <header class="article-header" data-url="{post_url}">
+    <div class="article-progress-header">
+        <div class="article-progress-bar-header"></div>
+    </div>
     <div class="post-meta">
         <time class="post-date" datetime="{iso_date}" itemprop="datePublished">{format_date(meta.get('date', ''), parsed_dt)}</time>
         <meta itemprop="dateModified" content="{iso_date}">
