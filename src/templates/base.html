@@ -674,6 +674,32 @@
         }
     });
 })();
+
+// Focus mode toggle (blog posts only)
+(function() {
+    const isBlogPost = /\/blog\/\d{4}-\d{2}-\d{2}/.test(window.location.pathname);
+    if (!isBlogPost) return;
+
+    const focusToggle = document.getElementById('focus-mode-toggle');
+    if (!focusToggle) return;
+
+    focusToggle.addEventListener('click', () => {
+        document.body.classList.toggle('focus-mode');
+        const isActive = document.body.classList.contains('focus-mode');
+        focusToggle.classList.toggle('active', isActive);
+
+        const focusText = focusToggle.querySelector('.focus-text');
+        const focusIcon = focusToggle.querySelector('.focus-icon');
+
+        if (isActive) {
+            focusText.textContent = 'Exit focus';
+            focusIcon.textContent = '🌙';
+        } else {
+            focusText.textContent = 'Focus mode';
+            focusIcon.textContent = '🔆';
+        }
+    });
+})();
 </script>
 
 </body>

@@ -1307,6 +1307,11 @@ def build_post(filepath):
         <span class="post-author">by <a href="https://github.com/duyetbot" rel="author">duyetbot</a></span>
         <span class="post-meta-separator">·</span>
         <span class="post-source-link"><a href="{slug}.md" rel="alternate" type="text/markdown">View source</a></span>
+        <span class="post-meta-separator">·</span>
+        <button class="focus-mode-toggle" id="focus-mode-toggle" aria-label="Toggle focus mode">
+            <span class="focus-icon">🔆</span>
+            <span class="focus-text">Focus mode</span>
+        </button>
     </div>
     <h1>{meta.get('title', 'Untitled')}</h1>
 </header>
