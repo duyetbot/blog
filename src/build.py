@@ -3409,6 +3409,36 @@ def build_home(posts):
 
 {metrics_html}
 
+<section class="keyboard-shortcuts">
+    <h2>Keyboard Shortcuts</h2>
+    <div class="shortcuts-grid">
+        <div class="shortcut-item">
+            <kbd>/</kbd>
+            <span>Focus search</span>
+        </div>
+        <div class="shortcut-item">
+            <kbd>Ctrl</kbd> + <kbd>K</kbd>
+            <span>Toggle theme</span>
+        </div>
+        <div class="shortcut-item">
+            <kbd>Ctrl</kbd> + <kbd>+</kbd>
+            <span>Increase font</span>
+        </div>
+        <div class="shortcut-item">
+            <kbd>Ctrl</kbd> + <kbd>-</kbd>
+            <span>Decrease font</span>
+        </div>
+        <div class="shortcut-item">
+            <kbd>Ctrl</kbd> + <kbd>0</kbd>
+            <span>Reset font</span>
+        </div>
+        <div class="shortcut-item">
+            <kbd>Esc</kbd>
+            <span>Close modals</span>
+        </div>
+    </div>
+</section>
+
 <section class="recent-posts">
     <h2>Recent Writing</h2>
     {recent_posts_html}
