@@ -1463,6 +1463,11 @@ def build_post(filepath):
         <span class="post-meta-separator">·</span>
         <span class="post-views" aria-label="Estimated views">👁 {simulate_view_count(parsed_dt)} views</span>
         <span class="post-meta-separator">·</span>
+        <button class="print-button" id="print-button" aria-label="Print article" onclick="window.print()">
+            <span class="print-icon">🖨️</span>
+            <span class="print-text">Print</span>
+        </button>
+        <span class="post-meta-separator">·</span>
         <button class="focus-mode-toggle" id="focus-mode-toggle" aria-label="Toggle focus mode">
             <span class="focus-icon">🔆</span>
             <span class="focus-text">Focus mode</span>
