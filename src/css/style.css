@@ -406,6 +406,142 @@ textarea:focus-visible {
     transition: border-color 0.15s ease, color 0.15s ease;
 }
 
+/* Error page styles */
+.error-page {
+    max-width: 600px;
+    margin: var(--space-xxl) auto;
+    text-align: center;
+    padding: var(--space-xl) var(--space-md);
+}
+
+.error-code {
+    font-size: 8rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--accent);
+    margin-bottom: var(--space-md);
+}
+
+.error-title {
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    margin-bottom: var(--space-md);
+}
+
+.error-message {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    margin-bottom: var(--space-xl);
+}
+
+.error-search {
+    margin-bottom: var(--space-xl);
+}
+
+.error-search-form {
+    display: flex;
+    max-width: 400px;
+    margin: 0 auto;
+    gap: var(--space-sm);
+}
+
+.error-search-input {
+    flex: 1;
+    padding: var(--space-sm);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+}
+
+.error-search-btn {
+    padding: var(--space-sm) var(--space-md);
+    background: var(--accent);
+    color: var(--bg-white);
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.error-search-btn:hover {
+    opacity: 0.9;
+}
+
+.error-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+}
+
+.error-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-md);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    color: var(--text-main);
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.error-link:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.error-link-icon {
+    font-size: 2rem;
+}
+
+.error-link-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.error-back {
+    margin-bottom: var(--space-xl);
+}
+
+.error-suggestions {
+    text-align: left;
+    margin-bottom: var(--space-xl);
+}
+
+.error-suggestions h2 {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    margin-bottom: var(--space-md);
+}
+
+.error-post-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.error-post-list li {
+    padding: var(--space-xs) 0;
+}
+
+.error-post-list a {
+    color: var(--text-main);
+    text-decoration: none;
+}
+
+.error-post-list a:hover {
+    color: var(--accent);
+}
+
+.error-contact {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
 /* ============================================
    SECTIONS
    ============================================ */

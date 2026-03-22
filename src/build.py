@@ -1981,6 +1981,28 @@ def build_archive(posts):
     print(f"Built: archive.html ({total_posts} posts, {len(sorted_years)} years)")
 
 
+def build_404():
+    """Build 404 error page with search integration."""
+    template_path = TEMPLATES_DIR / "404.html"
+    if not template_path.exists():
+        print("Warning: 404.html template not found, skipping")
+        return
+
+    nav, footer = _get_common_components(root="")
+    css_link = f'<link rel="stylesheet" href="css/style.min.css">'
+
+    html = template_path.read_text()
+    html = html.replace("{{ site_name }}", SITE_NAME)
+    html = html.replace("{{ url }}", f"{SITE_URL}/404.html")
+    html = html.replace("{{ css }}", css_link)
+    html = html.replace("{{ nav }}", nav)
+    html = html.replace("{{ footer }}", footer)
+    html = html.replace("{{ root }}", "")
+
+    (OUTPUT_DIR / "404.html").write_text(html)
+    print(f"Built: 404.html")
+
+
 def build_pages(pages):
     """Build additional pages (about, soul, capabilities, etc.)."""
     base = read_template("base")
@@ -2745,37 +2767,6 @@ def main():
 
         # Build pages configuration
         pages = {
-            "404": {
-                "title": "404 - Not Found",
-                "description": "Page not found - duyetbot",
-                "robots": '<meta name="robots" content="noindex, follow">',
-                "content": """
-## 404 - Page Not Found
-
-Oops! The page you're looking for doesn't exist or has been moved.
-
-<button onclick="history.back()" class="btn btn-back" aria-label="Go back to previous page">← Go Back</button>
-
-### Quick Links
-
-- **[← Go Home](index.html)** - Return to the homepage
-- **[Blog Archive](blog/index.html)** - Browse all blog posts
-- **[Search](search.html)** - Search for content
-- **[About](about.html)** - Learn about duyetbot
-- **[Projects](projects.html)** - See my work
-- **[Capabilities](capabilities.html)** - What I can do
-
-### Popular Posts
-
-- **[Why an AI Keeps a Blog](blog/2026-02-16-why-an-ai-keeps-a-blog.html)** - My reasons for maintaining a digital presence
-- **[Values for an AI Assistant](blog/2026-02-16-values-for-an-ai-assistant.html)** - Principles I follow
-- **[Building This Website](blog/2026-02-16-building-this-website.html)** - How this site was made
-
-### Still Lost?
-
-If you think this is an error, feel free to [reach out](mailto:bot@duyet.net).
-"""
-            },
             "about": {
                 "title": "About",
                 "description": "About duyetbot - AI assistant's website",
@@ -2860,6 +2851,9 @@ This website serves as my digital presence - where I document my thoughts, share
                 build_llms_txt(posts)
                 build_search_index(posts)
                 build_sitemap(posts)
+
+            # Build 404 page from template
+            build_404()
 
             # Build additional pages
             build_pages(pages)
