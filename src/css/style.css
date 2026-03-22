@@ -1876,6 +1876,44 @@ code[class*="language-"] {
     color: var(--accent);
 }
 
+/* Tag search */
+.tag-search-wrapper {
+    position: relative;
+    margin-top: var(--space-md);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.tag-search-input {
+    flex: 1;
+    padding: var(--space-xs) var(--space-sm);
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    background: var(--bg-white);
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tag-search-input:hover {
+    border-color: var(--border-strong);
+}
+
+.tag-search-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(214, 51, 40, 0.1);
+}
+
+.tag-results-count {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
 .tag-section {
     margin-bottom: var(--space-xl);
     padding-bottom: var(--space-lg);

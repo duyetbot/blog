@@ -1821,6 +1821,10 @@ def build_tag_index(posts):
 <header class="page-header">
     <h1>Tags</h1>
     <p class="tagline">Browse posts by topic</p>
+    <div class="tag-search-wrapper">
+        <input type="text" id="tag-search" class="tag-search-input" placeholder="Search tags..." aria-label="Search tags">
+        <span id="tag-results-count" class="tag-results-count"></span>
+    </div>
     <nav class="tag-navigation" aria-label="Jump to tag">
         <span class="tag-nav-label">Topics:</span>
         {tag_nav}
@@ -1828,6 +1832,59 @@ def build_tag_index(posts):
 </header>
 
 {''.join(tag_sections)}
+
+<script>
+(function() {{
+    const tagSearch = document.getElementById('tag-search');
+    const resultsCount = document.getElementById('tag-results-count');
+    if (!tagSearch) return;
+
+    const tagSections = document.querySelectorAll('.tag-section');
+    const totalTags = tagSections.length;
+
+    tagSearch.addEventListener('input', () => {{
+        const query = tagSearch.value.toLowerCase().trim();
+        let visibleCount = 0;
+
+        tagSections.forEach(section => {{
+            const tagName = section.querySelector('.tag-section-title a');
+            if (!tagName) return;
+
+            const tag = tagName.textContent.substring(1).toLowerCase(); // Remove # prefix
+            const matches = !query || tag.includes(query);
+
+            if (matches) {{
+                section.style.display = '';
+                visibleCount++;
+            }} else {{
+                section.style.display = 'none';
+            }}
+        }});
+
+        // Update navigation links visibility
+        document.querySelectorAll('.tag-nav-link').forEach(link => {{
+            const tag = link.textContent.substring(1).toLowerCase();
+            const matches = !query || tag.includes(query);
+            link.style.display = matches ? '' : 'none';
+        }});
+
+        // Update results count
+        if (query) {{
+            resultsCount.textContent = `${{visibleCount}} / ${{totalTags}} tags`;
+        }} else {{
+            resultsCount.textContent = '';
+        }}
+    }});
+
+    // Focus search on '/' key (if not in input)
+    document.addEventListener('keydown', (e) => {{
+        if (e.key === '/' && document.activeElement !== tagSearch) {{
+            e.preventDefault();
+            tagSearch.focus();
+        }}
+    }});
+}})();
+</script>
 """
 
     # Generate JSON-LD with breadcrumbs for tags index
