@@ -336,9 +336,7 @@
                 toast.classList.remove('toast-show');
                 toast.classList.add('toast-hide');
                 setTimeout(() => {
-                    if (toast.parentNode) {
-                        toast.parentNode.removeChild(toast);
-                    }
+                    toast.parentNode.removeChild(toast);
                     processToastQueue();
                 }, 300); // Wait for hide animation
             }, TOAST_DURATION);
@@ -828,9 +826,7 @@
             document.body.classList.add('post-marked-read');
 
             // Show toast notification
-            if (window.showToast) {
-                window.showToast('✓ Marked as read');
-            }
+            window.showToast('✓ Marked as read');
         }
     }
 
@@ -853,9 +849,7 @@
             document.body.classList.remove('post-marked-read');
 
             // Show toast notification
-            if (window.showToast) {
-                window.showToast('○ Marked as unread');
-            }
+            window.showToast('○ Marked as unread');
         }
     }
 
@@ -1156,9 +1150,7 @@
                 ttsIcon.textContent = '🔊';
 
                 // Show completion toast
-                if (window.showToast) {
-                    window.showToast('✅ Finished reading article', 'success');
-                }
+                window.showToast('✅ Finished reading article', 'success');
             };
 
             utterance.onerror = () => {
