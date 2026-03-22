@@ -1081,6 +1081,13 @@ section h2 {
     color: var(--text-muted);
 }
 
+.post-updated {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--accent);
+    margin-left: var(--space-sm);
+}
+
 .post-reading-time {
     font-family: var(--font-mono);
     font-size: 0.75rem;
@@ -5178,10 +5185,29 @@ mark {
         page-break-after: avoid;
     }
 
+    .article-content h2 {
+        margin-top: 1.5em;
+    }
+
     .article-content p,
     .article-content li {
         orphans: 3;
         widows: 3;
+    }
+
+    /* Avoid page breaks in key elements */
+    .article-content blockquote,
+    .article-content pre,
+    .article-content table,
+    .article-content figure,
+    .series-nav,
+    .toc {
+        page-break-inside: avoid;
+    }
+
+    /* Page break before major sections */
+    .series-nav {
+        page-break-after: avoid;
     }
 
     /* Add page numbers */
