@@ -327,7 +327,8 @@ textarea:focus-visible {
 
 /* Mobile menu */
 .nav-toggle,
-.nav-close {
+.nav-close,
+.nav-backdrop {
     display: none;
 }
 
@@ -335,17 +336,39 @@ textarea:focus-visible {
     .site-nav .nav-links {
         display: none;
         position: fixed;
-        top: 60px;
+        top: 0;
         left: 0;
         right: 0;
+        bottom: 0;
         background: var(--bg-paper);
         flex-direction: column;
-        padding: var(--space-md);
-        border-bottom: 1px solid var(--border);
+        padding: calc(60px + var(--space-md)) var(--space-md) var(--space-md);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        gap: var(--space-sm);
+        z-index: 99;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: opacity 0.25s ease, transform 0.25s ease;
     }
 
     .site-nav .nav-links.active {
         display: flex;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .site-nav .nav-links a {
+        font-size: 1.1rem;
+        padding: var(--space-sm);
+        border-radius: var(--radius-sm);
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+    }
+
+    .site-nav .nav-links a:active {
+        background: var(--bg-white);
     }
 
     .nav-close {
@@ -359,10 +382,17 @@ textarea:focus-visible {
         color: var(--text-muted);
         cursor: pointer;
         padding: var(--space-xs);
+        min-width: 44px;
+        min-height: 44px;
+        z-index: 100;
     }
 
     .nav-close:hover {
         color: var(--text-main);
+    }
+
+    .nav-close:active {
+        transform: scale(0.95);
     }
 
     .nav-toggle {
@@ -371,6 +401,31 @@ textarea:focus-visible {
         border: 1px solid var(--border);
         padding: var(--space-xs);
         cursor: pointer;
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    .nav-toggle:active {
+        background: var(--bg-white);
+    }
+
+    .nav-backdrop {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+        z-index: 98;
+    }
+
+    .nav-backdrop.active {
+        opacity: 1;
+        pointer-events: auto;
     }
 }
 
