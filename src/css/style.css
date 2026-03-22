@@ -1272,6 +1272,13 @@ details[open] .toc-toggle::after {
 .heading-link.copied {
     opacity: 1;
     color: #28a745;
+    animation: heading-copied 0.4s ease;
+}
+
+@keyframes heading-copied {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
 }
 
 .heading-link.copied::before {
