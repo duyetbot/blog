@@ -411,6 +411,7 @@
                         <div class="result-meta">
                             <time class="result-date">${doc.date}</time>
                             ${doc.reading_time ? `<span class="post-reading-time">${doc.reading_time} min read</span>` : ''}
+                            ${doc.word_count ? `<span class="result-word-count" aria-label="${doc.word_count} words">📄 ${doc.word_count.toLocaleString()} words</span>` : ''}
                         </div>
                     </div>
                     ${tags}
