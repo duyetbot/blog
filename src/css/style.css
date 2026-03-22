@@ -25,9 +25,10 @@ html {
 body {
     font-family: 'Inter', -apple-system, sans-serif;
     line-height: 1.6;
-    color: #1a1a1a;
-    background: #faf9f7;
+    color: var(--text-main);
+    background: var(--bg-paper);
     min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ============================================
@@ -40,7 +41,7 @@ body {
     --bg-white: #ffffff;
     --text-main: #1a1a1a;
     --text-muted: #666666;
-    --accent: #b32820;  /* Darker red for better contrast (WCAG AA: ~6.2:1) */
+    --accent: #d63328;  /* Vibrant red with excellent contrast */
     --border: #e5e3e0;
     --border-strong: #d4d2cf;
 
@@ -112,13 +113,13 @@ body {
 }
 
 [data-theme="dark"] {
-    --bg-paper: #0a0a0a;
-    --bg-white: #111111;
-    --text-main: #e8e6e3;
-    --text-muted: #9a9895;
-    --accent: #e8564d;
-    --border: #2a2a2a;
-    --border-strong: #3a3a3a;
+    --bg-paper: #0d0d0d;
+    --bg-white: #141414;
+    --text-main: #e6e2dd;
+    --text-muted: #a39e97;
+    --accent: #ff6b5b;
+    --border: #2a2825;
+    --border-strong: #3a3835;
 }
 
 /* ============================================
