@@ -900,6 +900,26 @@ section h2 {
     color: var(--accent);
 }
 
+.post-source-link {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+}
+
+.post-source-link a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.post-source-link a:hover {
+    color: var(--accent);
+}
+
+.post-meta-separator {
+    color: var(--border);
+    margin: 0 0.5em;
+}
+
 /* Table of Contents */
 .toc {
     padding: var(--space-md) var(--space-lg);
@@ -3350,6 +3370,8 @@ mark {
     .article-author-bio,
     .article-share,
     .comments-section,
+    .post-source-link,
+    .post-meta-separator,
     .modal {
         display: none !important;
     }
