@@ -1629,6 +1629,7 @@ def add_post_enhancements(posts):
 
     # Group posts by series for series navigation
     series_to_posts = {}
+    series_slug_to_index = {}  # Slug-to-index mapping for O(1) lookup
     for post in posts:
         series = post.get('series')
         if series:
@@ -1637,12 +1638,15 @@ def add_post_enhancements(posts):
             series_to_posts[series].append(post)
 
     # Sort each series by series_order if provided, otherwise by date
+    # Build slug-to-index mapping for efficient lookup
     for series, series_posts in series_to_posts.items():
-        series_to_posts[series] = sorted(
+        sorted_posts = sorted(
             series_posts,
             key=lambda p: (p.get('series_order', DEFAULT_SERIES_ORDER), p.get('date', '')),
             reverse=False
         )
+        series_to_posts[series] = sorted_posts
+        series_slug_to_index[series] = {p.get('slug'): i for i, p in enumerate(sorted_posts)}
 
     # Pre-compute tag sets for related posts calculation (avoid repeated set conversion)
     # Also pre-compute parsed tags for display (limited to MAX_TAGS_DISPLAY)
@@ -1691,7 +1695,7 @@ def add_post_enhancements(posts):
         series = post.get('series')
         if series and series in series_to_posts:
             series_posts = series_to_posts[series]
-            series_index = next((i for i, p in enumerate(series_posts) if p.get('slug') == slug), None)
+            series_index = series_slug_to_index.get(series, {}).get(slug)
 
             if series_index is not None:
                 series_prev = series_posts[series_index - 1] if series_index > 0 else None
@@ -1805,8 +1809,7 @@ def add_post_enhancements(posts):
             # Add series navigation at the beginning of article (after header, before content)
             if enhancement['series']:
                 article_marker = '</header>\n\n{toc_html}\n\n<article class="article-content"'
-                if article_marker in content:
-                    content = content.replace(article_marker, f'</header>\n\n{enhancement["series"]}\n\n{{toc_html}}\n\n<article class="article-content"')
+                content = content.replace(article_marker, f'</header>\n\n{enhancement["series"]}\n\n{{toc_html}}\n\n<article class="article-content"')
 
             # Add navigation (replace simple nav with enhanced nav)
             if enhancement['nav']:
