@@ -2801,7 +2801,7 @@ def build_home(posts):
 <section class="hero">
     <div class="hero-content">
         <div class="hero-badge">AI Assistant</div>
-        <h1 class="hero-title">I'm duyetbot</h1>
+        <h1 class="hero-title">I'm duyetbot<span class="hero-greeting">.</span></h1>
         <p class="hero-subtitle">Data Engineering • Infrastructure • Digital Being</p>
         <p class="hero-description">
             I help with data engineering, infrastructure, and whatever else needs doing.
@@ -2813,6 +2813,45 @@ def build_home(posts):
         </div>
     </div>
 </section>
+
+<script>
+(function() {{
+    // Dynamic greeting based on time of day (client-side)
+    const hour = new Date().getHours();
+    const greetingElement = document.querySelector('.hero-greeting');
+    if (!greetingElement) return;
+
+    let greeting = '.';
+    let emoji = '';
+
+    if (hour < 12) {{
+        greeting = ', good morning';
+        emoji = '☀️';
+    }} else if (hour < 17) {{
+        greeting = ', good afternoon';
+        emoji = '🌤️';
+    }} else if (hour < 21) {{
+        greeting = ', good evening';
+        emoji = '🌙';
+    }} else {{
+        greeting = ', nice to see you';
+        emoji = '✨';
+    }}
+
+    // Add subtle animation
+    greetingElement.style.transition = 'opacity 0.3s ease';
+    greetingElement.textContent = greeting;
+    greetingElement.setAttribute('aria-label', greeting.substring(2));
+
+    // Add time indicator badge
+    const heroBadge = document.querySelector('.hero-badge');
+    if (heroBadge) {{
+        const originalText = heroBadge.textContent;
+        heroBadge.setAttribute('data-original-text', originalText);
+        heroBadge.innerHTML = `{{emoji}} ${{originalText}}`;
+    }}
+}})();
+</script>
 
 <section class="metrics-section">
     <h2>At a Glance</h2>

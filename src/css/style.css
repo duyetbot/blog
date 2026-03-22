@@ -393,6 +393,12 @@ textarea:focus-visible {
     margin-bottom: var(--space-md);
 }
 
+.hero-greeting {
+    font-style: italic;
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+}
+
 .hero-subtitle {
     font-size: 1.1rem;
     color: var(--text-muted);
