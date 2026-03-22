@@ -4200,8 +4200,21 @@ mark {
     height: 100%;
     width: 0%;
     background: var(--accent);
+    background-image: linear-gradient(
+        90deg,
+        var(--accent) 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        var(--accent) 100%
+    );
+    background-size: 200% 100%;
     transition: width 0.1s linear;
     position: relative;
+    animation: progressShimmer 2s linear infinite;
+}
+
+@keyframes progressShimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
 }
 
 /* Percentage tooltip on hover */
