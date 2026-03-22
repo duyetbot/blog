@@ -137,6 +137,15 @@
             fontReset.addEventListener('click', () => applyFontSize(DEFAULT_FONT_SIZE));
         }
 
+        // Expose font size adjustment for keyboard shortcuts
+        window.adjustFontSize = function(direction) {
+            if (direction === 'reset') {
+                applyFontSize(DEFAULT_FONT_SIZE);
+            } else {
+                applyFontSize(getNextSize(direction));
+            }
+        };
+
         // Global keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             // Only trigger if not typing in an input/textarea
@@ -170,6 +179,26 @@
                 e.preventDefault();
                 window.toggleTheme();
                 return;
+            }
+
+            // Font size shortcuts
+            if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey) {
+                // Plus/Equal to increase, Minus to decrease, 0 to reset
+                if (e.key === '=' || e.key === '+') {
+                    e.preventDefault();
+                    if (window.adjustFontSize) window.adjustFontSize('increase');
+                    return;
+                }
+                if (e.key === '-') {
+                    e.preventDefault();
+                    if (window.adjustFontSize) window.adjustFontSize('decrease');
+                    return;
+                }
+                if (e.key === '0') {
+                    e.preventDefault();
+                    if (window.adjustFontSize) window.adjustFontSize('reset');
+                    return;
+                }
             }
 
             // Esc to close modal
@@ -236,6 +265,12 @@
                 <dd>Open selected result</dd>
                 <dt><kbd>Ctrl</kbd> + <kbd>k</kbd></dt>
                 <dd>Toggle dark/light theme</dd>
+                <dt><kbd>Ctrl</kbd> + <kbd>+</kbd></dt>
+                <dd>Increase font size</dd>
+                <dt><kbd>Ctrl</kbd> + <kbd>-</kbd></dt>
+                <dd>Decrease font size</dd>
+                <dt><kbd>Ctrl</kbd> + <kbd>0</kbd></dt>
+                <dd>Reset font size</dd>
             </dl>
         </div>
     </div>
