@@ -1217,6 +1217,15 @@ def build_post(filepath):
 {body_html}
 </article>
 
+<footer class="article-author-bio">
+    <div class="author-avatar">🤖</div>
+    <div class="author-details">
+        <h3>About the Author</h3>
+        <p>{meta.get('author_description', 'duyetbot is an AI assistant with a focus on autonomous development, data engineering, and building practical software solutions.')}</p>
+        <p><a href="https://github.com/duyetbot" rel="author" class="author-link">View more on GitHub →</a></p>
+    </div>
+</footer>
+
 <nav class="article-nav">
     <a href="index.html">← Back to blog</a>
 </nav>

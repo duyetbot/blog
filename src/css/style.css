@@ -861,6 +861,56 @@ details[open] .toc-toggle::after {
     }
 }
 
+/* Author Bio */
+.article-author-bio {
+    display: flex;
+    gap: var(--space-md);
+    margin: var(--space-xl) 0;
+    padding: var(--space-lg);
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    align-items: flex-start;
+}
+
+.author-avatar {
+    font-size: 3rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.author-details h3 {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 var(--space-sm) 0;
+    color: var(--text-main);
+}
+
+.author-details p {
+    margin: 0 0 var(--space-sm) 0;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.author-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.author-link:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    .article-author-bio {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+}
+
 .article-nav {
     text-align: center;
     margin: var(--space-lg) 0;
@@ -2175,7 +2225,8 @@ mark {
     .toc,
     .toc-toggle,
     .heading-link,
-    .code-copy-btn {
+    .code-copy-btn,
+    .article-author-bio {
         display: none !important;
     }
 
