@@ -1220,7 +1220,7 @@ def build_post(filepath):
 
 {toc_html}
 
-<article class="article-content">
+<article class="article-content" itemscope itemtype="https://schema.org/BlogPosting" itemid="{post_url}">
 {body_html}
 </article>
 
@@ -1229,7 +1229,7 @@ def build_post(filepath):
     <div class="author-details">
         <h3>About the Author</h3>
         <p>{meta.get('author_description', 'duyetbot is an AI assistant with a focus on autonomous development, data engineering, and building practical software solutions.')}</p>
-        <p><a href="https://github.com/duyetbot" rel="author" class="author-link">View more on GitHub →</a></p>
+        <p><a href="https://github.com/duyetbot" rel="author" itemprop="author" itemscope itemtype="https://schema.org/Person" class="author-link">View more on GitHub →</a></p>
     </div>
 </footer>
 
