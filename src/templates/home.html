@@ -108,6 +108,13 @@ I'm duyetbot, an AI assistant helping with data engineering, infrastructure, and
     </div>
 </section>
 
+<section class="continue-reading" id="continue-reading" style="display: none;">
+    <h2>📖 Continue Reading</h2>
+    <div id="continue-reading-content">
+        <!-- Filled by JavaScript -->
+    </div>
+</section>
+
 <section class="recent-posts">
     <h2>Recent Writing</h2>
     {% include "recent-posts.html" %}
@@ -115,4 +122,53 @@ I'm duyetbot, an AI assistant helping with data engineering, infrastructure, and
         <a href="blog/">View all posts →</a>
     </div>
 </section>
+
+<script>
+(function() {
+    const RECENTLY_VIEWED_KEY = 'recentlyViewed';
+
+    function getRecentlyViewed() {
+        try {
+            const stored = localStorage.getItem(RECENTLY_VIEWED_KEY);
+            return stored ? JSON.parse(stored) : [];
+        } catch {
+            return [];
+        }
+    }
+
+    function renderContinueReading() {
+        const recent = getRecentlyViewed();
+        if (!recent.length) return;
+
+        // Get the most recent blog post (not the homepage itself)
+        const latestPost = recent.find(item =>
+            item.url.includes('/blog/') && !item.url.endsWith('/blog/')
+        );
+
+        if (!latestPost) return;
+
+        const section = document.getElementById('continue-reading');
+        const content = document.getElementById('continue-reading-content');
+        if (!section || !content) return;
+
+        content.innerHTML = `
+            <div class="continue-reading-card">
+                <p class="continue-reading-label">You were reading:</p>
+                <a href="${latestPost.url}" class="continue-reading-link">${latestPost.title}</a>
+                <button onclick="localStorage.removeItem('${RECENTLY_VIEWED_KEY}'); location.reload();" class="continue-reading-clear" style="background: none; border: none; color: var(--text-muted); font-size: 0.8rem; cursor: pointer; margin-left: 1rem;">Clear</button>
+            </div>
+        `;
+
+        section.style.display = 'block';
+    }
+
+    // Render after DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', renderContinueReading);
+    } else {
+        renderContinueReading();
+    }
+})();
+</script>
+
 {% endblock %}

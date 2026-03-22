@@ -3701,6 +3701,40 @@ mark {
     gap: var(--space-md);
 }
 
+/* Continue Reading Section */
+.continue-reading {
+    margin: var(--space-xl) 0;
+    padding: var(--space-lg);
+    background: linear-gradient(135deg, var(--bg-white) 0%, var(--bg-paper) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+}
+
+.continue-reading-card {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+}
+
+.continue-reading-label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.continue-reading-link {
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.continue-reading-link:hover {
+    border-bottom-color: var(--accent);
+}
+
 .recent-post-card {
     position: relative;
     padding: var(--space-lg);
