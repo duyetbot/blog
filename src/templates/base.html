@@ -79,17 +79,56 @@
 
         window.toggleTheme = toggleTheme;
 
-        // Global keyboard shortcut: "/" to open search
+        // Global keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             // Only trigger if not typing in an input/textarea
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
                 return;
             }
+
+            // ? key to show shortcuts modal
+            if (e.key === '?' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                e.preventDefault();
+                const modal = document.getElementById('shortcuts-modal');
+                if (modal) {
+                    const isHidden = modal.getAttribute('aria-hidden') === 'true';
+                    modal.setAttribute('aria-hidden', !isHidden);
+                    if (isHidden) {
+                        modal.querySelector('.modal-close').focus();
+                    }
+                }
+                return;
+            }
+
+            // / key to open search
             if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) {
                 e.preventDefault();
                 window.location.href = '/search.html';
             }
+
+            // Esc to close modal
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('shortcuts-modal');
+                if (modal && modal.getAttribute('aria-hidden') === 'false') {
+                    modal.setAttribute('aria-hidden', 'true');
+                }
+            }
         });
+
+        // Modal close handlers
+        const modal = document.getElementById('shortcuts-modal');
+        if (modal) {
+            const closeBtn = modal.querySelector('.modal-close');
+            const overlay = modal.querySelector('.modal-overlay');
+
+            closeBtn.addEventListener('click', () => {
+                modal.setAttribute('aria-hidden', 'true');
+            });
+
+            overlay.addEventListener('click', () => {
+                modal.setAttribute('aria-hidden', 'true');
+            });
+        }
     })();
     </script>
 </head>
@@ -108,6 +147,33 @@
 <button id="back-to-top" class="back-to-top" aria-label="Back to top" tabindex="-1">
     <span aria-hidden="true">↑</span>
 </button>
+
+<!-- Keyboard Shortcuts Modal -->
+<div id="shortcuts-modal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="shortcuts-title">
+    <div class="modal-overlay" tabindex="-1"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="shortcuts-title">Keyboard Shortcuts</h2>
+            <button class="modal-close" aria-label="Close modal">×</button>
+        </div>
+        <div class="modal-body">
+            <dl class="shortcuts-list">
+                <dt><kbd>/</kbd> or <kbd>s</kbd></dt>
+                <dd>Open search</dd>
+                <dt><kbd>?</kbd></dt>
+                <dd>Show this help dialog</dd>
+                <dt><kbd>Esc</kbd></dt>
+                <dd>Close modal / Clear search</dd>
+                <dt><kbd>↑</kbd> <kbd>↓</kbd></dt>
+                <dd>Navigate search results</dd>
+                <dt><kbd>Enter</kbd></dt>
+                <dd>Open selected result</dd>
+                <dt><kbd>Ctrl</kbd> + <kbd>k</kbd></dt>
+                <dd>Toggle dark/light theme</dd>
+            </dl>
+        </div>
+    </div>
+</div>
 
 <script>
 (function() {
