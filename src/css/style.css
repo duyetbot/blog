@@ -702,7 +702,7 @@ section h2 {
     text-decoration: none;
     padding: 0.25em 0.5em;
     border-radius: 4px;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
 
 .year-nav-link:hover {
@@ -975,7 +975,7 @@ details[open] .toc-toggle::after {
     color: var(--text-muted);
     text-decoration: none;
     border-bottom: 1px solid transparent;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
 
 .toc-top:hover {
@@ -1124,7 +1124,7 @@ details[open] .toc-toggle::after {
     text-decoration: none;
     border: 1px solid var(--border);
     border-radius: 4px;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
 
 .article-nav-pager a:hover {
@@ -1138,6 +1138,29 @@ details[open] .toc-toggle::after {
 
 .article-nav-pager a[rel="next"] {
     text-align: left;
+}
+
+/* Keyboard navigation hint for article nav */
+.article-nav-pager a::after {
+    content: '';
+    font-size: 0.75rem;
+    opacity: 0;
+    margin-left: var(--space-sm);
+    color: var(--text-muted);
+    transition: opacity 0.2s ease;
+}
+
+.article-nav-pager a[rel="next"]::after {
+    content: '←';
+}
+
+.article-nav-pager a[rel="prev"]::after {
+    content: '→';
+}
+
+.article-nav-pager a:hover::after,
+.article-nav-pager a:focus::after {
+    opacity: 0.6;
 }
 
 @media (max-width: 600px) {
@@ -1237,7 +1260,7 @@ details[open] .toc-toggle::after {
     color: var(--text-main);
     font-size: 0.9rem;
     font-family: var(--font-sans);
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
     background: var(--bg-white);
     cursor: pointer;
 }
@@ -1765,7 +1788,7 @@ code[class*="language-"] {
     font-size: 0.75rem;
     color: var(--text-muted);
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
 
 .tag-chip:hover {
@@ -2869,7 +2892,7 @@ mark {
     cursor: pointer;
     color: var(--text-muted);
     border-radius: var(--radius-sm);
-    transition: all var(--transition-fast);
+    transition: color var(--transition-fast), background-color var(--transition-fast);
 }
 
 .modal-close:hover {
