@@ -4572,6 +4572,7 @@ mark {
     #streak-separator,
     .mark-read-btn,
     #mark-read-separator,
+    .post-marked-read .article-header::before,
     .modal {
         display: none !important;
     }
@@ -4590,15 +4591,20 @@ mark {
         margin: 0;
     }
 
-    /* Add URL and date to print header */
+    /* Add URL, date, and reading time to print header */
     .article-header::before {
-        content: "Source: " attr(data-url);
+        content: "Source: " attr(data-url) " • Reading time: " attr(data-reading-time) " minutes";
         display: block;
         font-size: 9pt;
         color: #666;
         margin-bottom: 1em;
         border-bottom: 1px solid #ddd;
         padding-bottom: 0.5em;
+    }
+
+    /* Fallback for articles without reading time */
+    .article-header[data-reading-time=""]::before {
+        content: "Source: " attr(data-url);
     }
 
     /* Article headers */

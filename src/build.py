@@ -986,11 +986,12 @@ def _format_iso_date(dt):
     return dt.isoformat()
 
 
-def generate_article_meta_tags(meta):
+def generate_article_meta_tags(meta, reading_time=None):
     """Generate Open Graph article meta tags for blog posts.
 
     Args:
         meta: Post metadata dict with date, modified, tags, author, etc.
+        reading_time: Estimated reading time in minutes
 
     Returns:
         HTML string with article meta tags, or empty string if not applicable
@@ -1011,6 +1012,10 @@ def generate_article_meta_tags(meta):
     modified_iso = _format_iso_date(modified_dt or dt)
     if modified_iso:
         parts.append(f'    <meta property="article:modified_time" content="{modified_iso}">')
+
+    # Article reading time (estimated)
+    if reading_time and reading_time > 0:
+        parts.append(f'    <meta property="article:reading_time" content="{reading_time}">')
 
     # Article author
     author = meta.get('author', 'duyetbot')
@@ -1563,7 +1568,7 @@ def build_post(filepath):
 
     # Render HTML
     json_ld = generate_json_ld_article(meta, post_url, reading_time, word_count)
-    article_meta = generate_article_meta_tags(meta)
+    article_meta = generate_article_meta_tags(meta, reading_time)
     html = render_template_with_common_vars(
         base,
         title=f"{meta.get('title', 'Untitled')} // duyetbot",
