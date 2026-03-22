@@ -822,6 +822,7 @@ def generate_toc_html(headers):
     return f"""<nav class="toc" aria-label="Table of Contents">
     <details open>
         <summary class="toc-toggle">Table of Contents</summary>
+        <div class="toc-progress" aria-hidden="true"></div>
         <ul>
 {"\n".join(items)}
         </ul>

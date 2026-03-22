@@ -1094,6 +1094,27 @@ details[open] .toc-toggle::after {
     color: var(--accent);
 }
 
+.toc-progress {
+    position: relative;
+    height: 3px;
+    background: var(--border);
+    margin-bottom: var(--space-sm);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.toc-progress::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: var(--toc-progress, 0%);
+    background: var(--accent);
+    border-radius: var(--radius-sm);
+    transition: width 0.3s ease;
+}
+
 .toc details[open] summary ~ * {
     animation: slideDown 0.2s ease-out;
 }
