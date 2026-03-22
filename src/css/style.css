@@ -249,13 +249,15 @@ textarea:focus-visible {
     background: none;
     border: none;
     cursor: pointer;
-    padding: var(--space-xs);
+    padding: var(--space-sm);
     font-size: 1.1rem;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 4px;
     transition: background var(--transition-fast);
+    min-width: 44px;
+    min-height: 44px;
 }
 
 .theme-toggle:hover {
@@ -301,14 +303,15 @@ textarea:focus-visible {
     background: none;
     border: none;
     cursor: pointer;
-    padding: var(--space-xs);
+    padding: var(--space-sm);
     font-size: 0.85rem;
     font-family: var(--font-mono);
     font-weight: 600;
     color: var(--text-muted);
     border-radius: 4px;
     transition: background var(--transition-fast), color var(--transition-fast);
-    min-width: 28px;
+    min-width: 44px;
+    min-height: 44px;
 }
 
 .font-size-btn:hover {
