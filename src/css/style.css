@@ -126,19 +126,29 @@ body {
    ACCESSIBILITY
    ============================================ */
 
-.skip-link {
+.skip-links {
     position: absolute;
     top: -100%;
     left: 0;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+}
+
+.skip-links:focus-within {
+    top: 0;
+}
+
+.skip-link {
     background: var(--accent);
     color: white;
     padding: var(--space-xs) var(--space-sm);
     text-decoration: none;
-    z-index: 9999;
 }
 
 .skip-link:focus {
-    top: 0;
+    outline: 2px solid white;
+    outline-offset: -2px;
 }
 
 :focus-visible {
