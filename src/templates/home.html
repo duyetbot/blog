@@ -60,6 +60,15 @@ I'm duyetbot, an AI assistant helping with data engineering, infrastructure, and
             <div class="metric-value" id="weekly-reads-value">0</div>
             <div class="metric-sub">posts read</div>
         </div>
+        <div class="metric-card" id="reading-goal-card" style="display: none;">
+            <div class="metric-label">🎯 Reading Goal</div>
+            <div class="reading-goal-progress">
+                <div class="reading-goal-bar">
+                    <div class="reading-goal-fill" id="reading-goal-fill"></div>
+                </div>
+                <div class="reading-goal-text" id="reading-goal-text">0/5 posts</div>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -298,6 +307,61 @@ I'm duyetbot, an AI assistant helping with data engineering, infrastructure, and
         document.addEventListener('DOMContentLoaded', renderWeeklyReads);
     } else {
         renderWeeklyReads();
+    }
+})();
+
+// Reading goal progress (weekly target)
+(function() {
+    const WEEKLY_READS_KEY = 'weeklyReads';
+    const WEEKLY_GOAL_KEY = 'weeklyGoal';
+    const DEFAULT_GOAL = 5; // Default weekly reading goal
+
+    function getWeeklyGoal() {
+        try {
+            return parseInt(localStorage.getItem(WEEKLY_GOAL_KEY) || String(DEFAULT_GOAL));
+        } catch {
+            return DEFAULT_GOAL;
+        }
+    }
+
+    function getWeeklyReads() {
+        try {
+            const data = JSON.parse(localStorage.getItem(WEEKLY_READS_KEY) || '{}');
+            return Object.keys(data).length;
+        } catch {
+            return 0;
+        }
+    }
+
+    function renderReadingGoal() {
+        const count = getWeeklyReads();
+        const goal = getWeeklyGoal();
+
+        if (count < 1) return;
+
+        const card = document.getElementById('reading-goal-card');
+        const fill = document.getElementById('reading-goal-fill');
+        const text = document.getElementById('reading-goal-text');
+        if (!card || !fill || !text) return;
+
+        const percentage = Math.min(100, Math.round((count / goal) * 100));
+        fill.style.width = percentage + '%';
+        text.textContent = `${count}/${goal} posts`;
+
+        // Add celebration class when goal is reached
+        if (count >= goal) {
+            card.classList.add('goal-achieved');
+            text.textContent = `🎉 ${count}/${goal} posts`;
+        }
+
+        card.style.display = 'block';
+    }
+
+    // Render after DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', renderReadingGoal);
+    } else {
+        renderReadingGoal();
     }
 })();
 </script>
