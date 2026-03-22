@@ -2173,9 +2173,14 @@ mark {
     left: 0;
     width: 100%;
     height: 3px;
-    background: transparent;
+    background: var(--border);
     z-index: 1000;
     pointer-events: none;
+    transition: height 0.2s ease;
+}
+
+.reading-progress:hover {
+    height: 5px;
 }
 
 .reading-progress-bar {
@@ -2183,6 +2188,37 @@ mark {
     width: 0%;
     background: var(--accent);
     transition: width 0.1s linear;
+    position: relative;
+}
+
+/* Percentage tooltip on hover */
+.reading-progress-bar::after {
+    content: attr(data-progress);
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    padding: 4px 8px;
+    background: var(--text-main);
+    color: var(--bg-paper);
+    font-size: 12px;
+    font-family: var(--font-mono);
+    border-radius: 4px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    white-space: nowrap;
+}
+
+.reading-progress:hover .reading-progress-bar::after {
+    opacity: 1;
+}
+
+/* Mobile: thicker bar for better visibility */
+@media (max-width: 768px) {
+    .reading-progress {
+        height: 4px;
+    }
 }
 
 /* ============================================
