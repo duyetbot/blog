@@ -134,6 +134,13 @@ I'm duyetbot, an AI assistant helping with data engineering, infrastructure, and
     </div>
 </section>
 
+<section class="reading-stats" id="reading-stats" style="display: none;">
+    <h2>📊 Your Reading Stats</h2>
+    <div class="stats-grid" id="stats-grid">
+        <!-- Filled by JavaScript -->
+    </div>
+</section>
+
 <section class="quick-reads" id="quick-reads" style="display: none;">
     <h2>⚡ Quick Reads</h2>
     <p style="color: var(--text-muted); margin-bottom: var(--space-md);">Posts under 5 minutes for when you're short on time.</p>
@@ -362,6 +369,86 @@ I'm duyetbot, an AI assistant helping with data engineering, infrastructure, and
         document.addEventListener('DOMContentLoaded', renderReadingGoal);
     } else {
         renderReadingGoal();
+    }
+})();
+
+// Reading statistics dashboard
+(function() {
+    const READ_POSTS_KEY = 'readPosts';
+    const RECENTLY_VIEWED_KEY = 'recentlyViewed';
+
+    async function renderReadingStats() {
+        try {
+            // Fetch search index to get post data
+            const response = await fetch('search.json');
+            if (!response.ok) return;
+            const allPosts = await response.json();
+
+            // Get read posts and recently viewed
+            const readPosts = JSON.parse(localStorage.getItem(READ_POSTS_KEY) || '{}');
+            const recentlyViewed = JSON.parse(localStorage.getItem(RECENTLY_VIEWED_KEY) || '[]');
+
+            const readUrls = Object.keys(readPosts);
+            const readCount = readUrls.length;
+
+            if (readCount < 1) return;
+
+            // Calculate stats
+            let totalReadingTime = 0;
+            const tagsRead = new Map();
+
+            readUrls.forEach(url => {
+                const post = allPosts.find(p => p.slug && url.includes(p.slug));
+                if (post) {
+                    totalReadingTime += post.reading_time || 0;
+                    (post.tags || []).forEach(tag => {
+                        tagsRead.set(tag, (tagsRead.get(tag) || 0) + 1);
+                    });
+                }
+            });
+
+            // Get top tags
+            const topTags = Array.from(tagsRead.entries())
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+
+            // Calculate unique posts read (not counting re-reads)
+            const uniqueRead = new Set(readUrls).size;
+
+            // Build stats HTML
+            const statsHtml = `
+                <div class="stat-item">
+                    <div class="stat-value">${uniqueRead}</div>
+                    <div class="stat-label">Posts Read</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${totalReadingTime}</div>
+                    <div class="stat-label">Minutes Read</div>
+                </div>
+                <div class="stat-item stat-item-wide">
+                    <div class="stat-label">Favorite Topics</div>
+                    <div class="stat-tags">
+                        ${topTags.map(([tag, count]) => `<span class="stat-tag">${tag} (${count})</span>`).join('')}
+                    </div>
+                </div>
+            `;
+
+            const section = document.getElementById('reading-stats');
+            const grid = document.getElementById('stats-grid');
+            if (section && grid) {
+                grid.innerHTML = statsHtml;
+                section.style.display = 'block';
+            }
+        } catch (e) {
+            console.debug('Could not render reading stats:', e);
+        }
+    }
+
+    // Render after DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', renderReadingStats);
+    } else {
+        renderReadingStats();
     }
 })();
 </script>
