@@ -38,6 +38,14 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Smooth theme transition */
+body.theme-transitioning,
+body.theme-transitioning *,
+body.theme-transitioning *::before,
+body.theme-transitioning *::after {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease !important;
+}
+
 /* ============================================
    EDITORIAL TYPOGRAPHY
    ============================================ */
@@ -4957,6 +4965,57 @@ mark {
         0% { opacity: 1; }
         100% { opacity: 0; }
     }
+}
+
+/* ============================================
+   SHARE SELECTION BUTTON
+   ============================================ */
+
+.share-selection-btn {
+    position: absolute;
+    display: none;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: 0.5rem 0.75rem;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    animation: fadeIn 0.2s ease;
+}
+
+.share-selection-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.share-selection-btn .share-icon {
+    font-size: 1rem;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Highlight for text fragments */
+::target-text {
+    background: #fff3cd;
+    padding: 0.1em 0.2em;
+    border-radius: 2px;
 }
 
 /* ============================================
