@@ -954,6 +954,12 @@ section h2 {
     margin: 0 0.5em;
 }
 
+.post-word-count {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
 /* Table of Contents */
 .toc {
     padding: var(--space-md) var(--space-lg);

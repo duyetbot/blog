@@ -1299,6 +1299,7 @@ def build_post(filepath):
         <time class="post-date" datetime="{iso_date}" itemprop="datePublished">{format_date(meta.get('date', ''), parsed_dt)}</time>
         <meta itemprop="dateModified" content="{iso_date}">
         <span class="post-reading-time" aria-label="{reading_time} minute read">🕐 {reading_time}{READING_TIME_SUFFIX}</span>
+        <span class="post-word-count" aria-label="{word_count} words">📄 {word_count} words</span>
         <span class="post-author">by <a href="https://github.com/duyetbot" rel="author">duyetbot</a></span>
         <span class="post-meta-separator">·</span>
         <span class="post-source-link"><a href="{slug}.md" rel="alternate" type="text/markdown">View source</a></span>
