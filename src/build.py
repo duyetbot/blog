@@ -1501,9 +1501,16 @@ def build_blog_index(posts):
             date = meta.get('date', '')
             description = meta.get('description', '')
             reading_time = meta.get('reading_time')
+            tags = parse_tags(meta.get('tags', []))
 
             # Generate new badge using helper
             new_badge = build_new_badge_html(parsed_dt)
+
+            # Generate tag badges (limit to 3 for blog index)
+            MAX_TAGS_DISPLAY = 3
+            display_tags = tags[:MAX_TAGS_DISPLAY]
+            tag_badges = ''.join(f'<a href="../tags.html#{slugify(tag)}" class="post-tag-badge">{escape_xml(tag)}</a>' for tag in display_tags) if display_tags else ''
+            tags_html = f'<div class="post-tags">{tag_badges}</div>' if tag_badges else ''
 
             post_meta = build_post_meta_html(date, parsed_dt, reading_time)
             post_list.append(f"""
@@ -1511,6 +1518,7 @@ def build_blog_index(posts):
     {post_meta}
     <h3 itemprop="headline"><a href="{slug}.html" itemprop="url">{title}</a>{new_badge}</h3>
     <p itemprop="description">{description}</p>
+    {tags_html}
 </article>
 """)
 

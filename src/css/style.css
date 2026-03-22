@@ -485,6 +485,30 @@ section h2 {
     line-height: 1.6;
 }
 
+/* Post tags on blog index */
+.post-tags {
+    display: flex;
+    gap: var(--space-xs);
+    flex-wrap: wrap;
+    margin-top: var(--space-sm);
+}
+
+.post-tag-badge {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 0.15em 0.5em;
+    background: var(--bg-paper);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.post-tag-badge:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
 /* Year navigation */
 .year-navigation {
     display: flex;
