@@ -1357,6 +1357,10 @@ def build_post(filepath):
     </div>
 </div>
 
+<section class="subscribe-reminder">
+    <p>Enjoyed this article? <a href="{SITE_URL}/rss.xml">Subscribe to the RSS feed</a> to get notified about new posts.</p>
+</section>
+
 <section id="comments" class="comments-section" aria-labelledby="comments-title">
     <h2 id="comments-title">Comments</h2>
     <p class="comments-placeholder">

@@ -1586,6 +1586,35 @@ details[open] .toc-toggle::after {
     color: var(--accent);
 }
 
+/* Subscribe Reminder */
+.subscribe-reminder {
+    margin: var(--space-xl) 0;
+    padding: var(--space-lg);
+    background: var(--bg-paper);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius-sm);
+    text-align: center;
+}
+
+.subscribe-reminder p {
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.subscribe-reminder a {
+    color: var(--accent);
+    font-weight: 500;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.subscribe-reminder a:hover {
+    border-bottom-color: var(--accent);
+}
+
 @media (max-width: 600px) {
     .share-links {
         flex-direction: column;
