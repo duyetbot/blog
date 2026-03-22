@@ -68,6 +68,11 @@
             <div id="tag-chips" class="tag-chips"></div>
             <button id="clear-tags" class="clear-tags" style="display: none;">Clear tags</button>
         </div>
+        <div id="reading-time-filters" class="reading-time-filters" style="display: none;">
+            <span class="reading-time-filters-label">Reading time:</span>
+            <div id="reading-time-chips" class="reading-time-chips"></div>
+            <button id="clear-reading-time" class="clear-reading-time" style="display: none;">Clear</button>
+        </div>
     </section>
 
     <!-- Search Results -->
@@ -127,6 +132,9 @@
     const tagFilters = document.getElementById('tag-filters');
     const tagChips = document.getElementById('tag-chips');
     const clearTagsBtn = document.getElementById('clear-tags');
+    const readingTimeFilters = document.getElementById('reading-time-filters');
+    const readingTimeChips = document.getElementById('reading-time-chips');
+    const clearReadingTimeBtn = document.getElementById('clear-reading-time');
     const skeletonResults = document.getElementById('skeleton-results');
     const searchEmpty = document.getElementById('search-empty');
 
@@ -135,12 +143,21 @@
     let selectedIndex = -1;
     let allTags = [];
     let selectedTags = new Set();
+    let selectedReadingTime = null;
+
+    // Reading time filter definitions
+    const READING_TIME_FILTERS = [
+        { id: 'short', label: '🍕 Short', min: 0, max: 5 },
+        { id: 'medium', label: '📖 Medium', min: 5, max: 10 },
+        { id: 'long', label: '📚 Long', min: 10, max: Infinity }
+    ];
 
     // URL query parameter support for shareable searches
-    function updateURL(query, tags) {
+    function updateURL(query, tags, readingTime) {
         const params = new URLSearchParams();
         if (query) params.set('q', query);
         if (tags.size > 0) params.set('tags', Array.from(tags).join(','));
+        if (readingTime) params.set('time', readingTime);
         const newURL = params.toString() ? `?${params}` : 'search.html';
         history.replaceState(null, '', newURL);
     }
@@ -149,11 +166,15 @@
         const params = new URLSearchParams(window.location.search);
         const query = params.get('q') || '';
         const tagsParam = params.get('tags');
+        const timeParam = params.get('time');
         if (tagsParam) {
             tagsParam.split(',').forEach(tag => {
                 const decoded = decodeURIComponent(tag);
                 if (decoded) selectedTags.add(decoded);
             });
+        }
+        if (timeParam && READING_TIME_FILTERS.find(f => f.id === timeParam)) {
+            selectedReadingTime = timeParam;
         }
         return query;
     }
@@ -170,13 +191,17 @@
             postCount.textContent = searchIndex.total;
             extractTags();
             renderTags();
+            renderReadingTimeFilters();
 
             // Initialize from URL parameters
             const initialQuery = parseURLParams();
-            if (initialQuery || selectedTags.size > 0) {
+            if (initialQuery || selectedTags.size > 0 || selectedReadingTime) {
                 searchInput.value = initialQuery;
                 if (selectedTags.size > 0) {
                     updateTagsUI();
+                }
+                if (selectedReadingTime) {
+                    updateReadingTimeUI();
                 }
             }
 
@@ -250,6 +275,52 @@
     clearTagsBtn.addEventListener('click', () => {
         selectedTags.clear();
         updateTagsUI();
+        performSearch(searchInput.value.trim());
+    });
+
+    // Render reading time filter chips
+    function renderReadingTimeFilters() {
+        readingTimeFilters.style.display = 'block';
+        updateReadingTimeUI();
+    }
+
+    // Update reading time chips state
+    function updateReadingTimeUI() {
+        clearReadingTimeBtn.style.display = selectedReadingTime ? 'inline-block' : 'none';
+
+        readingTimeChips.innerHTML = READING_TIME_FILTERS.map(filter => {
+            const isSelected = selectedReadingTime === filter.id;
+            return `
+                <button
+                    class="reading-time-chip ${isSelected ? 'active' : ''}"
+                    data-time="${filter.id}"
+                    aria-pressed="${isSelected}"
+                >
+                    ${escapeHtml(filter.label)}
+                </button>
+            `;
+        }).join('');
+    }
+
+    // Event delegation for reading time chips
+    readingTimeChips.addEventListener('click', (e) => {
+        const chip = e.target.closest('.reading-time-chip');
+        if (!chip) return;
+
+        const timeId = chip.dataset.time;
+        if (selectedReadingTime === timeId) {
+            selectedReadingTime = null;
+        } else {
+            selectedReadingTime = timeId;
+        }
+        updateReadingTimeUI();
+        performSearch(searchInput.value.trim());
+    });
+
+    // Clear reading time button
+    clearReadingTimeBtn.addEventListener('click', () => {
+        selectedReadingTime = null;
+        updateReadingTimeUI();
         performSearch(searchInput.value.trim());
     });
 
@@ -380,15 +451,15 @@
 
         // Update URL parameters (skip during initial load to prevent duplicate history entries)
         if (updateUrl) {
-            updateURL(query, selectedTags);
+            updateURL(query, selectedTags, selectedReadingTime);
             // Save to recent searches
             if (query && query.length >= 3) {
                 saveRecentSearch(query);
             }
         }
 
-        // If no query and no tags selected, show welcome message with recent searches
-        if (!query && selectedTags.size === 0) {
+        // If no query and no filters selected, show welcome message with recent searches
+        if (!query && selectedTags.size === 0 && !selectedReadingTime) {
             showWelcomeMessage();
             return;
         }
@@ -403,6 +474,15 @@
             const matchesTags = selectedTags.size === 0 ||
                 Array.from(selectedTags).every(tag => doc.tags.includes(tag));
             if (!matchesTags) return { doc, score: -1 };
+
+            // Reading time filter
+            if (selectedReadingTime) {
+                const filter = READING_TIME_FILTERS.find(f => f.id === selectedReadingTime);
+                const readingTime = doc.reading_time || 0;
+                if (readingTime < filter.min || readingTime >= filter.max) {
+                    return { doc, score: -1 };
+                }
+            }
 
             // Text search with fuzzy matching
             if (query) {
@@ -423,13 +503,13 @@
 
             return { doc, score };
         })
-        .filter(item => item.score > 0 || (!query && selectedTags.size > 0))
+        .filter(item => item.score > 0 || (!query && (selectedTags.size > 0 || selectedReadingTime)))
         .sort((a, b) => b.score - a.score)
         .map(item => item.doc);
 
         renderResults(scoredResults, query);
-        searchClear.style.display = query || selectedTags.size > 0 ? 'block' : 'none';
-        document.getElementById('share-search').style.display = (query || selectedTags.size > 0) ? 'inline-flex' : 'none';
+        searchClear.style.display = query || selectedTags.size > 0 || selectedReadingTime ? 'block' : 'none';
+        document.getElementById('share-search').style.display = (query || selectedTags.size > 0 || selectedReadingTime) ? 'inline-flex' : 'none';
     }
 
     // Recent searches storage
@@ -502,7 +582,7 @@
         searchResults.innerHTML = `
             <div class="search-empty">
                 <p>👋 Welcome! Start typing to search through <span id="post-count">${searchIndex.total}</span> articles.</p>
-                ${allTags.size > 0 ? '<p>Or click a tag below to filter.</p>' : ''}
+                ${allTags.length > 0 ? '<p>Or click a tag or reading time filter below to browse.</p>' : ''}
                 ${recentHtml}
                 ${popularHtml}
             </div>
@@ -544,9 +624,11 @@
     // Handle browser back/forward buttons
     window.addEventListener('popstate', () => {
         selectedTags.clear();
+        selectedReadingTime = null;
         const query = parseURLParams();
         searchInput.value = query;
         updateTagsUI();
+        updateReadingTimeUI();
         performSearch(query, false);
     });
 
@@ -582,7 +664,9 @@
     searchClear.addEventListener('click', () => {
         searchInput.value = '';
         selectedTags.clear();
+        selectedReadingTime = null;
         updateTagsUI();
+        updateReadingTimeUI();
         performSearch('');
         searchInput.focus();
     });
