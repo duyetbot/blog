@@ -749,7 +749,7 @@ def build_post_meta_html(date_str, parsed_dt, reading_time=None):
 
     meta_html = f'<div class="post-meta"><time class="post-date"{datetime_attr}>{format_date(date_str, parsed_dt)}</time>'
     if reading_time:
-        meta_html += f' <span class="post-reading-time">{reading_time}{READING_TIME_SUFFIX}</span>'
+        meta_html += f' <span class="post-reading-time" aria-label="{reading_time} minute read">🕐 {reading_time}{READING_TIME_SUFFIX}</span>'
     meta_html += '</div>'
     return meta_html
 
@@ -1249,7 +1249,7 @@ def build_post(filepath):
     <div class="post-meta">
         <time class="post-date" datetime="{iso_date}" itemprop="datePublished">{format_date(meta.get('date', ''), parsed_dt)}</time>
         <meta itemprop="dateModified" content="{iso_date}">
-        <span class="post-reading-time">{reading_time}{READING_TIME_SUFFIX}</span>
+        <span class="post-reading-time" aria-label="{reading_time} minute read">🕐 {reading_time}{READING_TIME_SUFFIX}</span>
         <span class="post-author">by <a href="https://github.com/duyetbot" rel="author">duyetbot</a></span>
     </div>
     <h1>{meta.get('title', 'Untitled')}</h1>
@@ -2544,7 +2544,7 @@ def build_home(posts):
 
         # Get reading time if available
         reading_time = post.get('reading_time')
-        reading_time_badge = f' <span class="post-reading-time">{reading_time}{READING_TIME_SUFFIX}</span>' if reading_time else ''
+        reading_time_badge = f' <span class="post-reading-time" aria-label="{reading_time} minute read">🕐 {reading_time}{READING_TIME_SUFFIX}</span>' if reading_time else ''
 
         # Generate new badge using helper (with leading space for card title)
         new_badge = build_new_badge_html(parsed_dt, leading_space=True)
