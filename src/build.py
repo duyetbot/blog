@@ -2334,12 +2334,16 @@ def build_archive(posts):
                 slug = meta.get('slug', '')
                 title = meta.get('title', 'Untitled')
                 description = meta.get('description', '')
+                reading_time = meta.get('reading_time')
                 day = date[8:10] if len(date) >= 10 else ''
+
+                # Reading time badge
+                reading_time_badge = f' <span class="archive-reading-time">🕐 {reading_time}{READING_TIME_SUFFIX}</span>' if reading_time else ''
 
                 post_items.append(f"""
                     <li class="archive-post-item">
                         <time class="archive-post-date" datetime="{year}-{month}-{day}">{month_name} {day}</time>
-                        <a href="blog/{slug}.html" class="archive-post-link">{title}</a>
+                        <a href="blog/{slug}.html" class="archive-post-link">{title}</a>{reading_time_badge}
                         {f'<p class="archive-post-description">{description}</p>' if description else ''}
                     </li>
                 """)

@@ -2634,6 +2634,14 @@ code[class*="language-"] {
     color: var(--accent);
 }
 
+.archive-reading-time {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-left: var(--space-sm);
+    white-space: nowrap;
+}
+
 .archive-post-description {
     font-size: 0.85rem;
     color: var(--text-muted);
