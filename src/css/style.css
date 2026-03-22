@@ -1455,6 +1455,12 @@ details[open] .toc-toggle::after {
     font-family: var(--font-mono);
 }
 
+.related-tag-match {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
 @media (max-width: 600px) {
     .related-posts-list {
         grid-template-columns: 1fr;

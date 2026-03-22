@@ -1383,12 +1383,17 @@ def add_post_enhancements(posts):
     # Also pre-compute parsed tags for display (limited to MAX_TAGS_DISPLAY)
     post_tag_sets = {}
     slug_to_display_tags = {}
+    tag_frequencies = {}  # For scoring: rarer tags get more weight
     for post in posts:
         slug = post.get('slug')
         if slug:
             tags = post.get('tags', [])
-            post_tag_sets[slug] = set(tags) if tags else set()
-            slug_to_display_tags[slug] = parse_tags(tags)[:MAX_TAGS_DISPLAY]
+            parsed = parse_tags(tags)
+            post_tag_sets[slug] = set(parsed) if parsed else set()
+            slug_to_display_tags[slug] = parsed[:MAX_TAGS_DISPLAY]
+            # Count tag frequencies across all posts
+            for tag in parsed:
+                tag_frequencies[tag] = tag_frequencies.get(tag, 0) + 1
 
     # Calculate enhancements for each post
     enhancements = {}
@@ -1416,8 +1421,9 @@ def add_post_enhancements(posts):
 
         nav_html = f'<nav class="article-nav-pager">{"".join(nav_parts)}</nav>' if nav_parts else None
 
-        # Calculate related posts HTML
+        # Calculate related posts with enhanced scoring
         post_tags = post_tag_sets.get(slug, set())
+
         if post_tags:
             related = []
             for other in posts:
@@ -1425,31 +1431,49 @@ def add_post_enhancements(posts):
                     continue
 
                 other_tags = post_tag_sets.get(other.get('slug'), set())
-                overlap = len(post_tags & other_tags)
+                overlap_tags = post_tags & other_tags
 
-                if overlap >= MIN_OVERLAP:
+                if overlap_tags:
+                    # Calculate weighted score
+                    # Rarer shared tags contribute more to the score
+                    score = 0
+                    for tag in overlap_tags:
+                        # Inverse frequency: rarer tags get higher scores
+                        tag_freq = tag_frequencies.get(tag, 1)
+                        tag_score = 10 / tag_freq  # Tag appearing once = 10 pts, twice = 5 pts, etc.
+                        score += tag_score
+
                     related.append({
                         'slug': other.get('slug'),
                         'title': other.get('title', 'Untitled'),
                         'date': other.get('date', ''),
-                        'overlap': overlap
+                        'score': score,
+                        'matching_tags': list(overlap_tags)
                     })
 
+            # Sort by score (desc), then by date (desc)
             if related:
-                related.sort(key=lambda x: (-x['overlap'], x['date']), reverse=True)
+                related.sort(key=lambda x: (-x['score'], x['date']))
                 related = related[:MAX_RELATED]
 
                 related_html_parts = ['<section class="related-posts">\n    <h3>Related Posts</h3>\n    <div class="related-posts-list">\n']
                 for r in related:
                     # Get pre-computed tags for this related post (O(1) lookup)
                     r_tags = slug_to_display_tags.get(r['slug'], [])
-                    tag_badges = ''.join(f'<span class="related-tag">{escape_xml(tag)}</span>' for tag in r_tags) if r_tags else ''
+                    # Highlight matching tags
+                    matching_tags = r.get('matching_tags', [])
+                    tag_badges = []
+                    for tag in r_tags:
+                        is_match = tag in matching_tags
+                        match_class = ' related-tag-match' if is_match else ''
+                        tag_badges.append(f'<span class="related-tag{match_class}">{escape_xml(tag)}</span>')
+                    tag_badges_html = ''.join(tag_badges) if tag_badges else ''
 
                     related_html_parts.append(f'''        <article class="related-post-card">
-            <h4><a href="{r['slug']}.html">{r['title']}</a></h4>
+            <h4><a href="{r['slug']}.html">{escape_xml(r['title'])}</a></h4>
             <div class="related-post-meta">
                 <time>{r['date']}</time>
-                {f'<div class="related-tags">{tag_badges}</div>' if tag_badges else ''}
+                {f'<div class="related-tags">{tag_badges_html}</div>' if tag_badges_html else ''}
             </div>
         </article>\n''')
                 related_html_parts.append('    </div>\n</section>\n')
@@ -1457,7 +1481,25 @@ def add_post_enhancements(posts):
             else:
                 related_html = None
         else:
-            related_html = None
+            # Fallback: show recent posts if current post has no tags
+            recent_posts = [p for p in sorted_posts if p.get('slug') != slug][:MAX_RELATED]
+            if recent_posts:
+                related_html_parts = ['<section class="related-posts">\n    <h3>Recent Posts</h3>\n    <div class="related-posts-list">\n']
+                for r in recent_posts:
+                    r_tags = slug_to_display_tags.get(r.get('slug', ''), [])
+                    tag_badges = ''.join(f'<span class="related-tag">{escape_xml(tag)}</span>' for tag in r_tags) if r_tags else ''
+
+                    related_html_parts.append(f'''        <article class="related-post-card">
+            <h4><a href="{r.get("slug")}.html">{escape_xml(r.get("title", "Untitled"))}</a></h4>
+            <div class="related-post-meta">
+                <time>{r.get("date", "")}</time>
+                {f'<div class="related-tags">{tag_badges}</div>' if tag_badges else ''}
+            </div>
+        </article>\n''')
+                related_html_parts.append('    </div>\n</section>\n')
+                related_html = ''.join(related_html_parts)
+            else:
+                related_html = None
 
         enhancements[slug] = {'nav': nav_html, 'related': related_html}
 
