@@ -93,5 +93,45 @@
 
 {{ footer }}
 
+<script>
+(function() {
+    // Extract potential search terms from URL path
+    const path = window.location.pathname
+        .replace(/\.html$/, '')
+        .replace(/^\//, '')
+        .replace(/\/+/g, ' ')
+        .replace(/-/g, ' ')
+        .trim();
+
+    const searchInput = document.querySelector('.error-search-input');
+    if (searchInput && path) {
+        searchInput.value = path;
+    }
+
+    // Auto-search after 3 seconds if user typed a path
+    if (path && path.length > 3) {
+        setTimeout(() => {
+            const form = document.querySelector('.error-search-form');
+            if (form) form.submit();
+        }, 2000);
+    }
+
+    // Add subtle entrance animation
+    document.addEventListener('DOMContentLoaded', () => {
+        const errorPage = document.querySelector('.error-page');
+        if (errorPage) {
+            errorPage.style.opacity = '0';
+            errorPage.style.transform = 'translateY(20px)';
+            errorPage.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+
+            requestAnimationFrame(() => {
+                errorPage.style.opacity = '1';
+                errorPage.style.transform = 'translateY(0)';
+            });
+        }
+    });
+})();
+</script>
+
 </body>
 </html>
