@@ -3348,20 +3348,41 @@ mark {
         word-break: break-all;
     }
 
-    /* Code blocks */
+    /* Code blocks - preserve readability */
     .article-content pre {
-        background: #f5f5f5;
+        background: #f8f8f8;
         border: 1px solid #ddd;
-        padding: 0.5em;
+        border-left: 3px solid #666;
+        padding: 1em;
         page-break-inside: avoid;
-        overflow: visible;
-        white-space: pre-wrap;
+        overflow-x: auto;
+        white-space: pre;
+        font-size: 9pt;
+        line-height: 1.4;
     }
 
     .article-content code {
-        font-size: 10pt;
-        background: #f5f5f5;
-        padding: 0.1em 0.3em;
+        font-size: 9pt;
+        font-family: 'Courier New', 'Consolas', monospace;
+        background: transparent;
+        padding: 0;
+    }
+
+    /* Code block wrapper elements */
+    .code-block-wrapper {
+        page-break-inside: avoid;
+        margin: 1em 0;
+    }
+
+    .code-lang {
+        background: #ddd;
+        color: #333;
+        border-radius: 2px;
+    }
+
+    .code-copy-btn,
+    .code-lines {
+        display: none !important;
     }
 
     /* Blockquotes */
