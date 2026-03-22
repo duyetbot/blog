@@ -19,7 +19,7 @@ import json
 import shutil
 import sys
 from collections import Counter
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 from pathlib import Path
 
 # Try to import YAML for config loading
@@ -2253,8 +2253,8 @@ def build_404():
     html = html.replace("{{ footer }}", footer)
     html = html.replace("{{ root }}", "")
     # Replace build_date
-    from datetime import datetime as dt
-    html = html.replace("{{ build_date }}", dt.utcnow().strftime("%Y-%m-%d %H:%M UTC"))
+    from datetime import datetime as dt, UTC
+    html = html.replace("{{ build_date }}", dt.now(UTC).strftime("%Y-%m-%d %H:%M UTC"))
 
     (OUTPUT_DIR / "404.html").write_text(html)
     print(f"Built: 404.html")
@@ -3084,14 +3084,14 @@ def render_template(template, **kwargs):
 
 def _get_common_template_vars():
     """Get common template variables used across all pages."""
-    from datetime import datetime as dt
+    from datetime import datetime as dt, UTC
     return {
         "og_locale": IN_LANGUAGE.replace("-", "_"),  # en-US → en_US for Open Graph
         "twitter_site": SITE_TWITTER,
         "twitter_creator": SITE_TWITTER,
         "author_name": SITE_AUTHOR,
         "github_profile": SITE_GITHUB,
-        "build_date": dt.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
+        "build_date": dt.now(UTC).strftime("%Y-%m-%d %H:%M UTC"),
     }
 
 
@@ -3167,12 +3167,12 @@ def _get_common_components(root=""):
         cache_key = f"{component_name}_{root}"
         if cache_key not in _get_common_components.cache:
             template = read_template(component_name)
-            from datetime import datetime as dt
+            from datetime import datetime as dt, UTC
             # Pass footer_tags only to footer component
             template_vars = {
                 "root": root,
                 "year": YEAR,
-                "build_date": dt.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
+                "build_date": dt.now(UTC).strftime("%Y-%m-%d %H:%M UTC"),
                 "footer_tags": _footer_tags_html if component_name == "footer" else ""
             }
             _get_common_components.cache[cache_key] = (
