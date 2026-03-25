@@ -26,6 +26,7 @@ frontmatter:
     - canonical
     - series
     - series_order
+    - warnings
 
 # Date format for blog posts (strftime format)
 date_format: "%a, %d %b %Y"

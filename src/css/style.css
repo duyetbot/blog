@@ -5490,3 +5490,46 @@ mark {
     display: none;
 }
 
+
+/* Content warnings */
+.content-warnings {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    padding: var(--space-sm);
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-md);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+}
+
+.warning-label {
+    font-weight: 600;
+    color: #856404;
+}
+
+.warning-tag {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 0.2em 0.6em;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+}
+
+[data-theme="dark"] .content-warnings {
+    background: #5a4a2a;
+    border-color: #ff6b6b;
+}
+
+[data-theme="dark"] .warning-label {
+    color: #ffbaba;
+}
+
+[data-theme="dark"] .warning-tag {
+    background: #5c2a2a;
+    color: #ffa8a8;
+}
+

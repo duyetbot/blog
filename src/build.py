@@ -1449,8 +1449,23 @@ def build_post(filepath):
     # Generate breadcrumbs navigation
     breadcrumbs_html = generate_breadcrumbs_html(meta.get('title', 'Untitled'), root="../")
 
+    # Build content warnings HTML if present
+    warnings_html = ""
+    if meta.get("warnings"):
+        warnings_list = meta.get("warnings", [])
+        if isinstance(warnings_list, list):
+            warning_tags = " ".join([f'<span class="warning-tag">{escape_xml(w)}</span>' for w in warnings_list])
+            warnings_html = f'<div class="content-warnings"><span class="warning-label">⚠️ Content warnings:</span> {warning_tags}</div>'
+
     # ISO date for meta attributes
     iso_date = _format_iso_date(parsed_dt) or meta.get('date', '')
+
+    # Get modified date from frontmatter, or default to published date
+    modified_dt = parsed_dt
+    modified_str = meta.get('modified') or meta.get('last_modified')
+    if modified_str:
+        modified_dt = _parse_datetime(modified_str) or parsed_dt
+    modified_iso = _format_iso_date(modified_dt) or iso_date
 
     # Create article HTML
     article_html = f"""
@@ -1460,6 +1475,8 @@ def build_post(filepath):
     <div class="article-progress-header">
         <div class="article-progress-bar-header"></div>
     </div>
+    {warnings_html}
+    <h1 class="article-title" itemprop="headline">{escape_xml(meta.get('title', 'Untitled'))}</h1>
     <div class="post-meta">
         <time class="post-date" datetime="{iso_date}" itemprop="datePublished">{format_date(meta.get('date', ''), parsed_dt)}</time>
         <meta itemprop="dateModified" content="{iso_date}">
